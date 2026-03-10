@@ -11,1562 +11,302 @@ body{font-family:'DM Sans',sans-serif;background:#0a0a0f;color:#e8e6e1;overflow:
 #canvas{width:100%;height:100%;cursor:grab;position:relative;overflow:hidden}
 #canvas.grabbing{cursor:grabbing}
 #world{position:absolute;transform-origin:0 0;will-change:transform}
-svg.conn{position:absolute;top:0;left:0;width:6000px;height:4000px;pointer-events:none;z-index:0}
-svg.conn path{fill:none;stroke-width:2;opacity:0.35}
-.nd{position:absolute;border-radius:16px;padding:14px 18px;cursor:default;z-index:1;opacity:0;animation:fadeIn .5s ease forwards;user-select:none;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
-.nd:hover{transform:scale(1.05)!important;z-index:10}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.nd--center{background:linear-gradient(135deg,var(--c1),var(--c2));color:#0a0a0f;border-radius:50%;width:200px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 0 60px var(--glow);z-index:5;font-family:'Space Mono',monospace}
-.nd--center .t{font-size:15px;font-weight:700;letter-spacing:-.5px;line-height:1.2}
-.nd--center .s{font-size:10px;opacity:.65;margin-top:4px}
-.nd--branch{border:2px solid var(--bc);backdrop-filter:blur(8px);min-width:150px;text-align:center;background:var(--bg)}
-.nd--branch .num{font-family:'Space Mono',monospace;font-size:36px;font-weight:700;line-height:1;opacity:.12;position:absolute;top:6px;right:12px}
-.nd--branch .t{font-size:16px;font-weight:700;letter-spacing:-.3px}
-.nd--branch .d{font-size:11px;opacity:.65;margin-top:4px;line-height:1.35}
-.nd--leaf{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(5px);max-width:210px;font-size:12px;line-height:1.45;padding:10px 14px}
-.nd--leaf .lbl{font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;opacity:.5}
-.ctrl{position:fixed;bottom:20px;right:20px;display:flex;gap:6px;z-index:100}
-.ctrl button{width:40px;height:40px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(10,10,15,.85);backdrop-filter:blur(8px);color:#e8e6e1;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.ctrl button:hover{background:rgba(255,255,255,.1)}
-.back{position:fixed;top:20px;left:20px;z-index:100;padding:8px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(10,10,15,.85);backdrop-filter:blur(8px);color:#e8e6e1;font-size:13px;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px}
-.back:hover{background:rgba(255,255,255,.1)}
-.legend{position:fixed;top:20px;right:20px;z-index:100;font-size:11px;opacity:.4;font-family:'Space Mono',monospace;text-align:right;max-width:300px}
-body::after{content:'';position:fixed;inset:0;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="300" height="300" filter="url(%23n)" opacity="0.04"/></svg>');pointer-events:none;z-index:999}
+svg.cn{position:absolute;top:0;left:0;width:8000px;height:6000px;pointer-events:none;z-index:0}
+svg.cn path{fill:none;stroke-width:2;opacity:0.35}
+.nd{position:absolute;border-radius:16px;padding:14px 18px;cursor:default;z-index:1;opacity:0;animation:fi .5s ease forwards;user-select:none;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
+.nd:hover{transform:scale(1.06)!important;z-index:10}
+@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.nd.ct{border-radius:50%;width:210px;height:210px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:5;font-family:'Space Mono',monospace}
+.nd.ct .t{font-size:16px;font-weight:700;letter-spacing:-.5px;line-height:1.15;color:#0a0a0f}
+.nd.ct .s{font-size:10px;opacity:.6;margin-top:5px;color:#0a0a0f}
+.nd.br{border:2px solid;backdrop-filter:blur(8px);min-width:155px;text-align:center}
+.nd.br .n{font-family:'Space Mono',monospace;font-size:34px;font-weight:700;line-height:1;opacity:.12;position:absolute;top:6px;right:12px}
+.nd.br .t{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.nd.br .d{font-size:11px;opacity:.6;margin-top:4px;line-height:1.35}
+.nd.lf{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(5px);max-width:215px;font-size:12px;line-height:1.45;padding:10px 14px}
+.nd.lf .k{font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;opacity:.5}
+.ui{position:fixed;bottom:20px;right:20px;display:flex;gap:6px;z-index:100}
+.ui button{width:40px;height:40px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(10,10,15,.85);backdrop-filter:blur(8px);color:#e8e6e1;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ui button:hover{background:rgba(255,255,255,.1)}
+.bk{position:fixed;top:20px;left:20px;z-index:100;padding:8px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(10,10,15,.85);backdrop-filter:blur(8px);color:#e8e6e1;font-size:13px;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px}
+.bk:hover{background:rgba(255,255,255,.1)}
+.hd{position:fixed;top:20px;right:20px;z-index:100;font-size:11px;opacity:.4;font-family:'Space Mono',monospace;text-align:right;max-width:280px}
+body::after{content:'';position:fixed;inset:0;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/></filter><rect width="200" height="200" filter="url(%23n)" opacity="0.035"/></svg>');pointer-events:none;z-index:999}
 </style>
 </head>
 <body>
-<a class="back" href="index.html">← Назад к списку</a>
-<div class="legend" id="legend"></div>
-<div class="ctrl">
-<button onclick="zoomIn()" title="Zoom In">+</button>
-<button onclick="zoomOut()" title="Zoom Out">−</button>
-<button onclick="resetView()" title="Reset">⊙</button>
-</div>
-<div id="canvas"><div id="world"><svg class="conn" id="svg"></svg></div></div>
-
+<a class="bk" href="index.html">← Назад к списку</a>
+<div class="hd" id="hd"></div>
+<div class="ui"><button onclick="zi()">+</button><button onclick="zo()">−</button><button onclick="rv()">⊙</button></div>
+<div id="canvas"><div id="world"><svg class="cn" id="svg"></svg></div></div>
 <script>
-// ============ MINDMAP DATA FOR ALL 80 SOURCES ============
 const MAPS={
 1:{title:"HOW HABITS\nFORM",sub:"Lally et al. 2010\nEuropean J Social Psychology",c1:"#ff6b6b",c2:"#f7c948",branches:[
-{color:"#ff6b6b",label:"01",title:"МЕТОДОЛОГИЯ",desc:"96 участников, 12 недель",x:-550,y:-350,leaves:[
-  {lbl:"Выборка",txt:"96 добровольцев выбрали 1 действие (еда/питьё/активность) для ежедневного выполнения",dx:-250,dy:-120},
-  {lbl:"Шкала",txt:"SRHI (Self-Report Habit Index) — субъективная оценка автоматичности каждый день",dx:-350,dy:30},
-  {lbl:"Длительность",txt:"84 дня наблюдений, нелинейная регрессия для каждого участника",dx:-200,dy:130}
+  {color:"#ff6b6b",label:"01",title:"МЕТОДОЛОГИЯ",desc:"96 участников, 84 дня",x:-550,y:-350,leaves:[{lbl:"Выборка",txt:"96 добровольцев выбрали 1 действие (еда/питьё/активность) для ежедневного выполнения",dx:-250,dy:-120},{lbl:"Шкала",txt:"SRHI — субъективная оценка автоматичности каждый день по шкале",dx:-350,dy:30},{lbl:"Длительность",txt:"84 дня наблюдений, нелинейная регрессия для каждого участника",dx:-200,dy:130}]},
+  {color:"#ffd93d",label:"02",title:"РЕЗУЛЬТАТЫ",desc:"Асимптотическая кривая",x:550,y:-350,leaves:[{lbl:"Медиана",txt:"66 дней до 95% автоматичности — это СРЕДНЕЕ, не правило для всех",dx:250,dy:-120},{lbl:"Диапазон",txt:"От 18 дней (стакан воды) до 254 дней (50 приседаний)",dx:350,dy:30},{lbl:"Кривая",txt:"Быстрый рост в начале → замедление → плато. Первые 3 недели = макс. прирост",dx:200,dy:130}]},
+  {color:"#4ecdc4",label:"03",title:"ПРОПУСКИ",desc:"1 день ≠ катастрофа",x:-500,y:350,leaves:[{lbl:"Потеря",txt:"Пропуск 1 дня = −0.29 балла (незначимо). Привычка НЕ ломается",dx:-250,dy:-80},{lbl:"Восстановление",txt:"После пропуска прогресс возобновляется без потерь",dx:-300,dy:80}]},
+  {color:"#a78bfa",label:"04",title:"СЛОЖНОСТЬ",desc:"Простое vs сложное",x:500,y:350,leaves:[{lbl:"Простые",txt:"Выпить воду, съесть фрукт — ~20 дней. Минимум усилий",dx:250,dy:-80},{lbl:"Сложные",txt:"50 приседаний, бег 15 мин — 100+ дней. Физ. усилие замедляет",dx:300,dy:80}]},
+  {color:"#ff8fab",label:"★",title:"КОНТЕКСТ",desc:"Ключ автоматичности",x:0,y:480,leaves:[{lbl:"Привязка",txt:"'После завтрака' — контекст запускает действие автоматически",dx:-200,dy:90},{lbl:"Стабильность",txt:"Один и тот же контекст каждый день ускоряет формирование",dx:200,dy:90}]},
 ]},
-{color:"#ffd93d",label:"02",title:"РЕЗУЛЬТАТЫ",desc:"Асимптотическая кривая",x:550,y:-350,leaves:[
-  {lbl:"Медиана",txt:"66 дней до 95% автоматичности — это среднее, а не правило",dx:250,dy:-120},
-  {lbl:"Диапазон",txt:"От 18 дней (стакан воды) до 254 дней (50 приседаний) — огромный разброс",dx:350,dy:30},
-  {lbl:"Кривая",txt:"Быстрый рост в начале, замедление к плато. Первые 3 недели — максимальный прирост",dx:200,dy:130}
-]},
-{color:"#4ecdc4",label:"03",title:"ПРОПУСКИ",desc:"Один день ≠ катастрофа",x:-500,y:350,leaves:[
-  {lbl:"Потеря",txt:"Пропуск 1 дня = −0.29 балла автоматичности (статистически незначимо)",dx:-250,dy:-80},
-  {lbl:"Восстановление",txt:"После пропуска прогресс возобновляется без значимых потерь",dx:-300,dy:80}
-]},
-{color:"#a78bfa",label:"04",title:"СЛОЖНОСТЬ",desc:"Простое vs сложное",x:500,y:350,leaves:[
-  {lbl:"Простые",txt:"Выпить воду, съесть фрукт — ~20 дней. Минимальное когнитивное усилие",dx:250,dy:-80},
-  {lbl:"Сложные",txt:"50 приседаний, бег 15 мин — 100+ дней. Физическое усилие замедляет",dx:300,dy:80}
-]},
-{color:"#ff8fab",label:"★",title:"КОНТЕКСТ",desc:"Ключ к автоматичности",x:0,y:450,leaves:[
-  {lbl:"Привязка",txt:"'После завтрака' — контекст запускает действие автоматически",dx:-200,dy:100},
-  {lbl:"Стабильность",txt:"Один и тот же контекст каждый день ускоряет формирование",dx:200,dy:100}
-]}
-]},
-
-3:{title:"ATOMIC\nHABITS",sub:"James Clear, 2018\nAvery / Penguin",c1:"#38bdf8",c2:"#a78bfa",branches:[
-{color:"#38bdf8",label:"01",title:"ОЧЕВИДНОСТЬ",desc:"1-й закон: Cue",x:-550,y:-350,leaves:[
-  {lbl:"Habit Stacking",txt:"'После [существующая привычка], я [новая привычка]' — привязка к якорю",dx:-280,dy:-100},
-  {lbl:"Environment",txt:"Измени среду: положи книгу на подушку, убери телефон в другую комнату",dx:-300,dy:60},
-  {lbl:"Scoreboard",txt:"Habit tracker — визуальный сигнал прогресса. 'Не рви цепочку' (Seinfeld)",dx:-200,dy:160}
-]},
-{color:"#ffd93d",label:"02",title:"ПРИВЛЕКАТЕЛЬНОСТЬ",desc:"2-й закон: Craving",x:550,y:-350,leaves:[
-  {lbl:"Temptation Bundle",txt:"Совмести 'надо' с 'хочу': подкаст только во время бега",dx:280,dy:-100},
-  {lbl:"Social Group",txt:"Окружение формирует привычки. Вступи в группу, где твоя цель — норма",dx:320,dy:60},
-  {lbl:"Reframing",txt:"Не 'я должен', а 'я выбираю'. Не 'надо бегать', а 'я укрепляю тело'",dx:220,dy:160}
-]},
-{color:"#34d399",label:"03",title:"ЛЁГКОСТЬ",desc:"3-й закон: Response",x:-500,y:350,leaves:[
-  {lbl:"2-Minute Rule",txt:"Любая привычка = 2-минутная версия. 'Читай 30 мин' → 'Открой книгу'",dx:-280,dy:-80},
-  {lbl:"Friction",txt:"↓трение для хорошего (кроссовки у двери), ↑для плохого (удали приложение)",dx:-300,dy:80},
-  {lbl:"Decisional",txt:"Убери решения: автоматические переводы, meal prep в воскресенье",dx:-200,dy:160}
-]},
-{color:"#ff6b6b",label:"04",title:"УДОВЛЕТВОРЕНИЕ",desc:"4-й закон: Reward",x:500,y:350,leaves:[
-  {lbl:"Немедленность",txt:"Мозг ценит немедленное. Добавь мгновенную награду к долгосрочной привычке",dx:280,dy:-80},
-  {lbl:"Tracking",txt:"Визуальный прогресс = дофаминовая награда. Закрашивание клетки = микро-удовольствие",dx:300,dy:80}
-]},
-{color:"#f472b6",label:"∞",title:"1% РОСТ",desc:"Кумулятивный эффект",x:0,y:480,leaves:[
-  {lbl:"Математика",txt:"1.01^365 = 37.78. Маленькие улучшения дают экспоненциальный результат",dx:-220,dy:90},
-  {lbl:"Identity",txt:"Цель не 'сбросить вес', а 'стать здоровым человеком'. Идентичность > результат",dx:220,dy:90}
-]}
-]},
-
 2:{title:"THE POWER\nOF HABIT",sub:"Charles Duhigg, 2012\nRandom House",c1:"#fb923c",c2:"#ffd93d",branches:[
-{color:"#fb923c",label:"01",title:"HABIT LOOP",desc:"Cue → Routine → Reward",x:-500,y:-300,leaves:[
-  {lbl:"Cue",txt:"Триггер: место, время, эмоция, другие люди, предшествующее действие",dx:-280,dy:-100},
-  {lbl:"Routine",txt:"Действие (физическое, ментальное, эмоциональное) — то, что мы хотим изменить",dx:-320,dy:60},
-  {lbl:"Reward",txt:"Удовлетворение потребности: сахар→энергия, прогулка→социализация, курение→пауза",dx:-200,dy:160}
+  {color:"#fb923c",label:"01",title:"HABIT LOOP",desc:"Cue → Routine → Reward",x:-520,y:-300,leaves:[{lbl:"Cue",txt:"Триггер: место, время, эмоция, другие люди, предшествующее действие",dx:-280,dy:-100},{lbl:"Routine",txt:"Действие — физическое, ментальное, эмоциональное. ТО, что мы хотим изменить",dx:-320,dy:50},{lbl:"Reward",txt:"Удовлетворение: сахар→энергия, прогулка→социализация, курение→пауза",dx:-200,dy:150}]},
+  {color:"#ffd93d",label:"02",title:"GOLDEN RULE",desc:"Перезапись рутины",x:520,y:-300,leaves:[{lbl:"Принцип",txt:"Оставь тот же Cue и Reward, замени ТОЛЬКО Routine на здоровый аналог",dx:280,dy:-80},{lbl:"Пример",txt:"Cue: стресс 15:00. Routine: чипсы→прогулка 5 мин. Reward: пауза остаётся",dx:300,dy:80}]},
+  {color:"#4ecdc4",label:"03",title:"KEYSTONE\nHABITS",desc:"Каскадный эффект",x:-450,y:350,leaves:[{lbl:"Определение",txt:"Одна привычка запускает цепочку изменений в других сферах жизни",dx:-250,dy:-60},{lbl:"Alcoa",txt:"Фокус на безопасности → прибыль ×5 за 10 лет, ↑качество, ↑моральный дух",dx:-280,dy:80},{lbl:"Спорт",txt:"Спорт → лучше сон → лучше еда → больше энергии → продуктивность",dx:-180,dy:160}]},
+  {color:"#a78bfa",label:"04",title:"CRAVING",desc:"Двигатель привычки",x:450,y:350,leaves:[{lbl:"Без craving",txt:"Нет craving = нет привычки. Craving = предвкушение награды (дофамин)",dx:250,dy:-60},{lbl:"Pepsodent",txt:"Мята в пасте → покалывание = craving чистоты → чистка зубов стала привычкой",dx:300,dy:80}]},
 ]},
-{color:"#ffd93d",label:"02",title:"GOLDEN RULE",desc:"Перезапись, не удаление",x:500,y:-300,leaves:[
-  {lbl:"Принцип",txt:"Оставь тот же Cue и Reward, замени только Routine на здоровый аналог",dx:280,dy:-80},
-  {lbl:"Пример",txt:"Cue: стресс 15:00. Вместо печенья (routine) → прогулка 5 мин. Reward: пауза остаётся",dx:300,dy:80}
+3:{title:"ATOMIC\nHABITS",sub:"James Clear, 2018\nAvery / Penguin",c1:"#38bdf8",c2:"#a78bfa",branches:[
+  {color:"#38bdf8",label:"01",title:"ОЧЕВИДНОСТЬ",desc:"1-й закон: Cue",x:-550,y:-350,leaves:[{lbl:"Habit Stacking",txt:"'После [существующая], я [новая]' — привязка к якорю",dx:-280,dy:-100},{lbl:"Среда",txt:"Положи книгу на подушку, убери телефон в другую комнату",dx:-300,dy:50},{lbl:"Трекер",txt:"Habit tracker: 'Не рви цепочку' (Seinfeld strategy)",dx:-200,dy:140}]},
+  {color:"#ffd93d",label:"02",title:"ПРИВЛЕКАТЕЛЬНОСТЬ",desc:"2-й закон: Craving",x:550,y:-350,leaves:[{lbl:"Temptation Bundle",txt:"Совмести 'надо' с 'хочу': подкаст только во время бега",dx:280,dy:-100},{lbl:"Окружение",txt:"Вступи в группу, где твоя цель — норма поведения",dx:320,dy:50},{lbl:"Reframing",txt:"Не 'я должен', а 'я выбираю'. Не бремя, а привилегия",dx:220,dy:140}]},
+  {color:"#34d399",label:"03",title:"ЛЁГКОСТЬ",desc:"3-й закон: Response",x:-500,y:350,leaves:[{lbl:"2-Minute Rule",txt:"Любая привычка = 2-минутная версия. 'Читай' → 'Открой книгу'",dx:-280,dy:-80},{lbl:"Friction",txt:"↓трение для хорошего (кроссовки у двери), ↑для плохого (удали app)",dx:-300,dy:80}]},
+  {color:"#ff6b6b",label:"04",title:"УДОВЛЕТВОРЕНИЕ",desc:"4-й закон: Reward",x:500,y:350,leaves:[{lbl:"Немедленность",txt:"Мозг ценит немедленное. Добавь мгновенную награду к долгосрочному",dx:280,dy:-80},{lbl:"Tracking",txt:"Визуальный прогресс = дофаминовая награда. Закрашивание клетки = кайф",dx:300,dy:80}]},
+  {color:"#f472b6",label:"∞",title:"1% В ДЕНЬ",desc:"Кумулятивный эффект",x:0,y:480,leaves:[{lbl:"Математика",txt:"1.01^365 = 37.78. Маленькие улучшения → экспоненциальный результат",dx:-220,dy:90},{lbl:"Identity",txt:"Цель не 'сбросить вес', а 'стать здоровым человеком'. Идентичность > результат",dx:220,dy:90}]},
 ]},
-{color:"#4ecdc4",label:"03",title:"KEYSTONE\nHABITS",desc:"Каскадный эффект",x:-450,y:350,leaves:[
-  {lbl:"Определение",txt:"Одна привычка, которая запускает цепочку изменений в других сферах жизни",dx:-250,dy:-60},
-  {lbl:"Alcoa",txt:"Фокус на безопасности → ↑прибыль ×5, ↑качество, ↑моральный дух за 10 лет",dx:-280,dy:80},
-  {lbl:"Упражнения",txt:"Регулярный спорт → лучше сон → лучше питание → больше энергии → продуктивность",dx:-180,dy:160}
+4:{title:"HABITS:\nREPEAT\nPERFORMANCE",sub:"Wood & Neal, 2006\nCurrent Directions Psych Sci",c1:"#34d399",c2:"#38bdf8",branches:[
+  {color:"#34d399",label:"43%",title:"АВТОМАТИЗМ",desc:"43% действий на автопилоте",x:-500,y:-300,leaves:[{lbl:"Открытие",txt:"43% повседневных действий выполняются автоматически, без осознания",dx:-270,dy:-80},{lbl:"Контекст",txt:"Одно и то же место + время + предшествующее действие = автозапуск",dx:-300,dy:60}]},
+  {color:"#38bdf8",label:"01",title:"КОНТЕКСТ > \nНАМЕРЕНИЯ",desc:"Среда управляет",x:500,y:-300,leaves:[{lbl:"Парадокс",txt:"Даже с сильным намерением: привычная среда = старые паттерны",dx:280,dy:-70},{lbl:"Переезд",txt:"Студенты после переезда легко меняли привычки: нет старых триггеров",dx:300,dy:70}]},
+  {color:"#ffd93d",label:"★",title:"DISRUPTION",desc:"Окно для изменений",x:0,y:380,leaves:[{lbl:"Момент",txt:"Переезд, смена работы, отпуск = уникальное окно для новых привычек",dx:-230,dy:90},{lbl:"Стратегия",txt:"Планируй изменения к моментам disruption — так легче всего",dx:230,dy:90}]},
 ]},
-{color:"#a78bfa",label:"04",title:"CRAVING",desc:"Движущая сила",x:450,y:350,leaves:[
-  {lbl:"Без craving",txt:"Нет craving = нет привычки. Craving = предвкушение награды (дофамин)",dx:250,dy:-60},
-  {lbl:"Pepsodent",txt:"Hopkins добавил мяту в пасту. Покалывание = craving чистоты. Продажи взлетели",dx:300,dy:80}
-]}
+6:{title:"HOOKED",sub:"Nir Eyal, 2014\nPortfolio / Penguin",c1:"#ff6b35",c2:"#f7c948",branches:[
+  {color:"#ff6b6b",label:"01",title:"ТРИГГЕР",desc:"Что запускает",x:-550,y:-300,leaves:[{lbl:"Внешние",txt:"Push, email, реклама, кнопки — ведут пользователя к продукту",dx:-280,dy:-100},{lbl:"Внутренние",txt:"Скука→Instagram, одиночество→Facebook, тревога→Google",dx:-320,dy:40},{lbl:"Цель",txt:"Перейти от внешних к внутренним: продукт = ответ на эмоцию",dx:-200,dy:140}]},
+  {color:"#4ecdc4",label:"02",title:"ДЕЙСТВИЕ",desc:"B = MAT (Fogg)",x:550,y:-300,leaves:[{lbl:"Мотивация",txt:"Удовольствие/боль, надежда/страх, принятие/отвержение",dx:280,dy:-100},{lbl:"Способность",txt:"6 факторов: время, деньги, физ./ментальное усилие, норма, привычность",dx:350,dy:40},{lbl:"Принцип",txt:"Один скролл, один клик. Уменьши трение = больше действий",dx:220,dy:140}]},
+  {color:"#ffe66d",label:"03",title:"ПЕРЕМЕННАЯ\nНАГРАДА",desc:"Непредсказуемость",x:-500,y:350,leaves:[{lbl:"Племя",txt:"Лайки, комменты, признание — социальная validation",dx:-280,dy:-90},{lbl:"Охота",txt:"Лента, поиск, скроллинг — информационная охота",dx:-300,dy:30},{lbl:"Себя",txt:"Прогресс-бары, уровни, завершение — внутреннее мастерство",dx:-200,dy:120},{lbl:"Скиннер",txt:"Variable ratio = максимальная устойчивость поведения",dx:-350,dy:200}]},
+  {color:"#a29bfe",label:"04",title:"ИНВЕСТИЦИЯ",desc:"Вложение",x:500,y:350,leaves:[{lbl:"Данные",txt:"Профиль, настройки, история → персонализация повышает ценность",dx:280,dy:-80},{lbl:"Контент",txt:"Посты, фото, плейлисты → привязка к платформе",dx:300,dy:40},{lbl:"Репутация",txt:"Рейтинг, фолловеры → не переносимый соц. капитал",dx:250,dy:130}]},
+  {color:"#fd79a8",label:"★",title:"ЭТИКА",desc:"Manipulation Matrix",x:0,y:520,leaves:[{lbl:"Фасилитатор",txt:"Сам используешь + улучшает жизнь → этичный продукт",dx:-220,dy:80},{lbl:"Дилер",txt:"Не используешь + не улучшает → манипуляция. Избегай",dx:220,dy:80}]},
 ]},
-
-6:{title:"HOOKED",sub:"Nir Eyal, 2014\nPortfolio/Penguin",c1:"#ff6b35",c2:"#f7c948",branches:[
-{color:"#ff6b6b",label:"01",title:"ТРИГГЕР",desc:"Что запускает действие",x:-550,y:-300,leaves:[
-  {lbl:"Внешние",txt:"Push-уведомления, email, реклама, рекомендации друзей, call-to-action кнопки",dx:-280,dy:-100},
-  {lbl:"Внутренние",txt:"Эмоции: скука → Instagram, одиночество → Facebook, неуверенность → Google",dx:-320,dy:50},
-  {lbl:"Цель",txt:"Перейти от внешних триггеров к внутренним — продукт = ответ на эмоцию",dx:-200,dy:150}
+9:{title:"BETTER THAN\nBEFORE",sub:"Gretchen Rubin, 2015\nFour Tendencies",c1:"#a78bfa",c2:"#ff8fab",branches:[
+  {color:"#34d399",label:"U",title:"UPHOLDER",desc:"Внутренние + Внешние",x:-500,y:-280,leaves:[{lbl:"Характер",txt:"Выполняет и свои, и чужие ожидания. Дисциплинированный, надёжный",dx:-280,dy:-60},{lbl:"Риск",txt:"Жёсткость: не может расслабиться. Тяготится нарушением правил",dx:-280,dy:60}]},
+  {color:"#38bdf8",label:"Q",title:"QUESTIONER",desc:"Только внутренние",x:500,y:-280,leaves:[{lbl:"Характер",txt:"Выполняет только то, что имеет смысл. Нужно обоснование",dx:280,dy:-60},{lbl:"Стратегия",txt:"Дай себе ДАННЫЕ и исследования. Привычка должна быть логична",dx:280,dy:60}]},
+  {color:"#fb923c",label:"O",title:"OBLIGER",desc:"Только внешние",x:-450,y:300,leaves:[{lbl:"Самая большая",txt:"~41% людей. Нуждается во внешней accountability для привычек",dx:-260,dy:-60},{lbl:"Стратегия",txt:"Найди accountability partner, тренера, группу. Обещание другим = мотор",dx:-280,dy:60}]},
+  {color:"#ff6b6b",label:"R",title:"REBEL",desc:"Сопротивляется всем",x:450,y:300,leaves:[{lbl:"Характер",txt:"Сопротивляется и внутренним, и внешним ожиданиям. 'Никто мне не указ'",dx:260,dy:-60},{lbl:"Стратегия",txt:"Свяжи привычку с ИДЕНТИЧНОСТЬЮ и СВОБОДОЙ. 'Я выбираю быть здоровым'",dx:280,dy:60}]},
 ]},
-{color:"#4ecdc4",label:"02",title:"ДЕЙСТВИЕ",desc:"B = MAT (Fogg)",x:550,y:-300,leaves:[
-  {lbl:"Мотивация",txt:"Удовольствие/боль, надежда/страх, принятие/отвержение — 3 оси мотивации",dx:280,dy:-100},
-  {lbl:"Способность",txt:"6 факторов: время, деньги, физ.усилие, ментальное усилие, соц.норма, привычность",dx:350,dy:50},
-  {lbl:"Принцип",txt:"Один скролл, один клик, один свайп. Уменьши трение → больше действий",dx:220,dy:150}
-]},
-{color:"#ffe66d",label:"03",title:"ПЕРЕМЕННАЯ\nНАГРАДА",desc:"Непредсказуемость",x:-500,y:350,leaves:[
-  {lbl:"Племя",txt:"Социальные: лайки, комментарии, признание, статус — validation от других",dx:-280,dy:-80},
-  {lbl:"Охота",txt:"Информационные: лента новостей, поиск, скроллинг — поиск ресурсов",dx:-300,dy:50},
-  {lbl:"Себя",txt:"Мастерство: прогресс-бары, уровни, завершение задач — внутреннее удовлетворение",dx:-200,dy:140},
-  {lbl:"Скиннер",txt:"Variable ratio schedule: непредсказуемое подкрепление → максимальная устойчивость поведения",dx:-350,dy:220}
-]},
-{color:"#a29bfe",label:"04",title:"ИНВЕСТИЦИЯ",desc:"Вложение в будущее",x:500,y:350,leaves:[
-  {lbl:"Данные",txt:"Профиль, настройки, история — персонализация повышает ценность для пользователя",dx:280,dy:-80},
-  {lbl:"Контент",txt:"Посты, фото, плейлисты — создают привязку. 'Мои 10 лет в Instagram'",dx:300,dy:50},
-  {lbl:"Репутация",txt:"Рейтинги, фолловеры, отзывы — социальный капитал не переносится на другую платформу",dx:250,dy:140}
-]},
-{color:"#fd79a8",label:"★",title:"ЭТИКА",desc:"Manipulation Matrix",x:0,y:500,leaves:[
-  {lbl:"Фасилитатор",txt:"Сам используешь + улучшает жизнь → этичный продукт (пример: Slack для продуктивности)",dx:-220,dy:90},
-  {lbl:"Дилер",txt:"Не используешь + не улучшает → манипуляция → slot machines, clickbait",dx:220,dy:90}
-]}
-]},
-
-46:{title:"THINKING\nFAST & SLOW",sub:"Daniel Kahneman, 2011\nNobel Prize 2002",c1:"#ffd93d",c2:"#fb923c",branches:[
-{color:"#ffd93d",label:"01",title:"СИСТЕМА 1",desc:"Быстрая, автоматическая",x:-550,y:-320,leaves:[
-  {lbl:"Характер",txt:"Мгновенная, интуитивная, эмоциональная. Работает без усилий. >90% всех решений",dx:-280,dy:-100},
-  {lbl:"Плюсы",txt:"Экономит энергию, быстрые реакции, распознавание паттернов, экспертная интуиция",dx:-320,dy:50},
-  {lbl:"Минусы",txt:"Когнитивные искажения: anchoring, availability, representativeness, framing",dx:-200,dy:150}
-]},
-{color:"#38bdf8",label:"02",title:"СИСТЕМА 2",desc:"Медленная, осознанная",x:550,y:-320,leaves:[
-  {lbl:"Характер",txt:"Аналитическая, логическая, требует усилий. Быстро устаёт (ego depletion)",dx:280,dy:-100},
-  {lbl:"Активация",txt:"Включается при: новизне, сложности, противоречии, осознанном усилии",dx:320,dy:50},
-  {lbl:"Проблема",txt:"Ленивая: при возможности перекладывает на Систему 1 (cognitive ease)",dx:230,dy:150}
-]},
-{color:"#ff6b6b",label:"03",title:"LOSS AVERSION",desc:"Потеря = ×2 приобретения",x:-480,y:350,leaves:[
-  {lbl:"Формула",txt:"Потеря $100 ≈ по силе ощущений = приобретению $200. Асимметрия боли и радости",dx:-260,dy:-70},
-  {lbl:"Prospect Theory",txt:"Люди принимают решения от reference point, не от абсолютных значений",dx:-300,dy:70},
-  {lbl:"Применение",txt:"Framing: '90% выживаемость' vs '10% смертность' — одни данные, разные решения",dx:-200,dy:150}
-]},
-{color:"#34d399",label:"04",title:"ANCHORING",desc:"Первое число = якорь",x:480,y:350,leaves:[
-  {lbl:"Механизм",txt:"Любое число, увиденное перед оценкой, сдвигает оценку в свою сторону",dx:260,dy:-70},
-  {lbl:"Эксперимент",txt:"Колесо рулетки → оценка % стран Африки в ООН. Случайное число влияло на ответ",dx:300,dy:70}
-]},
-{color:"#a78bfa",label:"★",title:"HEURISTICS",desc:"Ментальные ярлыки",x:0,y:480,leaves:[
-  {lbl:"Availability",txt:"Оцениваем вероятность по лёгкости вспоминания примера (авиакатастрофы vs ДТП)",dx:-230,dy:90},
-  {lbl:"WYSIATI",txt:"What You See Is All There Is — решаем на основе имеющейся информации, игнорируя пробелы",dx:230,dy:90}
-]}
-]},
-
-39:{title:"FLOW",sub:"Csikszentmihalyi, 1990\nOptimal Experience",c1:"#38bdf8",c2:"#a78bfa",branches:[
-{color:"#38bdf8",label:"01",title:"УСЛОВИЕ",desc:"Challenge ≈ Skill",x:-520,y:-320,leaves:[
-  {lbl:"Баланс",txt:"Сложность задачи должна соответствовать уровню навыка. На границе — поток",dx:-270,dy:-90},
-  {lbl:"Skill>>Challenge",txt:"→ Скука. Задача слишком лёгкая, нет вовлечения",dx:-300,dy:50},
-  {lbl:"Challenge>>Skill",txt:"→ Тревога. Задача подавляет, парализует. Нужна декомпозиция",dx:-220,dy:140}
-]},
-{color:"#a78bfa",label:"02",title:"8 КОМПОНЕНТОВ",desc:"Признаки потока",x:520,y:-320,leaves:[
-  {lbl:"Фокус",txt:"Полная концентрация на задаче. Внешний мир исчезает",dx:270,dy:-110},
-  {lbl:"Слияние",txt:"Действие и осознание сливаются. Ты = процесс",dx:320,dy:-20},
-  {lbl:"Контроль",txt:"Чувство власти над ситуацией. Уверенность в каждом шаге",dx:270,dy:70},
-  {lbl:"Время",txt:"Часы пролетают как минуты. Изменённое восприятие времени",dx:320,dy:150}
-]},
-{color:"#34d399",label:"03",title:"НЕЙРОХИМИЯ",desc:"5 веществ потока",x:-480,y:350,leaves:[
-  {lbl:"Дофамин",txt:"Фокус + мотивация + pattern recognition. Запускает вход в поток",dx:-260,dy:-70},
-  {lbl:"Норадреналин",txt:"Бдительность + энергия. Повышает signal-to-noise ratio в мозге",dx:-300,dy:50},
-  {lbl:"Эндорфины",txt:"Обезболивание + удовольствие. Позволяет продолжать без усталости",dx:-220,dy:130},
-  {lbl:"Анандамид",txt:"Латеральное мышление + creativity. Связи между далёкими идеями",dx:-280,dy:210}
-]},
-{color:"#ffd93d",label:"04",title:"ТРИГГЕРЫ",desc:"Как войти в поток",x:480,y:350,leaves:[
-  {lbl:"Внешние",txt:"Новизна, сложность, непредсказуемость, deep embodiment, rich environment",dx:260,dy:-70},
-  {lbl:"Внутренние",txt:"Ясные цели, немедленная обратная связь, challenge-skill balance",dx:300,dy:50},
-  {lbl:"Социальные",txt:"Совместная работа, общий риск, close listening, yes-and. Групповой поток",dx:240,dy:140}
-]}
-]},
-
 11:{title:"REWARD\nPREDICTION\nERROR",sub:"Schultz W. 1998\nDopamine Neurons",c1:"#ffd93d",c2:"#ff6b6b",branches:[
-{color:"#ffd93d",label:"01",title:"НЕОЖИДАННАЯ\nНАГРАДА",desc:"DA ↑↑↑",x:-500,y:-300,leaves:[
-  {lbl:"Механизм",txt:"Получил больше ожидаемого → мощный всплеск дофамина → 'запомни и повтори!'",dx:-280,dy:-80},
-  {lbl:"Обучение",txt:"Позитивная RPE = главный обучающий сигнал мозга. Основа всего reinforcement learning",dx:-300,dy:60}
+  {color:"#ffd93d",label:"↑",title:"НЕОЖИДАННАЯ\nНАГРАДА",desc:"DA всплеск",x:-500,y:-300,leaves:[{lbl:"Механизм",txt:"Получил БОЛЬШЕ ожидаемого → мощный выброс дофамина → 'запомни и повтори!'",dx:-280,dy:-80},{lbl:"Обучение",txt:"Позитивная RPE = главный обучающий сигнал мозга. Основа RL",dx:-300,dy:60}]},
+  {color:"#34d399",label:"=",title:"ОЖИДАЕМАЯ\nНАГРАДА",desc:"DA = baseline",x:500,y:-300,leaves:[{lbl:"Механизм",txt:"Получил РОВНО сколько ожидал → дофамин НЕ меняется → ничего нового",dx:280,dy:-80},{lbl:"Адаптация",txt:"Hedonic treadmill: привычные удовольствия перестают радовать",dx:300,dy:60}]},
+  {color:"#ff6b6b",label:"↓",title:"НЕТ ОЖИДАЕМОГО",desc:"DA падение",x:-450,y:350,leaves:[{lbl:"Механизм",txt:"Ожидал награду, не получил → дофамин НИЖЕ baseline → разочарование",dx:-260,dy:-50},{lbl:"Вывод",txt:"Завышенные ожидания = хроническое разочарование. Управляй ожиданиями",dx:-280,dy:60}]},
+  {color:"#a78bfa",label:"≈",title:"TD LEARNING",desc:"Мозг = нейросеть",x:450,y:350,leaves:[{lbl:"Алгоритм",txt:"Temporal Difference: тот же алгоритм что в AI/ML. Мост нейронауки ↔ AI",dx:260,dy:-50},{lbl:"Science",txt:"Schultz-Dayan-Montague 1997: DA нейроны = TD error signal",dx:280,dy:60}]},
 ]},
-{color:"#34d399",label:"02",title:"ОЖИДАЕМАЯ\nНАГРАДА",desc:"DA = baseline",x:500,y:-300,leaves:[
-  {lbl:"Механизм",txt:"Получил ровно столько, сколько ожидал → дофамин НЕ меняется → ничего нового",dx:280,dy:-80},
-  {lbl:"Адаптация",txt:"Hedonic treadmill: привычные удовольствия перестают вызывать дофаминовый отклик",dx:300,dy:60}
+13:{title:"DOPAMINE\nNATION",sub:"Anna Lembke, 2021\nStanford Psychiatry",c1:"#ff6b6b",c2:"#ffd93d",branches:[
+  {color:"#ff6b6b",label:"01",title:"БАЛАНС",desc:"Удовольствие ↔ Боль",x:-520,y:-320,leaves:[{lbl:"Весы",txt:"Мозг = весы: удар удовольствия → компенсаторный спад (opponent process)",dx:-280,dy:-90},{lbl:"Гомеостаз",txt:"Дофаминовый всплеск → автоматический откат ниже baseline",dx:-300,dy:40},{lbl:"Хронический",txt:"Повторные стимуляции → весы застревают на боли → ангедония",dx:-220,dy:130}]},
+  {color:"#ffd93d",label:"02",title:"ТОЛЕРАНТНОСТЬ",desc:"Нужно больше",x:520,y:-320,leaves:[{lbl:"D2 рецепторы",txt:"Downregulation: для того же кайфа нужна большая доза стимуляции",dx:280,dy:-80},{lbl:"Порог",txt:"Базовый DA падает. Обычная радость больше не радует",dx:300,dy:60}]},
+  {color:"#4ecdc4",label:"03",title:"DA ПОСТ",desc:"30 дней reset",x:-480,y:350,leaves:[{lbl:"Протокол",txt:"30 дней ПОЛНОГО воздержания от источника зависимости",dx:-280,dy:-70},{lbl:"Механизм",txt:"D2 рецепторы upregulate, чувствительность возвращается",dx:-300,dy:60},{lbl:"После",txt:"Еда, прогулка, разговор снова вызывают удовольствие",dx:-220,dy:140}]},
+  {color:"#a78bfa",label:"04",title:"БОЛЬ → КАЙФ",desc:"Hormesis",x:480,y:350,leaves:[{lbl:"Инверсия",txt:"Начни с боли (холодный душ, бег) → компенсация → удовольствие ПОСЛЕ",dx:280,dy:-60},{lbl:"Self-binding",txt:"Физическое: убери телефон. Социальное: расскажи о решении другим",dx:300,dy:70}]},
 ]},
-{color:"#ff6b6b",label:"03",title:"ОТСУТСТВИЕ\nОЖИДАЕМОГО",desc:"DA ↓↓↓",x:0,y:400,leaves:[
-  {lbl:"Механизм",txt:"Ожидал награду, не получил → падение дофамина ниже baseline → негативная эмоция",dx:-250,dy:80},
-  {lbl:"Разочарование",txt:"Завышенные ожидания → хроническое разочарование. Управляй ожиданиями!",dx:250,dy:80}
+14:{title:"PLEASURE\nCENTER",sub:"Olds & Milner, 1954\nSelf-Stimulation",c1:"#ffd93d",c2:"#fb923c",branches:[
+  {color:"#ffd93d",label:"01",title:"ОТКРЫТИЕ",desc:"Электрод в мозге",x:-480,y:-280,leaves:[{lbl:"Метод",txt:"Электрод в септальной области крысы. Нажатие рычага = стимуляция",dx:-270,dy:-70},{lbl:"Результат",txt:"7000 нажатий/час! Крысы отказывались от еды и воды",dx:-280,dy:60}]},
+  {color:"#fb923c",label:"02",title:"ПУТЬ",desc:"VTA → NAcc",x:480,y:-280,leaves:[{lbl:"Мезолимбический",txt:"Стимулировался дофаминовый путь VTA→NAcc = 'шоссе наград'",dx:270,dy:-60},{lbl:"Значение",txt:"Основа ВСЕЙ нейронауки зависимостей и мотивации",dx:280,dy:60}]},
+  {color:"#ff6b6b",label:"★",title:"УРОК",desc:"Удовольствие > всего",x:0,y:350,leaves:[{lbl:"Override",txt:"Удовольствие может перебить ВСЕ базовые потребности: еду, воду, сон",dx:-230,dy:80},{lbl:"Дизайн",txt:"Соцсети, игры, слот-машины используют тот же нейронный путь",dx:230,dy:80}]},
 ]},
-{color:"#a78bfa",label:"★",title:"TD LEARNING",desc:"Мозг = нейросеть",x:500,y:350,leaves:[
-  {lbl:"Алгоритм",txt:"Temporal Difference learning: тот же алгоритм, что в AI/ML. Мост между нейронаукой и AI",dx:280,dy:-30},
-  {lbl:"Science 1997",txt:"Schultz-Dayan-Montague формализовали: DA нейроны = TD error signal",dx:250,dy:80}
-]}
+15:{title:"VARIABLE\nREWARD",sub:"Anselme P. 2015\nUncertainty & Dopamine",c1:"#a78bfa",c2:"#ffd93d",branches:[
+  {color:"#a78bfa",label:"VS",title:"ПЕРЕМЕННАЯ\nvs ФИКС",desc:"Непредсказуемость >> ",x:-480,y:-280,leaves:[{lbl:"Скиннер",txt:"Variable ratio schedule: голуби и крысы жмут рычаг бесконечно",dx:-270,dy:-70},{lbl:"DA при ожидании",txt:"Дофамин выбрасывается при ОЖИДАНИИ, не при получении",dx:-280,dy:60}]},
+  {color:"#ffd93d",label:"01",title:"ПРИМЕНЕНИЯ",desc:"Везде вокруг нас",x:480,y:-280,leaves:[{lbl:"Slot machines",txt:"Случайные выигрыши → невозможно остановиться. $$$-индустрия",dx:270,dy:-70},{lbl:"Лента соцсетей",txt:"Скролл = slot machine. Иногда мем, иногда скучно, иногда wow",dx:280,dy:60},{lbl:"Лут-боксы",txt:"Игры: случайный дроп → дофамин при открытии, не при получении",dx:260,dy:140}]},
+  {color:"#ff6b6b",label:"★",title:"ЗАЩИТА",desc:"Осознание = первый шаг",x:0,y:350,leaves:[{lbl:"Осознай",txt:"Лента = slot machine для твоего мозга. Это не развлечение, это дизайн",dx:-230,dy:80},{lbl:"Batch",txt:"Проверяй уведомления 3 раза в день, не 150 раз",dx:230,dy:80}]},
 ]},
-
-34:{title:"MARSHMALLOW\nTEST",sub:"Walter Mischel, 1972\nStanford University",c1:"#fb923c",c2:"#ff6b6b",branches:[
-{color:"#fb923c",label:"01",title:"ЭКСПЕРИМЕНТ",desc:"4 года, 15 минут",x:-500,y:-300,leaves:[
-  {lbl:"Дизайн",txt:"Ребёнок 4 лет один с маршмеллоу. Если подождёт 15 мин — получит вторую",dx:-280,dy:-80},
-  {lbl:"Стратегии",txt:"Успешные: отвлечение, закрытие глаз, пение. Неуспешные: смотреть на маршмеллоу",dx:-300,dy:60},
-  {lbl:"Результат",txt:"~30% дождались. Остальные съели в среднем через 3 минуты",dx:-200,dy:140}
+23:{title:"4 СПОСОБА\n↑СЕРОТОНИН",sub:"Young S. 2002\nJ Psychiatry & Neuroscience",c1:"#6bcb77",c2:"#38bdf8",branches:[
+  {color:"#6bcb77",label:"☀",title:"СОЛНЦЕ",desc:"Яркий свет",x:-480,y:-280,leaves:[{lbl:"Механизм",txt:"Яркий свет → ↑серотонин. 30 мин на улице утром = антидепрессант",dx:-270,dy:-60},{lbl:"SAD",txt:"Seasonal Affective Disorder: зимой мало света → ↓серотонин → депрессия",dx:-280,dy:60}]},
+  {color:"#38bdf8",label:"🏃",title:"УПРАЖНЕНИЯ",desc:"Аэробные",x:480,y:-280,leaves:[{lbl:"Триптофан",txt:"Упражнения ↑свободный триптофан → проникает через ГЭБ → ↑5-HT",dx:270,dy:-60},{lbl:"Доза",txt:"30 мин умеренного бега 3-5 раз в неделю. Эффект кумулятивный",dx:280,dy:60}]},
+  {color:"#ffd93d",label:"🙏",title:"БЛАГОДАРНОСТЬ",desc:"Позитивные мысли",x:-450,y:300,leaves:[{lbl:"Механизм",txt:"Вспоминание позитивного активирует серотонинергические пути напрямую",dx:-260,dy:-50},{lbl:"Практика",txt:"Дневник благодарности, 3 вещи перед сном. Работает через 3 недели",dx:-280,dy:60}]},
+  {color:"#ff8fab",label:"🍗",title:"ТРИПТОФАН",desc:"Диета",x:450,y:300,leaves:[{lbl:"Продукты",txt:"Индейка, яйца, орехи, сыр, бананы, тёмный шоколад, лосось",dx:260,dy:-50},{lbl:"Механизм",txt:"Триптофан → предшественник серотонина. Без него — дефицит 5-HT",dx:280,dy:60}]},
 ]},
-{color:"#ffd93d",label:"02",title:"30 ЛЕТ\nСПУСТЯ",desc:"Follow-up",x:500,y:-300,leaves:[
-  {lbl:"SAT",txt:"+210 баллов у 'ждавших'. Огромная разница в академической успеваемости",dx:280,dy:-80},
-  {lbl:"Здоровье",txt:"Ниже BMI, меньше зависимостей, лучше управление стрессом",dx:300,dy:50},
-  {lbl:"Карьера",txt:"Выше доход, стабильнее отношения, лучше социальные навыки",dx:240,dy:130}
+24:{title:"OXYTOCIN\nINCREASES\nTRUST",sub:"Kosfeld, Zak 2005\nNature",c1:"#ff8fab",c2:"#a78bfa",branches:[
+  {color:"#ff8fab",label:"01",title:"ЭКСПЕРИМЕНТ",desc:"Trust Game",x:-480,y:-280,leaves:[{lbl:"Метод",txt:"Интраназальный спрей OXT vs плацебо → Trust Game с деньгами",dx:-270,dy:-60},{lbl:"Результат",txt:"+17% денег отдавали незнакомцу. Первое прямое доказательство",dx:-280,dy:60}]},
+  {color:"#a78bfa",label:"02",title:"МЕХАНИЗМ",desc:"Нейрохимия доверия",x:480,y:-280,leaves:[{lbl:"Амигдала",txt:"OXT снижает активность амигдалы → меньше страха → больше доверия",dx:270,dy:-60},{lbl:"Nature",txt:"Публикация в Nature — одна из самых цитируемых в соц. нейронауке",dx:280,dy:60}]},
+  {color:"#34d399",label:"★",title:"ПРАКТИКА",desc:"Повысь OXT естественно",x:0,y:350,leaves:[{lbl:"Объятия",txt:"8 объятий/день (Zak). Контакт кожа-к-коже. Массаж",dx:-230,dy:80},{lbl:"Доброта",txt:"Акты щедрости повышают OXT и у дающего, и у получающего",dx:230,dy:80}]},
 ]},
-{color:"#a78bfa",label:"03",title:"HOT/COOL\nСИСТЕМА",desc:"Мишель 2014",x:0,y:400,leaves:[
-  {lbl:"Hot",txt:"Эмоциональная, лимбическая, быстрая. 'Хочу сейчас!' Амигдала + вентральный стриатум",dx:-250,dy:80},
-  {lbl:"Cool",txt:"Когнитивная, PFC, стратегическая. 'Подожди — будет лучше'. dlPFC + vmPFC",dx:250,dy:80}
+29:{title:"RUNNER'S\nHIGH",sub:"Boecker H. 2008\nCerebral Cortex — PET scan",c1:"#a78bfa",c2:"#34d399",branches:[
+  {color:"#a78bfa",label:"01",title:"ДОКАЗАТЕЛЬСТВО",desc:"ПЭТ-сканирование",x:-480,y:-280,leaves:[{lbl:"Метод",txt:"ПЭТ с [11C]diprenorphine ДО и ПОСЛЕ 2 часов бега",dx:-270,dy:-70},{lbl:"Результат",txt:"β-эндорфины связались с опиоидными рецепторами в PFC и лимбике",dx:-280,dy:60}]},
+  {color:"#34d399",label:"02",title:"КОРРЕЛЯЦИЯ",desc:"Эйфория",x:480,y:-280,leaves:[{lbl:"Субъективно",txt:"Уровень эндорфинов коррелировал с ощущением эйфории",dx:270,dy:-60},{lbl:"Области",txt:"Фронтальная и лимбическая кора — центры эмоций и удовольствия",dx:280,dy:60}]},
+  {color:"#ffd93d",label:"★",title:"ПОРОГ",desc:"Как достичь",x:0,y:350,leaves:[{lbl:"Интенсивность",txt:">70% VO2max минимум. Лёгкая прогулка не даст эффекта",dx:-230,dy:80},{lbl:"Длительность",txt:">30 мин непрерывно. Идеал: 45-120 мин аэробных",dx:230,dy:80}]},
 ]},
-{color:"#34d399",label:"★",title:"СТРАТЕГИИ",desc:"Как развить",x:-450,y:350,leaves:[
-  {lbl:"Reframing",txt:"Представь маршмеллоу как облако — снимает эмоциональный заряд",dx:-260,dy:-40},
-  {lbl:"Distance",txt:"'Как бы мой друг поступил?' — психологическое дистанцирование",dx:-280,dy:60}
-]}
+33:{title:"EGO\nDEPLETION",sub:"Baumeister 1998\nSelf-Control as Resource",c1:"#fb923c",c2:"#ff6b6b",branches:[
+  {color:"#fb923c",label:"01",title:"ЭКСПЕРИМЕНТ",desc:"Шоколад vs редиска",x:-480,y:-280,leaves:[{lbl:"Дизайн",txt:"Группа A: сопротивляйся шоколаду, ешь редиску. Группа B: ешь что хочешь",dx:-270,dy:-70},{lbl:"Результат",txt:"Группа A сдалась на головоломке через 8 мин vs 20 мин у группы B",dx:-280,dy:60}]},
+  {color:"#ff6b6b",label:"02",title:"МОДЕЛЬ",desc:"Воля = мускул",x:480,y:-280,leaves:[{lbl:"Ограниченность",txt:"Самоконтроль расходует общий ресурс. Устал = слабая воля",dx:270,dy:-70},{lbl:"Восстановление",txt:"Глюкоза, сон, позитивные эмоции — восполняют ресурс",dx:280,dy:60}]},
+  {color:"#ffd93d",label:"03",title:"DECISION\nFATIGUE",desc:"Решения = истощение",x:-420,y:320,leaves:[{lbl:"Судьи",txt:"Утром: 65% условных. К вечеру: 0%. Потом перерыв: снова 65%",dx:-260,dy:-50},{lbl:"CEO",txt:"Zuckerberg, Jobs: одна одежда каждый день — экономия решений",dx:-280,dy:60}]},
+  {color:"#a78bfa",label:"★",title:"СТРАТЕГИИ",desc:"Как экономить",x:420,y:320,leaves:[{lbl:"Утро",txt:"Важные решения — утром. Рутину — автоматизируй",dx:260,dy:-50},{lbl:"Batch",txt:"Группируй решения. Meal prep, capsule wardrobe, templates",dx:280,dy:60}]},
 ]},
-
+34:{title:"MARSHMALLOW\nTEST",sub:"Mischel 1972/2014\nStanford + Follow-up",c1:"#fb923c",c2:"#ff6b6b",branches:[
+  {color:"#fb923c",label:"01",title:"ЭКСПЕРИМЕНТ",desc:"4 года, 15 минут",x:-500,y:-300,leaves:[{lbl:"Дизайн",txt:"Ребёнок 4 лет один с маршмеллоу. Подождёшь 15 мин → получишь вторую",dx:-280,dy:-80},{lbl:"Стратегии",txt:"Успешные: закрыл глаза, пел, считал. Неуспешные: смотрел на маршмеллоу",dx:-300,dy:50},{lbl:"Итог",txt:"~30% дождались. Остальные съели через ~3 минуты",dx:-200,dy:140}]},
+  {color:"#ffd93d",label:"02",title:"30 ЛЕТ\nСПУСТЯ",desc:"Follow-up",x:500,y:-300,leaves:[{lbl:"SAT",txt:"+210 баллов у дождавшихся. Огромная академическая разница",dx:280,dy:-80},{lbl:"BMI",txt:"Ниже BMI, меньше зависимостей, лучше управление стрессом",dx:300,dy:50},{lbl:"Карьера",txt:"Выше доход, стабильнее отношения, шире соц. сеть",dx:240,dy:130}]},
+  {color:"#a78bfa",label:"03",title:"HOT/COOL",desc:"Две системы",x:0,y:400,leaves:[{lbl:"Hot",txt:"Лимбика: 'Хочу СЕЙЧАС!' Амигдала + вентральный стриатум",dx:-240,dy:80},{lbl:"Cool",txt:"PFC: 'Подожди — будет лучше'. Стратегии дистанцирования",dx:240,dy:80}]},
+]},
+36:{title:"WILLPOWER\nINSTINCT",sub:"Kelly McGonigal, 2012\nStanford",c1:"#fb923c",c2:"#34d399",branches:[
+  {color:"#fb923c",label:"01",title:"БИОЛОГИЯ",desc:"Воля = физиология",x:-480,y:-280,leaves:[{lbl:"HRV",txt:"Heart Rate Variability = метрика силы воли. Высокая HRV = лучше контроль",dx:-270,dy:-60},{lbl:"PFC",txt:"Префронтальная кора = центр 'я буду' + 'я не буду' + 'я хочу'",dx:-280,dy:60}]},
+  {color:"#34d399",label:"02",title:"ТОПЛИВО",desc:"3 ресурса воли",x:480,y:-280,leaves:[{lbl:"Сон",txt:"7-8 часов. <6ч = самоконтроль −40%. Это не роскошь, а необходимость",dx:270,dy:-70},{lbl:"Упражнения",txt:"20 мин/день. Повышает BDNF и объём PFC",dx:280,dy:50},{lbl:"Питание",txt:"Стабильная глюкоза. Не голодать. Орехи, белок, сложные углеводы",dx:260,dy:130}]},
+  {color:"#a78bfa",label:"03",title:"МЕДИТАЦИЯ",desc:"8 недель = рост PFC",x:-420,y:320,leaves:[{lbl:"Структура",txt:"8 нед × 10 мин/день → измеримый рост серого вещества в PFC",dx:-260,dy:-50},{lbl:"Stress pause",txt:"10-секундная пауза с глубоким дыханием восстанавливает ресурс",dx:-280,dy:60}]},
+  {color:"#ffd93d",label:"★",title:"I WILL / WON'T",desc:"3 зоны PFC",x:420,y:320,leaves:[{lbl:"Я буду",txt:"Левая PFC: то, что ты решил делать (встать рано, бегать)",dx:260,dy:-50},{lbl:"Я не буду",txt:"Правая PFC: то, от чего воздерживаешься (сахар, телефон)",dx:280,dy:60}]},
+]},
+37:{title:"DUNEDIN\nSTUDY",sub:"Moffitt T. 2011\n1000 людей, 32 года",c1:"#34d399",c2:"#38bdf8",branches:[
+  {color:"#34d399",label:"01",title:"ДИЗАЙН",desc:"От рождения до 32",x:-480,y:-280,leaves:[{lbl:"Выборка",txt:"1000 человек, Новая Зеландия, с рождения до 32 лет",dx:-270,dy:-60},{lbl:"Измерение",txt:"Самоконтроль по оценкам учителей, родителей и самих детей",dx:-280,dy:60}]},
+  {color:"#38bdf8",label:"02",title:"РЕЗУЛЬТАТЫ",desc:"Самоконтроль предсказывает",x:480,y:-280,leaves:[{lbl:"Здоровье",txt:"Меньше болезней, ниже BMI, меньше зависимостей",dx:270,dy:-70},{lbl:"Финансы",txt:"Выше доход, больше сбережений, финансовая стабильность",dx:280,dy:40},{lbl:"Закон",txt:"Меньше судимостей. Эффект после контроля за IQ и классом",dx:260,dy:120}]},
+  {color:"#ffd93d",label:"★",title:"ВЫВОД",desc:"Воля > IQ",x:0,y:350,leaves:[{lbl:"Независимо",txt:"Эффект сохранялся после контроля за IQ и социальным классом!",dx:-230,dy:80},{lbl:"Инвестиция",txt:"Развитие самоконтроля у детей — лучшая инвестиция на всю жизнь",dx:230,dy:80}]},
+]},
+39:{title:"FLOW",sub:"Csikszentmihalyi 1990\nOptimal Experience",c1:"#38bdf8",c2:"#a78bfa",branches:[
+  {color:"#38bdf8",label:"01",title:"УСЛОВИЕ",desc:"Challenge ≈ Skill",x:-520,y:-320,leaves:[{lbl:"Баланс",txt:"Сложность задачи ≈ уровень навыка. На границе возникает поток",dx:-270,dy:-90},{lbl:"Скука",txt:"Skill >> Challenge → скука. Задача слишком лёгкая",dx:-300,dy:40},{lbl:"Тревога",txt:"Challenge >> Skill → тревога. Задача подавляет",dx:-220,dy:130}]},
+  {color:"#a78bfa",label:"02",title:"8 ПРИЗНАКОВ",desc:"Компоненты потока",x:520,y:-320,leaves:[{lbl:"Фокус",txt:"Полная концентрация. Внешний мир исчезает",dx:270,dy:-100},{lbl:"Слияние",txt:"Действие и осознание сливаются. Ты = процесс",dx:320,dy:-20},{lbl:"Контроль",txt:"Чувство власти над ситуацией",dx:270,dy:60},{lbl:"Время",txt:"Часы пролетают как минуты. Изменённое восприятие",dx:320,dy:140}]},
+  {color:"#34d399",label:"03",title:"НЕЙРОХИМИЯ",desc:"5 веществ потока",x:-480,y:350,leaves:[{lbl:"Дофамин",txt:"Фокус + мотивация + pattern recognition",dx:-260,dy:-70},{lbl:"Норадреналин",txt:"Бдительность + энергия",dx:-290,dy:20},{lbl:"Эндорфины",txt:"Обезболивание, можно продолжать без устали",dx:-220,dy:100},{lbl:"Анандамид",txt:"Латеральное мышление + creativity",dx:-280,dy:170}]},
+  {color:"#ffd93d",label:"04",title:"КАК ВОЙТИ",desc:"Триггеры",x:480,y:350,leaves:[{lbl:"Ясные цели",txt:"Точно знаешь, что делаешь и зачем",dx:260,dy:-60},{lbl:"Обратная связь",txt:"Немедленно видишь результат каждого шага",dx:300,dy:30},{lbl:"Убери шум",txt:"Отключи всё. 90-минутный блок без прерываний",dx:240,dy:110}]},
+]},
+41:{title:"DRIVE",sub:"Daniel Pink, 2009\nMotivation 3.0",c1:"#a78bfa",c2:"#ff8fab",branches:[
+  {color:"#a78bfa",label:"A",title:"AUTONOMY",desc:"Свобода выбора",x:-520,y:-320,leaves:[{lbl:"Что/Когда/Как",txt:"Выбор задач, времени и метода. 20% time Google → Gmail",dx:280,dy:-100},{lbl:"ROWE",txt:"+35% продуктивность. Results-Only: контроль результата, не процесса",dx:-300,dy:40}]},
+  {color:"#38bdf8",label:"M",title:"MASTERY",desc:"Рост навыка",x:520,y:-320,leaves:[{lbl:"Поток",txt:"Mastery = жизнь в потоке. Challenge ≈ Skill",dx:270,dy:-80},{lbl:"Асимптота",txt:"Мастерство недостижимо полностью — это и мотивирует",dx:300,dy:40}]},
+  {color:"#ff8fab",label:"P",title:"PURPOSE",desc:"Служение",x:-450,y:350,leaves:[{lbl:"Beyond self",txt:"Работа связана с чем-то большим: семья, наука, общество",dx:-260,dy:-50},{lbl:"Profit+",txt:"TOMS, Patagonia: бизнес + миссия = мотивированная команда",dx:-280,dy:60}]},
+  {color:"#ffd93d",label:"!",title:"REWARD FAIL",desc:"Кнут мёртв",x:450,y:350,leaves:[{lbl:"If-then",txt:"'Если X → получишь Y' УБИВАЕТ творческую мотивацию",dx:260,dy:-50},{lbl:"Candle Problem",txt:"Группа с наградой решила задачу МЕДЛЕННЕЕ. Награда = шоры",dx:280,dy:60}]},
+]},
 42:{title:"SELF-\nDETERMINATION",sub:"Deci & Ryan, 1985\nSDT Theory",c1:"#34d399",c2:"#38bdf8",branches:[
-{color:"#34d399",label:"01",title:"КОМПЕТЕНТНОСТЬ",desc:"Чувство эффективности",x:-500,y:-300,leaves:[
-  {lbl:"Определение",txt:"Ощущение, что ты можешь справиться, что растёшь, что твои усилия дают результат",dx:-280,dy:-80},
-  {lbl:"Практика",txt:"Оптимальный вызов (challenge≈skill), позитивная обратная связь, видимый прогресс",dx:-300,dy:60}
+  {color:"#34d399",label:"C",title:"КОМПЕТЕНТНОСТЬ",desc:"Я могу!",x:-500,y:-300,leaves:[{lbl:"Чувство",txt:"Ощущение эффективности: мои усилия дают результат",dx:-280,dy:-60},{lbl:"Как",txt:"Оптимальный вызов + позитивная обратная связь + видимый прогресс",dx:-280,dy:60}]},
+  {color:"#38bdf8",label:"A",title:"АВТОНОМИЯ",desc:"Я выбираю!",x:500,y:-300,leaves:[{lbl:"Чувство",txt:"Я сам решаю что и как. Не подчиняюсь внешнему давлению",dx:280,dy:-60},{lbl:"Убийца",txt:"Контроль, surveillance, дедлайны под давлением = смерть мотивации",dx:280,dy:60}]},
+  {color:"#ff8fab",label:"R",title:"СВЯЗЬ",desc:"Я важен!",x:-450,y:350,leaves:[{lbl:"Чувство",txt:"Связь с другими, принадлежность к группе, я нужен кому-то",dx:-260,dy:-50},{lbl:"Как",txt:"Командная работа, менторство, признание вклада",dx:-280,dy:60}]},
+  {color:"#ffd93d",label:"→",title:"МОТИВАЦИЯ",desc:"Спектр",x:450,y:350,leaves:[{lbl:"Спектр",txt:"Amotivation → External → Identified → Integrated → Intrinsic",dx:260,dy:-50},{lbl:"Overjustification",txt:"Внешняя награда за то, что уже нравится → ↓мотивация",dx:280,dy:60}]},
 ]},
-{color:"#38bdf8",label:"02",title:"АВТОНОМИЯ",desc:"Чувство выбора",x:500,y:-300,leaves:[
-  {lbl:"Определение",txt:"Ощущение, что ты сам выбираешь что и как делать, а не подчиняешься внешнему контролю",dx:280,dy:-80},
-  {lbl:"Убийца",txt:"Внешний контроль, дедлайны под давлением, surveillance — уничтожают внутреннюю мотивацию",dx:300,dy:60}
+43:{title:"GRIT",sub:"Angela Duckworth, 2016\nPassion + Perseverance",c1:"#fb923c",c2:"#ffd93d",branches:[
+  {color:"#fb923c",label:"01",title:"ОПРЕДЕЛЕНИЕ",desc:"Grit = Passion + Perseverance",x:-480,y:-280,leaves:[{lbl:"Формула",txt:"Настойчивость к ДОЛГОСРОЧНЫМ целям + глубокая страсть к делу",dx:-270,dy:-60},{lbl:"Grit > Talent",txt:"Grit предсказывает успех лучше IQ, таланта и социального класса",dx:-280,dy:60}]},
+  {color:"#ffd93d",label:"02",title:"WEST POINT",desc:"Полевые данные",x:480,y:-280,leaves:[{lbl:"+60%",txt:"Кадеты с высоким Grit на 60% чаще заканчивали 'Beast Barracks'",dx:270,dy:-60},{lbl:"Spelling Bee",txt:"Дети с Grit тренировались больше часов → побеждали",dx:280,dy:60}]},
+  {color:"#34d399",label:"03",title:"4 КОМПОНЕНТА",desc:"Из чего состоит Grit",x:-420,y:320,leaves:[{lbl:"Interest",txt:"Глубокий интерес к одной области. Не перескакивай",dx:-260,dy:-70},{lbl:"Practice",txt:"Deliberate practice: 10000 часов осознанной тренировки",dx:-280,dy:20},{lbl:"Purpose",txt:"Служение: моя работа помогает другим",dx:-240,dy:90},{lbl:"Hope",txt:"Рост через неудачи: упал — встань — стал сильнее",dx:-270,dy:160}]},
+  {color:"#a78bfa",label:"★",title:"GROWTH",desc:"Grit можно развить",x:420,y:320,leaves:[{lbl:"Развитие",txt:"Grit НЕ врождённый. Культура, менторы, практика — всё влияет",dx:260,dy:-40},{lbl:"Среда",txt:"Gritty cultures (Финляндия, спецназ) передают настойчивость через нормы",dx:280,dy:60}]},
 ]},
-{color:"#ff8fab",label:"03",title:"СВЯЗЬ",desc:"Чувство принадлежности",x:0,y:400,leaves:[
-  {lbl:"Определение",txt:"Ощущение связи с другими, принадлежности к группе, что ты важен для кого-то",dx:-250,dy:80},
-  {lbl:"Практика",txt:"Командная работа, менторство, признание вклада, тёплые отношения",dx:250,dy:80}
+44:{title:"DEEP\nWORK",sub:"Cal Newport, 2016\nFocused Success",c1:"#38bdf8",c2:"#a78bfa",branches:[
+  {color:"#38bdf8",label:"01",title:"ПРОБЛЕМА",desc:"11 минут",x:-480,y:-280,leaves:[{lbl:"Среднее",txt:"11 мин до отвлечения. После — 25 мин на восстановление фокуса",dx:-270,dy:-60},{lbl:"Attention residue",txt:"Переключение задач оставляет 'осадок' — мозг ещё думает о предыдущей",dx:-280,dy:60}]},
+  {color:"#a78bfa",label:"02",title:"4 ПРАВИЛА",desc:"Deep Work Rules",x:480,y:-280,leaves:[{lbl:"Work deeply",txt:"Ритуалы, 90-мин блоки, Grand Gestures (Rowling в отеле)",dx:270,dy:-80},{lbl:"Embrace boredom",txt:"Тренируй скуку. НЕ хватайся за телефон в очереди",dx:290,dy:20},{lbl:"Quit social media",txt:"Если не можешь доказать пользу — удаляй",dx:260,dy:100},{lbl:"Drain shallows",txt:"Минимизируй мелкие задачи. Batch email 2 раза/день",dx:280,dy:170}]},
+  {color:"#ffd93d",label:"★",title:"ФОРМУЛА",desc:"Deep > Shallow",x:0,y:350,leaves:[{lbl:"Deep",txt:"Когнитивно-требовательное без отвлечений = создаёт ЦЕННОСТЬ",dx:-230,dy:80},{lbl:"Shallow",txt:"Email, meetings, admin = необходимо, но не создаёт нового",dx:230,dy:80}]},
 ]},
-{color:"#ffd93d",label:"★",title:"МОТИВАЦИЯ",desc:"Внутренняя > внешней",x:500,y:350,leaves:[
-  {lbl:"Спектр",txt:"Amotivation → External → Introjected → Identified → Integrated → Intrinsic",dx:280,dy:-30},
-  {lbl:"Overjustification",txt:"Внешние награды за то, что уже нравится → ↓внутренняя мотивация",dx:260,dy:70}
-]}
-]}
+45:{title:"NUDGE",sub:"Thaler & Sunstein 2008\nNobel Prize 2017",c1:"#34d399",c2:"#38bdf8",branches:[
+  {color:"#34d399",label:"01",title:"DEFAULTS",desc:"Настройки по умолчанию",x:-520,y:-320,leaves:[{lbl:"Донорство",txt:"Opt-in: ~15%. Opt-out: ~90%. Тот же выбор, другой default → ×6",dx:-280,dy:-90},{lbl:"Пенсия",txt:"Auto-enrollment: 49% → 86% участие. Никто не заставлял",dx:-300,dy:40},{lbl:"Принцип",txt:"Люди остаются на default. Настрой его на лучшее!",dx:-220,dy:130}]},
+  {color:"#38bdf8",label:"02",title:"АРХИТЕКТУРА\nВЫБОРА",desc:"Дизайн решений",x:520,y:-320,leaves:[{lbl:"Столовая",txt:"Фрукты на уровне глаз: +35%. Чипсы ниже: −20%",dx:270,dy:-90},{lbl:"Тарелка",txt:"Меньше тарелка → −22% порция. Человек не замечает",dx:300,dy:40},{lbl:"Порядок",txt:"Первый вариант выбирают чаще. Здоровое — первым",dx:240,dy:130}]},
+  {color:"#ffd93d",label:"03",title:"LIBERTARIAN\nPATERNALISM",desc:"Свобода + направление",x:0,y:400,leaves:[{lbl:"Принцип",txt:"Направляй к лучшему, НЕ запрещая. Свобода сохранена",dx:-240,dy:80},{lbl:"Sludge",txt:"Анти-nudge: трение мешающее хорошему (7 шагов отписки)",dx:240,dy:80}]},
+]},
+46:{title:"THINKING\nFAST & SLOW",sub:"Daniel Kahneman 2011\nNobel Prize 2002",c1:"#ffd93d",c2:"#fb923c",branches:[
+  {color:"#ffd93d",label:"S1",title:"СИСТЕМА 1",desc:"Быстрая, автоматическая",x:-550,y:-320,leaves:[{lbl:"Характер",txt:"Мгновенная, интуитивная, эмоциональная. >90% всех решений",dx:-280,dy:-100},{lbl:"Плюсы",txt:"Экономия энергии, быстрые реакции, распознавание паттернов",dx:-320,dy:40},{lbl:"Минусы",txt:"Искажения: anchoring, availability, representativeness, framing",dx:-200,dy:140}]},
+  {color:"#38bdf8",label:"S2",title:"СИСТЕМА 2",desc:"Медленная, осознанная",x:550,y:-320,leaves:[{lbl:"Характер",txt:"Аналитическая, логическая. Требует усилий. Быстро устаёт",dx:280,dy:-100},{lbl:"Активация",txt:"Включается при новизне, сложности, противоречии",dx:320,dy:40},{lbl:"Ленивая",txt:"При возможности перекладывает на С1 (cognitive ease)",dx:230,dy:140}]},
+  {color:"#ff6b6b",label:"03",title:"LOSS AVERSION",desc:"×2 асимметрия",x:-480,y:350,leaves:[{lbl:"Формула",txt:"Потеря $100 по силе = приобретение $200. Боль > радость",dx:-260,dy:-70},{lbl:"Framing",txt:"'90% выживаемость' vs '10% смертность' — разные решения",dx:-280,dy:60}]},
+  {color:"#34d399",label:"04",title:"ANCHORING",desc:"Якорный эффект",x:480,y:350,leaves:[{lbl:"Любое число",txt:"Случайное число ПЕРЕД оценкой сдвигает оценку в свою сторону",dx:260,dy:-60},{lbl:"Рулетка",txt:"Колесо рулетки → оценка % стран в ООН. Случайность влияла!",dx:280,dy:60}]},
+]},
+48:{title:"INFLUENCE",sub:"Robert Cialdini, 2007\n6 Principles",c1:"#fb923c",c2:"#ffd93d",branches:[
+  {color:"#fb923c",label:"R",title:"RECIPROCITY",desc:"Дай первым",x:-520,y:-380,leaves:[{lbl:"Механизм",txt:"Обязанность ответить на подарок/услугу. Даже нежеланный",dx:-270,dy:-50},{lbl:"Hare Krishna",txt:"Цветок → пожертвование. Free sample → покупка",dx:-280,dy:50}]},
+  {color:"#ffd93d",label:"C",title:"COMMITMENT",desc:"Начатое — закончу",x:520,y:-380,leaves:[{lbl:"Foot-in-door",txt:"Малое согласие → большее. Петиция → пожертвование",dx:270,dy:-50},{lbl:"Публичное",txt:"Записанное > устного. Публичное > приватного",dx:280,dy:50}]},
+  {color:"#38bdf8",label:"S",title:"SOCIAL PROOF",desc:"Делаю как другие",x:-480,y:0,leaves:[{lbl:"+34%",txt:"Social proof = +34% конверсия. Отзывы и рейтинги убеждают",dx:-280,dy:-40},{lbl:"Полотенца",txt:"'95% гостей повторно используют' → ты тоже",dx:-280,dy:50}]},
+  {color:"#34d399",label:"A",title:"AUTHORITY",desc:"Доверяю эксперту",x:480,y:0,leaves:[{lbl:"Milgram",txt:"65% продолжали бить током по указанию 'учёного'",dx:270,dy:-40},{lbl:"Титулы",txt:"Форма, диплом, уверенность = автоматическое подчинение",dx:280,dy:50}]},
+  {color:"#ff6b6b",label:"$",title:"SCARCITY",desc:"Дефицит = ценность",x:-480,y:380,leaves:[{lbl:"FOMO",txt:"'Осталось 2!' → loss aversion → срочность покупки",dx:-270,dy:-40},{lbl:"Exclusive",txt:"Ограниченные серии, countdown, VIP = воспринимается ценнее",dx:-280,dy:50}]},
+  {color:"#a78bfa",label:"♥",title:"LIKING",desc:"У симпатичных",x:480,y:380,leaves:[{lbl:"Факторы",txt:"Привлекательность, сходство, комплименты, знакомость",dx:270,dy:-40},{lbl:"Tupperware",txt:"Покупают у подруги, не у компании. Liking > продукт",dx:280,dy:50}]},
+]},
+49:{title:"TINY\nHABITS",sub:"BJ Fogg, 2019\nStanford Behavior Design",c1:"#34d399",c2:"#ffd93d",branches:[
+  {color:"#34d399",label:"B",title:"BEHAVIOR",desc:"= MAP",x:-500,y:-300,leaves:[{lbl:"Формула",txt:"B = Motivation × Ability × Prompt. Все три ОДНОВРЕМЕННО",dx:-280,dy:-60},{lbl:"Нет действия?",txt:"Проверь: достаточно мотивации? Достаточно легко? Есть ли prompt?",dx:-280,dy:60}]},
+  {color:"#ffd93d",label:"M",title:"MOTIVATION",desc:"Волна",x:500,y:-300,leaves:[{lbl:"Волна",txt:"Мотивация = волна: приходит и уходит. Не полагайся на неё!",dx:280,dy:-60},{lbl:"Лучше",txt:"Вместо ↑мотивации → ↓трение (ability). Так надёжнее",dx:280,dy:60}]},
+  {color:"#38bdf8",label:"A",title:"ABILITY",desc:"2 минуты",x:-450,y:350,leaves:[{lbl:"Tiny",txt:"Любая привычка = 2-минутная версия. 'Бегай' → 'Надень кроссовки'",dx:-260,dy:-50},{lbl:"Anchor",txt:"'После [существующая привычка], я [крохотное действие]'",dx:-280,dy:60}]},
+  {color:"#ff8fab",label:"C",title:"CELEBRATION",desc:"Ключ!",x:450,y:350,leaves:[{lbl:"Shine",txt:"Маленькое празднование СРАЗУ после действия → эмоция → закрепление",dx:260,dy:-50},{lbl:"Примеры",txt:"Мысленное 'Yes!', улыбка, кулак в воздух, танец. Эмоция = клей",dx:280,dy:60}]},
+]},
+53:{title:"THE BRAIN\nTHAT CHANGES",sub:"Norman Doidge, 2007\nNeuroplasticity",c1:"#f472b6",c2:"#38bdf8",branches:[
+  {color:"#f472b6",label:"01",title:"НЕЙРОПЛАСТИЧНОСТЬ",desc:"Мозг перестраивается",x:-480,y:-280,leaves:[{lbl:"Революция",txt:"Старая догма: мозг неизменен после детства. НЕПРАВДА!",dx:-270,dy:-60},{lbl:"Хебб",txt:"'Neurons that fire together, wire together' — закон пластичности",dx:-280,dy:60}]},
+  {color:"#38bdf8",label:"02",title:"ТАКСИСТЫ",desc:"Лондон, гиппокамп",x:480,y:-280,leaves:[{lbl:"+20%",txt:"Гиппокамп таксистов на 20% больше чем у водителей автобусов",dx:270,dy:-60},{lbl:"Навигация",txt:"Годы навигации по 25000 улицам → физический рост мозга",dx:280,dy:60}]},
+  {color:"#ffd93d",label:"★",title:"ВЫВОДЫ",desc:"Что это значит",x:0,y:350,leaves:[{lbl:"Любой возраст",txt:"Мозг меняется всю жизнь. Никогда не поздно учиться",dx:-230,dy:80},{lbl:"Use it",txt:"Что ты делаешь каждый день — буквально перестраивает мозг",dx:230,dy:80}]},
+]},
+57:{title:"PERMA",sub:"Martin Seligman, 2002\nPositive Psychology",c1:"#facc15",c2:"#34d399",branches:[
+  {color:"#facc15",label:"P",title:"POSITIVE\nEMOTION",desc:"Радость, благодарность",x:-520,y:-350,leaves:[{lbl:"Не только",txt:"Культивируй РАЗНООБРАЗИЕ: благодарность, надежда, любовь, интерес",dx:-280,dy:-60},{lbl:"3:1",txt:"Fredrickson: 3 позитивных на 1 негативную = порог процветания",dx:-290,dy:60}]},
+  {color:"#38bdf8",label:"E",title:"ENGAGEMENT",desc:"Поток, вовлечение",x:520,y:-350,leaves:[{lbl:"Flow",txt:"Полное погружение в деятельность. Csikszentmihalyi",dx:270,dy:-60},{lbl:"Strengths",txt:"Используй signature strengths каждый день → вовлечение",dx:280,dy:60}]},
+  {color:"#ff8fab",label:"R",title:"RELATIONSHIPS",desc:"Связи с людьми",x:-480,y:50,leaves:[{lbl:"#1",txt:"Качество отношений = предиктор №1 счастья (Harvard, 75 лет)",dx:-280,dy:-40},{lbl:"ACR",txt:"Active Constructive Responding: реагируй на хорошие новости с энтузиазмом",dx:-280,dy:50}]},
+  {color:"#a78bfa",label:"M",title:"MEANING",desc:"Смысл, служение",x:480,y:50,leaves:[{lbl:"Beyond self",txt:"Принадлежность чему-то большему: семья, вера, наука, искусство",dx:270,dy:-40},{lbl:"Страдание",txt:"Meaning может включать страдание и вести к flourishing",dx:280,dy:50}]},
+  {color:"#34d399",label:"A",title:"ACCOMPLISHMENT",desc:"Достижения",x:0,y:400,leaves:[{lbl:"Mastery",txt:"Стремление к мастерству ради процесса, не только результата",dx:-230,dy:80},{lbl:"Grit",txt:"Perseverance + Passion = долгосрочный успех (Duckworth)",dx:230,dy:80}]},
+]},
+60:{title:"THREE GOOD\nTHINGS",sub:"Seligman 2005\nPositive Interventions",c1:"#facc15",c2:"#34d399",branches:[
+  {color:"#facc15",label:"01",title:"МЕТОД",desc:"1 неделя",x:-480,y:-280,leaves:[{lbl:"Инструкция",txt:"Каждый вечер запиши 3 хорошие вещи дня + ПОЧЕМУ они произошли",dx:-270,dy:-60},{lbl:"Длительность",txt:"Всего 1 неделя ежедневной практики. 5-10 минут/вечер",dx:-280,dy:60}]},
+  {color:"#34d399",label:"02",title:"РЕЗУЛЬТАТ",desc:"6 месяцев эффекта",x:480,y:-280,leaves:[{lbl:"Депрессия",txt:"Снижение симптомов депрессии сохранялось 6 месяцев после 1 недели!",dx:-270,dy:-60},{lbl:"Счастье",txt:"Рост субъективного счастья, который не угасал за полгода",dx:-280,dy:60}]},
+  {color:"#ff8fab",label:"★",title:"ПОЧЕМУ",desc:"Механизм",x:0,y:350,leaves:[{lbl:"Внимание",txt:"Тренирует мозг ЗАМЕЧАТЬ позитивное (availability heuristic)",dx:-230,dy:80},{lbl:"5-HT",txt:"Позитивные воспоминания активируют серотониновые пути (Young 2002)",dx:230,dy:80}]},
+]},
+61:{title:"HAPPINESS\nPIE",sub:"Lyubomirsky 2005\n50 / 10 / 40",c1:"#facc15",c2:"#22c55e",branches:[
+  {color:"#6b7280",label:"50%",title:"ГЕНЕТИКА",desc:"Set point",x:-500,y:-300,leaves:[{lbl:"Set point",txt:"Базовый уровень счастья от рождения. Hedonic treadmill возвращает к нему",dx:-270,dy:-60},{lbl:"Близнецы",txt:"~50% вариации объясняется генетикой (исследования близнецов)",dx:-280,dy:60}]},
+  {color:"#9ca3af",label:"10%",title:"ОБСТОЯТЕЛЬСТВА",desc:"Условия жизни",x:500,y:-300,leaves:[{lbl:"Доход",txt:"Деньги важны до ~$75K. Выше — diminishing returns",dx:270,dy:-60},{lbl:"Адаптация",txt:"Лотерея и паралич: через год уровень счастья → baseline",dx:280,dy:60}]},
+  {color:"#22c55e",label:"40%",title:"ДЕЙСТВИЯ",desc:"Наш контроль!",x:-450,y:320,leaves:[{lbl:"Благодарность",txt:"Дневник, визит благодарности — самые доказанные интервенции",dx:-260,dy:-80},{lbl:"Отношения",txt:"Инвестиции в близких. Active Constructive Responding",dx:-280,dy:10},{lbl:"Поток",txt:"Регулярные занятия в потоке: спорт, творчество, обучение",dx:-240,dy:90},{lbl:"Доброта",txt:"5 актов доброты/неделю → значимый рост (но все в один день!)",dx:-270,dy:160}]},
+  {color:"#fb923c",label:"!",title:"ПАРАДОКС",desc:"Фокус не там",x:450,y:320,leaves:[{lbl:"Ошибка",txt:"Люди тратят энергию на 10% (деньги), игнорируя 40% (действия)!",dx:260,dy:-30}]},
+]},
+65:{title:"MINDFULNESS\n→ BRAIN",sub:"Hölzel B. 2009\nMBSR 8 weeks",c1:"#f472b6",c2:"#a78bfa",branches:[
+  {color:"#f472b6",label:"↑",title:"РОСТ",desc:"Серое вещество",x:-480,y:-280,leaves:[{lbl:"Гиппокамп",txt:"↑ плотность = лучше память и обучение",dx:-270,dy:-60},{lbl:"TPJ",txt:"↑ височно-теменной узел = лучше эмпатия и perspective-taking",dx:-280,dy:60}]},
+  {color:"#a78bfa",label:"↓",title:"УМЕНЬШЕНИЕ",desc:"Амигдала",x:480,y:-280,leaves:[{lbl:"Тревога",txt:"↓ объём амигдалы = меньше тревоги и стрессовой реактивности",dx:270,dy:-60},{lbl:"Корреляция",txt:"Снижение стресса коррелировало со структурными изменениями",dx:280,dy:60}]},
+  {color:"#ffd93d",label:"★",title:"ПРОТОКОЛ",desc:"Как именно",x:0,y:350,leaves:[{lbl:"MBSR",txt:"8 недель × 27 мин/день. Mindfulness-Based Stress Reduction",dx:-230,dy:80},{lbl:"Вывод",txt:"Медитация ФИЗИЧЕСКИ меняет мозг. Не метафора, а нейронаука",dx:230,dy:80}]},
+]},
+72:{title:"BEHAVE",sub:"Robert Sapolsky, 2017\nBiology of Humans",c1:"#f472b6",c2:"#ff6b6b",branches:[
+  {color:"#f472b6",label:"ms",title:"МИЛЛИСЕКУНДЫ",desc:"Нейромедиаторы",x:-500,y:-300,leaves:[{lbl:"DA + 5-HT",txt:"Дофамин, серотонин, норадреналин — мгновенные решения",dx:-270,dy:-60},{lbl:"Амигдала",txt:"Страх за 50мс, до осознания. Рептильный мозг быстрее PFC",dx:-280,dy:60}]},
+  {color:"#ff6b6b",label:"сек",title:"СЕКУНДЫ",desc:"Сенсорные стимулы",x:500,y:-300,leaves:[{lbl:"Запах",txt:"Феромоны, запах страха — бессознательное влияние на поведение",dx:270,dy:-60},{lbl:"Лицо",txt:"Привлекательные лица → доверие за 100мс. Halo effect",dx:280,dy:60}]},
+  {color:"#ffd93d",label:"час",title:"ЧАСЫ-ДНИ",desc:"Гормоны",x:-450,y:100,leaves:[{lbl:"Кортизол",txt:"Хронический стресс → ↓PFC, ↑амигдала = плохие решения + привычки",dx:-260,dy:-40},{lbl:"Тестостерон",txt:"Не агрессия, а статус-стремление. Контекст определяет поведение",dx:-280,dy:50}]},
+  {color:"#34d399",label:"лет",title:"ГОДЫ",desc:"Нейропластичность",x:450,y:100,leaves:[{lbl:"Среда",txt:"Детский опыт формирует мозг: стресс → гиперактивная амигдала",dx:260,dy:-40},{lbl:"Эпигенетика",txt:"Среда включает/выключает гены. Наследуется через поколения",dx:280,dy:50}]},
+  {color:"#a78bfa",label:"∞",title:"ТЫСЯЧЕЛЕТИЯ",desc:"Эволюция",x:0,y:400,leaves:[{lbl:"Tribalism",txt:"In-group/out-group = эволюционная программа. Us vs Them за 50мс",dx:-230,dy:80},{lbl:"Вывод",txt:"Поведение = каскад ВСЕХ уровней. Нет одной причины",dx:230,dy:80}]},
+]},
+76:{title:"IF-THEN\nPLANS",sub:"Gollwitzer & Sheeran 2003\nMeta-Analysis",c1:"#34d399",c2:"#ffd93d",branches:[
+  {color:"#34d399",label:"01",title:"ФОРМУЛА",desc:"Если X, то Y",x:-480,y:-280,leaves:[{lbl:"Структура",txt:"'ЕСЛИ [ситуация], ТО [конкретное действие]' — привязка к контексту",dx:-270,dy:-70},{lbl:"Пример",txt:"'Если 7:00 утра, то я надеваю кроссовки и выхожу бегать'",dx:-280,dy:60}]},
+  {color:"#ffd93d",label:"02",title:"ЭФФЕКТ",desc:"d = 0.65",x:480,y:-280,leaves:[{lbl:"Мета-анализ",txt:"94 исследования. Effect size d = 0.65 — значительный эффект",dx:270,dy:-60},{lbl:"×2-3",txt:"Вероятность достижения цели увеличивается в 2-3 раза vs простое намерение",dx:280,dy:60}]},
+  {color:"#a78bfa",label:"★",title:"МЕХАНИЗМ",desc:"Почему работает",x:0,y:350,leaves:[{lbl:"Автоматизм",txt:"Ситуация автоматически активирует действие без обдумывания",dx:-230,dy:80},{lbl:"PFC bypass",txt:"Решение принято ЗАРАНЕЕ → не нужна воля в момент действия",dx:230,dy:80}]},
+]},
+78:{title:"WHY WE\nSLEEP",sub:"Matthew Walker, 2018\nBerkeley Neuroscience",c1:"#38bdf8",c2:"#a78bfa",branches:[
+  {color:"#38bdf8",label:"01",title:"ДЕФИЦИТ",desc:"<6 часов",x:-500,y:-300,leaves:[{lbl:"Самоконтроль",txt:"−40% самоконтроль. PFC отключается первой при недосыпе",dx:-270,dy:-70},{lbl:"Когнитив",txt:"−20% когнитивные функции. Как 0.08% алкоголя в крови",dx:-280,dy:50},{lbl:"Иммунитет",txt:"×4 риск простуды после 1 ночи <6 часов",dx:-230,dy:130}]},
+  {color:"#a78bfa",label:"02",title:"REM vs DEEP",desc:"Два типа сна",x:500,y:-300,leaves:[{lbl:"REM",txt:"Обрабатывает эмоции. Консолидирует эмоциональные воспоминания",dx:270,dy:-70},{lbl:"Deep/SWS",txt:"Консолидирует факты и навыки. Переносит из гиппокампа в кору",dx:280,dy:50},{lbl:"Привычки",txt:"Deep sleep = закрепление моторных привычек и процедурной памяти",dx:240,dy:130}]},
+  {color:"#ffd93d",label:"★",title:"ПРАВИЛА",desc:"Гигиена сна",x:0,y:400,leaves:[{lbl:"7-9 часов",txt:"Не меньше. Будильник — это насилие над мозгом",dx:-230,dy:70},{lbl:"Нет кофеина",txt:"После 14:00. Период полураспада = 6 часов",dx:0,dy:100},{lbl:"Темно+прохладно",txt:"18-19°C. Блокаут шторы. Нет экранов за 1ч до сна",dx:230,dy:70}]},
+]},
+80:{title:"MINDSET",sub:"Carol Dweck, 2006\nGrowth vs Fixed",c1:"#34d399",c2:"#ff6b6b",branches:[
+  {color:"#ff6b6b",label:"F",title:"FIXED",desc:"Талант фиксирован",x:-520,y:-320,leaves:[{lbl:"Вера",txt:"'Умный от рождения. Усилия = признак слабости'",dx:-280,dy:-90},{lbl:"Поведение",txt:"Избегание вызовов, сдача при трудностях, угроза от успеха других",dx:-300,dy:40},{lbl:"Результат",txt:"Плато рано. 'Я не математик' → не пытается → не учится",dx:-220,dy:130}]},
+  {color:"#34d399",label:"G",title:"GROWTH",desc:"Способности растут",x:520,y:-320,leaves:[{lbl:"Вера",txt:"'Мозг = мускул. Ошибка = обучение. Усилия развивают'",dx:-280,dy:-90},{lbl:"Поведение",txt:"Принятие вызовов, настойчивость, обучение на критике",dx:300,dy:40},{lbl:"Результат",txt:"+20% оценки. Нейропластичность ПОДТВЕРЖДАЕТ: мозг растёт от усилий",dx:250,dy:130}]},
+  {color:"#ffd93d",label:"★",title:"ПОХВАЛА",desc:"Рычаг изменений",x:0,y:420,leaves:[{lbl:"Усилия",txt:"'Ты хорошо поработал!' → growth → берёт сложные задачи",dx:-240,dy:80},{lbl:"Талант",txt:"'Ты такой умный!' → fixed → избегает вызовов → стагнация",dx:240,dy:80}]},
+  {color:"#a78bfa",label:"!",title:"ЕЩЁ НЕ",desc:"Сила слова",x:-450,y:350,leaves:[{lbl:"Reframing",txt:"Не 'я не умею', а 'я ЕЩЁ НЕ умею'. Одно слово меняет всё",dx:-260,dy:-20}]},
+]},
 };
 
-
-13:{title:"DOPAMINE\nNATION",sub:"Anna Lembke, 2021\nStanford Psychiatry",c1:"#ff6b6b",c2:"#ffd93d",branches:[
-{color:"#ff6b6b",label:"01",title:"БАЛАНС",desc:"Удовольствие ↔ Боль",x:-520,y:-320,leaves:[
-  {lbl:"Весы",txt:"Мозг = весы: каждый 'удар' удовольствия компенсируется равной болью (opponent process)",dx:-280,dy:-90},
-  {lbl:"Гомеостаз",txt:"Мозг стремится к нейтрали. Дофаминовый всплеск → компенсаторный спад ниже baseline",dx:-300,dy:50},
-  {lbl:"Хронический",txt:"Повторные стимуляции → весы застревают на стороне боли → ангедония",dx:-220,dy:140}
-]},
-{color:"#ffd93d",label:"02",title:"ТОЛЕРАНТНОСТЬ",desc:"Нужно больше",x:520,y:-320,leaves:[
-  {lbl:"Рецепторы",txt:"D2 рецепторы downregulate: для того же эффекта нужна большая доза стимуляции",dx:280,dy:-90},
-  {lbl:"Порог",txt:"Базовый уровень дофамина падает. Обычные радости больше не радуют",dx:300,dy:50}
-]},
-{color:"#4ecdc4",label:"03",title:"ДОФАМИНОВЫЙ\nПОСТ",desc:"30 дней reset",x:-480,y:350,leaves:[
-  {lbl:"Протокол",txt:"30 дней полного воздержания от источника зависимости (соцсети, сахар, алкоголь)",dx:-280,dy:-70},
-  {lbl:"Механизм",txt:"D2 рецепторы upregulate, базовый дофамин восстанавливается, чувствительность возвращается",dx:-300,dy:60},
-  {lbl:"После",txt:"Обычные радости (еда, прогулка, разговор) снова вызывают удовольствие",dx:-220,dy:140}
-]},
-{color:"#a78bfa",label:"04",title:"PAIN AS\nPORTAL",desc:"Боль → удовольствие",x:480,y:350,leaves:[
-  {lbl:"Инверсия",txt:"Начни с боли (холодный душ, бег, голодание) → организм компенсирует → удовольствие ПОСЛЕ",dx:280,dy:-70},
-  {lbl:"Hormesis",txt:"Контролируемый стресс тренирует систему. Сауна→холод→эндорфины",dx:300,dy:60}
-]},
-{color:"#ff8fab",label:"★",title:"САМООБВЯЗЫВАНИЕ",desc:"Odysseus strategy",x:0,y:480,leaves:[
-  {lbl:"Физическое",txt:"Убери телефон из спальни, не покупай чипсы, заблокируй сайты",dx:-230,dy:80},
-  {lbl:"Социальное",txt:"Расскажи о решении другим → accountability. 'Я не пью 30 дней'",dx:230,dy:80}
-]}
-]},
-
-41:{title:"DRIVE",sub:"Daniel Pink, 2009\nMotivation 3.0",c1:"#a78bfa",c2:"#ff8fab",branches:[
-{color:"#a78bfa",label:"A",title:"AUTONOMY",desc:"Свобода выбора",x:-520,y:-320,leaves:[
-  {lbl:"Что",txt:"Выбор задач: 20% time Google → Gmail, AdSense. Atlassian ShipIt Days",dx:-280,dy:-90},
-  {lbl:"Когда",txt:"Гибкий график. ROWE (Results-Only Work Environment) → +35% продуктивность",dx:-300,dy:40},
-  {lbl:"Как",txt:"Свобода метода. Не контролируй процесс — контролируй результат",dx:-220,dy:130},
-  {lbl:"С кем",txt:"Выбор команды. Самосборные команды мотивированнее назначенных",dx:-280,dy:210}
-]},
-{color:"#38bdf8",label:"M",title:"MASTERY",desc:"Рост навыка",x:520,y:-320,leaves:[
-  {lbl:"Поток",txt:"Mastery = being in flow. Challenge ≈ Skill → прогресс → мастерство",dx:280,dy:-90},
-  {lbl:"Mindset",txt:"Growth mindset необходим. 'Я ещё не умею' вместо 'я не умею'",dx:300,dy:40},
-  {lbl:"Асимптота",txt:"Mastery = асимптота: можно приближаться, но никогда не достичь полностью. Это мотивирует",dx:250,dy:130}
-]},
-{color:"#ff8fab",label:"P",title:"PURPOSE",desc:"Служение",x:0,y:400,leaves:[
-  {lbl:"Beyond self",txt:"Связь работы с чем-то большим, чем личная выгода. 'Зачем я это делаю?'",dx:-250,dy:80},
-  {lbl:"Profit+",txt:"Profit motive + purpose motive. TOMS, Patagonia — бизнес + миссия",dx:250,dy:80}
-]},
-{color:"#ffd93d",label:"!",title:"REWARD\nFAILURE",desc:"Кнут и пряник мертвы",x:500,y:350,leaves:[
-  {lbl:"If-then rewards",txt:"'Если сделаешь X — получишь Y' УБИВАЕТ творческую мотивацию",dx:280,dy:-30},
-  {lbl:"Candle Problem",txt:"Reward group решила задачу МЕДЛЕННЕЕ. Внешняя награда сужает мышление",dx:260,dy:70}
-]}
-]},
-
-45:{title:"NUDGE",sub:"Thaler & Sunstein, 2008\nNobel Prize 2017",c1:"#34d399",c2:"#38bdf8",branches:[
-{color:"#34d399",label:"01",title:"DEFAULTS",desc:"Настройки по умолчанию",x:-520,y:-320,leaves:[
-  {lbl:"Донорство",txt:"Opt-in: ~15% доноров. Opt-out: ~90%. Тот же выбор, другой default → ×6 результат",dx:-280,dy:-90},
-  {lbl:"Пенсия",txt:"Auto-enrollment в 401k → участие выросло с 49% до 86%. Никто не заставлял",dx:-300,dy:50},
-  {lbl:"Принцип",txt:"Люди остаются на default. Настрой default на лучшее → массовое улучшение",dx:-220,dy:140}
-]},
-{color:"#38bdf8",label:"02",title:"АРХИТЕКТУРА\nВЫБОРА",desc:"Дизайн решений",x:520,y:-320,leaves:[
-  {lbl:"Столовая",txt:"Положи фрукты на уровне глаз → +35% потребление. Чипсы ниже → −20%",dx:280,dy:-90},
-  {lbl:"Размер",txt:"Меньшая тарелка → −22% порция. Человек не замечает разницы",dx:300,dy:50},
-  {lbl:"Порядок",txt:"Первый вариант в списке выбирают чаще. Положи здоровое первым",dx:240,dy:140}
-]},
-{color:"#ffd93d",label:"03",title:"LIBERTARIAN\nPATERNALISM",desc:"Свобода + направление",x:0,y:420,leaves:[
-  {lbl:"Принцип",txt:"Направляй к лучшему выбору, НЕ запрещая альтернативы. Свобода сохранена",dx:-250,dy:80},
-  {lbl:"Критика",txt:"Кто определяет 'лучшее'? Этика nudge: прозрачность и обратимость обязательны",dx:250,dy:80}
-]},
-{color:"#a78bfa",label:"★",title:"SLUDGE",desc:"Анти-nudge",x:-450,y:350,leaves:[
-  {lbl:"Определение",txt:"Sludge = friction, намеренно мешающий хорошему выбору (отмена подписки 7 шагов)",dx:-270,dy:-30},
-  {lbl:"Борьба",txt:"Хороший дизайн: минимум трения для хорошего, максимум — для вредного",dx:-250,dy:70}
-]}
-]},
-
-48:{title:"INFLUENCE",sub:"Robert Cialdini, 2007\n6 Principles of Persuasion",c1:"#fb923c",c2:"#ffd93d",branches:[
-{color:"#fb923c",label:"01",title:"RECIPROCITY",desc:"Дай первым",x:-520,y:-380,leaves:[
-  {lbl:"Механизм",txt:"Люди чувствуют обязанность ответить на подарок/услугу. Даже нежеланный подарок работает",dx:-280,dy:-70},
-  {lbl:"Пример",txt:"Бесплатный образец → покупка. Hare Krishna: цветок → пожертвование",dx:-290,dy:50}
-]},
-{color:"#ffd93d",label:"02",title:"COMMITMENT",desc:"Начатое хочется закончить",x:520,y:-380,leaves:[
-  {lbl:"Foot-in-door",txt:"Согласие на малое → согласие на большее. Подпиши петицию → пожертвуй → волонтёрь",dx:280,dy:-70},
-  {lbl:"Письменное",txt:"Записанное обещание сильнее устного. Публичное сильнее приватного",dx:300,dy:50}
-]},
-{color:"#38bdf8",label:"03",title:"SOCIAL PROOF",desc:"Делаю как другие",x:-480,y:0,leaves:[
-  {lbl:"Механизм",txt:"В неопределённости смотрим на поведение похожих людей. '95% гостей повторно используют полотенца'",dx:-300,dy:-50},
-  {lbl:"Конверсия",txt:"+34% конверсия при показе отзывов/рейтингов. Числа убедительнее слов",dx:-280,dy:50}
-]},
-{color:"#34d399",label:"04",title:"AUTHORITY",desc:"Доверие экспертам",x:480,y:0,leaves:[
-  {lbl:"Milgram",txt:"65% продолжали бить током по указанию 'учёного'. Форма, титул, уверенность = подчинение",dx:280,dy:-50},
-  {lbl:"Практика",txt:"Демонстрируй экспертизу ДО просьбы. Дипломы на стене у врача — это nudge",dx:290,dy:50}
-]},
-{color:"#ff6b6b",label:"05",title:"SCARCITY",desc:"Дефицит = ценность",x:-480,y:380,leaves:[
-  {lbl:"Механизм",txt:"'Осталось 2 штуки' → loss aversion активируется → срочность покупки",dx:-270,dy:-50},
-  {lbl:"FOMO",txt:"Fear of missing out. Ограниченные серии, countdown timers, exclusive access",dx:-280,dy:50}
-]},
-{color:"#a78bfa",label:"06",title:"LIKING",desc:"Покупаю у симпатичных",x:480,y:380,leaves:[
-  {lbl:"Факторы",txt:"Привлекательность, сходство, комплименты, знакомость, ассоциации",dx:270,dy:-50},
-  {lbl:"Tupperware",txt:"Вечеринки Tupperware: покупают у подруги, не у компании. Liking → продажи",dx:280,dy:50}
-]}
-]},
-
-57:{title:"PERMA",sub:"Martin Seligman, 2002\nPositive Psychology",c1:"#facc15",c2:"#34d399",branches:[
-{color:"#facc15",label:"P",title:"POSITIVE\nEMOTION",desc:"Радость, благодарность",x:-520,y:-350,leaves:[
-  {lbl:"Не только",txt:"Не 'будь всегда счастлив', а культивируй разнообразие: благодарность, надежда, любовь, интерес",dx:-280,dy:-70},
-  {lbl:"3:1",txt:"Fredrickson: соотношение позитивных к негативным 3:1 = порог процветания",dx:-290,dy:50}
-]},
-{color:"#38bdf8",label:"E",title:"ENGAGEMENT",desc:"Поток, вовлечение",x:520,y:-350,leaves:[
-  {lbl:"Flow",txt:"Полное погружение в деятельность. Время исчезает. Csikszentmihalyi → Seligman",dx:280,dy:-70},
-  {lbl:"Strengths",txt:"Используй signature strengths (сильные стороны характера) ежедневно → вовлечение",dx:300,dy:50}
-]},
-{color:"#ff8fab",label:"R",title:"RELATIONSHIPS",desc:"Связи с людьми",x:-480,y:150,leaves:[
-  {lbl:"#1 предиктор",txt:"Качество отношений — предиктор №1 счастья и долголетия (Harvard Grant Study, 75 лет)",dx:-280,dy:-50},
-  {lbl:"ACR",txt:"Active Constructive Responding: реагируй на хорошие новости с энтузиазмом и вопросами",dx:-290,dy:50}
-]},
-{color:"#a78bfa",label:"M",title:"MEANING",desc:"Смысл, служение",x:480,y:150,leaves:[
-  {lbl:"Beyond self",txt:"Принадлежность и служение чему-то большему: семья, община, вера, наука, искусство",dx:280,dy:-50},
-  {lbl:"Vs Pleasure",txt:"Meaning может включать страдание и всё равно вести к flourishing",dx:290,dy:50}
-]},
-{color:"#34d399",label:"A",title:"ACCOMPLISHMENT",desc:"Достижения",x:0,y:430,leaves:[
-  {lbl:"Mastery",txt:"Стремление к мастерству и достижению ради самого процесса, не только результата",dx:-230,dy:80},
-  {lbl:"Grit",txt:"Perseverance + Passion = долгосрочный успех. Duckworth расширила это направление",dx:230,dy:80}
-]}
-]},
-
-80:{title:"MINDSET",sub:"Carol Dweck, 2006\nNew Psychology of Success",c1:"#34d399",c2:"#38bdf8",branches:[
-{color:"#ff6b6b",label:"F",title:"FIXED\nMINDSET",desc:"Талант фиксирован",x:-520,y:-320,leaves:[
-  {lbl:"Вера",txt:"'Талант дан от рождения. Либо умный, либо нет. Усилия = признак слабости'",dx:-280,dy:-90},
-  {lbl:"Поведение",txt:"Избегание вызовов, сдача при трудностях, игнорирование критики, угроза от успеха других",dx:-300,dy:40},
-  {lbl:"Результат",txt:"Плато рано. Не раскрывает потенциал. 'Я не математик' → не пытается → не учится",dx:-220,dy:140}
-]},
-{color:"#34d399",label:"G",title:"GROWTH\nMINDSET",desc:"Способности развиваемы",x:520,y:-320,leaves:[
-  {lbl:"Вера",txt:"'Мозг = мускул. Усилия развивают способности. Ошибка = обучение, не приговор'",dx:280,dy:-90},
-  {lbl:"Поведение",txt:"Принятие вызовов, настойчивость, обучение на критике, вдохновение от успеха других",dx:300,dy:40},
-  {lbl:"Результат",txt:"+20% оценки. Нейропластичность подтверждает: мозг буквально растёт от усилий",dx:250,dy:140}
-]},
-{color:"#ffd93d",label:"★",title:"ПОХВАЛА",desc:"Ключевой рычаг",x:0,y:420,leaves:[
-  {lbl:"Усилия",txt:"'Ты хорошо поработал!' → growth mindset → берёт сложные задачи → растёт",dx:-250,dy:80},
-  {lbl:"Талант",txt:"'Ты такой умный!' → fixed mindset → избегает вызовов → стагнирует",dx:250,dy:80}
-]},
-{color:"#a78bfa",label:"!",title:"'ЕЩЁ НЕ'",desc:"Сила слова",x:-450,y:350,leaves:[
-  {lbl:"Reframing",txt:"Не 'я не умею программировать', а 'я ЕЩЁ НЕ умею программировать'. Одно слово меняет всё",dx:-260,dy:-30}
-]}
-]},
-
-61:{title:"HAPPINESS\nPIE",sub:"Lyubomirsky et al. 2005\nSustainable Change",c1:"#facc15",c2:"#22c55e",branches:[
-{color:"#6b7280",label:"50%",title:"ГЕНЕТИКА",desc:"Set point",x:-520,y:-300,leaves:[
-  {lbl:"Set point",txt:"Каждый рождается с базовым уровнем счастья. Hedonic treadmill возвращает к нему",dx:-280,dy:-70},
-  {lbl:"Близнецы",txt:"Исследования близнецов: ~50% вариации счастья объясняется генетикой",dx:-300,dy:50}
-]},
-{color:"#9ca3af",label:"10%",title:"ОБСТОЯТЕЛЬСТВА",desc:"Условия жизни",x:520,y:-300,leaves:[
-  {lbl:"Доход",txt:"Деньги важны до ~$75K/год (базовые потребности). Выше — diminishing returns",dx:280,dy:-70},
-  {lbl:"Адаптация",txt:"Лотерея и паралич: через год уровень счастья возвращается к baseline",dx:300,dy:50}
-]},
-{color:"#22c55e",label:"40%",title:"ДЕЙСТВИЯ",desc:"Наш контроль!",x:0,y:400,leaves:[
-  {lbl:"Благодарность",txt:"Дневник благодарности, визит благодарности — самые доказанные интервенции",dx:-260,dy:70},
-  {lbl:"Отношения",txt:"Инвестиции в близкие связи. Active Constructive Responding. Quality time",dx:260,dy:70},
-  {lbl:"Поток",txt:"Регулярные занятия в состоянии потока. Спорт, творчество, обучение",dx:-260,dy:150},
-  {lbl:"Доброта",txt:"5 актов доброты в неделю → значимый рост счастья (но все в один день!)",dx:260,dy:150}
-]},
-{color:"#fb923c",label:"!",title:"ПАРАДОКС",desc:"Фокус на 10% vs 40%",x:-450,y:350,leaves:[
-  {lbl:"Ошибка",txt:"Люди тратят энергию на обстоятельства (10%), игнорируя действия (40%)",dx:-270,dy:-20}
-]}
-]}
-
-
-4:{title:"HABITS:\\nA REPEAT\\nPERFORMANCE",sub:"Wood & Neal, 2006\nCurrent Dir Psych Science",c1:"#ff6b6b",c2:"#fb923c",branches:[
-{color:"#ff6b6b",label:"01",title:"43% АВТОПИЛОТ",desc:"Повседневные действия",x:-520,y:-320,leaves:[
-  {lbl:"Факт",txt:"43% ежедневных действий выполняются автоматически, без осознанного решения — в одном контексте",dx:-280,dy:-90},
-  {lbl:"Примеры",txt:"Утренний кофе, маршрут на работу, проверка телефона, перекус в 15:00 — всё на автопилоте",dx:-300,dy:40},
-  {lbl:"Экономия",txt:"Привычки экономят когнитивную энергию: мозг освобождает PFC для новых задач",dx:-220,dy:140}
-]},
-{color:"#ffd93d",label:"02",title:"КОНТЕКСТ",desc:"Среда > Намерения",x:520,y:-320,leaves:[
-  {lbl:"Открытие",txt:"Контекст (место, время, предыдущее действие) контролирует привычки сильнее, чем желание измениться",dx:280,dy:-90},
-  {lbl:"Доказательство",txt:"Студенты-переводники меняли привычки легче: старые контекстные сигналы исчезли",dx:320,dy:40},
-  {lbl:"Вывод",txt:"Хочешь изменить привычку — измени среду. Не полагайся на мотивацию",dx:240,dy:140}
-]},
-{color:"#4ecdc4",label:"03",title:"REPETITION",desc:"Повторение в контексте",x:0,y:420,leaves:[
-  {lbl:"Формула",txt:"Повторение + стабильный контекст = автоматичность. Без контекста — просто действие",dx:-240,dy:80},
-  {lbl:"Disruption",txt:"Переезд, отпуск, новая работа = окно для сброса привычек и внедрения новых",dx:240,dy:80}
-]}
-]},
-
-5:{title:"HABIT AND\\nINTENTION",sub:"Wood, Quinn, Kashy 2002\nJPSP",c1:"#fb923c",c2:"#ffd93d",branches:[
-{color:"#fb923c",label:"01",title:"ПРЕДСКАЗАНИЕ",desc:"Что предсказывает поведение?",x:-520,y:-300,leaves:[
-  {lbl:"Частые действия",txt:"Для часто повторяемых действий в стабильном контексте — habit strength предсказывает лучше намерений",dx:-280,dy:-80},
-  {lbl:"Редкие действия",txt:"Для нерегулярных действий в меняющихся условиях — намерения всё ещё важны",dx:-300,dy:60}
-]},
-{color:"#ffd93d",label:"02",title:"INTENTION-\\nBEHAVIOR GAP",desc:"Разрыв слово-дело",x:520,y:-300,leaves:[
-  {lbl:"Проблема",txt:"Люди решают 'буду бегать' — но автоматически повторяют старое (диван+ТВ) в привычном контексте",dx:280,dy:-80},
-  {lbl:"Причина",txt:"Привычные среды автоматически активируют старые паттерны через S-R связи в стриатуме",dx:300,dy:60}
-]},
-{color:"#4ecdc4",label:"★",title:"ОКНО ПЕРЕМЕН",desc:"Context disruption",x:0,y:380,leaves:[
-  {lbl:"Переезд",txt:"Смена города/квартиры удаляет контекстные триггеры — привычки не активируются",dx:-240,dy:80},
-  {lbl:"Стратегия",txt:"Используй любые life transitions (работа, путешествие) для внедрения новых привычек",dx:240,dy:80}
-]}
-]},
-
-7:{title:"HABIT\\nFORMATION",sub:"Smith & Graybiel, 2016\nMIT Neuroscience",c1:"#f472b6",c2:"#a78bfa",branches:[
-{color:"#f472b6",label:"01",title:"PFC → DLS",desc:"Нейронный переход",x:-520,y:-320,leaves:[
-  {lbl:"Начало",txt:"Новое действие: PFC (префронтальная кора) активно управляет — осознанное решение каждый шаг",dx:-280,dy:-90},
-  {lbl:"Переход",txt:"С повторением активность смещается в DLS (дорсолатеральный стриатум) — автоматизация",dx:-300,dy:40},
-  {lbl:"Результат",txt:"PFC 'отпускает' — действие выполняется без осознанного контроля, как набор текста",dx:-220,dy:140}
-]},
-{color:"#a78bfa",label:"02",title:"START/STOP",desc:"Окаймляющие нейроны",x:520,y:-320,leaves:[
-  {lbl:"Паттерн",txt:"Нейроны базальных ганглиев стреляют в НАЧАЛЕ и КОНЦЕ привычной последовательности",dx:280,dy:-90},
-  {lbl:"Середина",txt:"В середине рутины — тишина. Мозг выполняет 'скрипт' на автопилоте",dx:300,dy:40},
-  {lbl:"Аналогия",txt:"Как нажатие 'Play' и 'Stop' на магнитофоне — между ними лента крутится сама",dx:240,dy:140}
-]},
-{color:"#4ecdc4",label:"03",title:"КЛИНИЧЕСКИЕ\\nСВЯЗИ",desc:"OCD, зависимости",x:0,y:400,leaves:[
-  {lbl:"OCD",txt:"Компульсии = привычки без goal-directed тормоза. Гиперактивность S-R системы",dx:-240,dy:80},
-  {lbl:"Зависимости",txt:"Substance use = застревание в habit loop. DLS доминирует над PFC",dx:240,dy:80}
-]},
-{color:"#ffd93d",label:"★",title:"СТРЕСС",desc:"Ускоритель привычек",x:-450,y:300,leaves:[
-  {lbl:"Механизм",txt:"Стресс ослабляет PFC и усиливает стриатум → мозг дефолтит к привычкам",dx:-260,dy:-20}
-]}
-]},
-
-8:{title:"MACHINE\\nLEARNING &\\nHABITS",sub:"Buyalskaya, Camerer 2023\nPNAS",c1:"#38bdf8",c2:"#34d399",branches:[
-{color:"#38bdf8",label:"01",title:"ДАННЫЕ",desc:"12 миллионов наблюдений",x:-520,y:-300,leaves:[
-  {lbl:"Источник 1",txt:"24 Hour Fitness: миллионы записей о посещениях фитнес-центров с временными метками",dx:-280,dy:-80},
-  {lbl:"Источник 2",txt:"Proventix: данные о гигиене рук медработников в больницах (дозаторы с сенсорами)",dx:-300,dy:50}
-]},
-{color:"#34d399",label:"02",title:"ML МЕТОД",desc:"Context > Frequency",x:520,y:-300,leaves:[
-  {lbl:"Контекст",txt:"День недели, время суток, предыдущие посещения — ML предсказывает поведение лучше, чем простая частота",dx:280,dy:-80},
-  {lbl:"Индивидуально",txt:"Модель обнаруживает индивидуальные контекстные триггеры каждого человека",dx:300,dy:50}
-]},
-{color:"#ffd93d",label:"03",title:"ИНТЕРВЕНЦИИ",desc:"Кому помогает nudge?",x:0,y:380,leaves:[
-  {lbl:"Открытие",txt:"Люди с МЕНЕЕ предсказуемыми паттернами сильнее реагируют на внешние стимулы (деньги, напоминания)",dx:-250,dy:80},
-  {lbl:"Вывод",txt:"Персонализируй: определи контекстные триггеры каждого и таргетируй именно их",dx:250,dy:80}
-]}
-]},
-
-9:{title:"BETTER THAN\\nBEFORE",sub:"Gretchen Rubin, 2015\nFour Tendencies",c1:"#a78bfa",c2:"#ff8fab",branches:[
-{color:"#a78bfa",label:"U",title:"UPHOLDER",desc:"Внешние ✓ Внутренние ✓",x:-500,y:-350,leaves:[
-  {lbl:"~20%",txt:"Выполняет и внешние, и внутренние ожидания. Дисциплинирован, но может быть ригидным",dx:-270,dy:-70},
-  {lbl:"Стратегия",txt:"Просто начни. Upholder'у достаточно решения — он его выполнит",dx:-280,dy:50}
-]},
-{color:"#38bdf8",label:"Q",title:"QUESTIONER",desc:"Внешние ✗ Внутренние ✓",x:500,y:-350,leaves:[
-  {lbl:"~24%",txt:"Выполняет только то, что считает обоснованным. 'Почему я должен?' = главный вопрос",dx:270,dy:-70},
-  {lbl:"Стратегия",txt:"Дай данные и логику. Questioner'у нужно ЗАЧЕМ, не КАК. Исследования > авторитеты",dx:280,dy:50}
-]},
-{color:"#ff8fab",label:"O",title:"OBLIGER",desc:"Внешние ✓ Внутренние ✗",x:-480,y:300,leaves:[
-  {lbl:"~41%",txt:"Самая большая группа! Выполняет для других, но не для себя. Нуждается во внешней accountability",dx:-270,dy:-70},
-  {lbl:"Стратегия",txt:"Найди accountability partner, тренера, группу. Внешние дедлайны обязательны",dx:-280,dy:50},
-  {lbl:"Obliger rebellion",txt:"Если слишком долго только для других → внезапный бунт и отказ от всего",dx:-200,dy:140}
-]},
-{color:"#fb923c",label:"R",title:"REBEL",desc:"Внешние ✗ Внутренние ✗",x:480,y:300,leaves:[
-  {lbl:"~15%",txt:"Сопротивляется любым ожиданиям — и внешним, и внутренним. Ценит свободу и идентичность",dx:270,dy:-70},
-  {lbl:"Стратегия",txt:"Свяжи привычку с идентичностью и свободой: 'Я тот, кто...' Не навязывай, предложи выбор",dx:280,dy:50}
-]}
-]},
-
-10:{title:"MAKING &\\nBREAKING\\nHABITS",sub:"Buabang, Gillan 2024\nTrends in Cognitive Sciences",c1:"#f472b6",c2:"#ff6b6b",branches:[
-{color:"#f472b6",label:"01",title:"S-R СИСТЕМА",desc:"Стимул → Реакция",x:-520,y:-320,leaves:[
-  {lbl:"Где",txt:"Дорсолатеральный стриатум (DLS). Повторяет привычные действия в знакомом контексте",dx:-280,dy:-80},
-  {lbl:"Свойства",txt:"Быстрая, автоматическая, нечувствительна к изменению ценности результата (outcome-insensitive)",dx:-300,dy:50}
-]},
-{color:"#38bdf8",label:"02",title:"GOAL-DIRECTED",desc:"Гибкая система",x:520,y:-320,leaves:[
-  {lbl:"Где",txt:"Префронтальная кора (PFC) + дорсомедиальный стриатум (DMS). Планирование и гибкость",dx:280,dy:-80},
-  {lbl:"Свойства",txt:"Медленная, осознанная, чувствительна к последствиям. Обновляет поведение при новой информации",dx:300,dy:50}
-]},
-{color:"#ffd93d",label:"03",title:"СТРЕСС &\\nВРЕМЯ",desc:"Сдвиг к привычкам",x:-480,y:350,leaves:[
-  {lbl:"Стресс",txt:"Кортизол ослабляет PFC → мозг переключается на S-R привычки. Стресс УСКОРЯЕТ привычки",dx:-270,dy:-60},
-  {lbl:"Цейтнот",txt:"Под давлением времени S-R система побеждает — она быстрее goal-directed",dx:-280,dy:60}
-]},
-{color:"#34d399",label:"04",title:"СТРАТЕГИИ\\nЛОМКИ",desc:"4 подхода",x:480,y:350,leaves:[
-  {lbl:"Ослабление",txt:"Разрушай S-R связи через extinction — выполняй cue без reward многократно",dx:270,dy:-80},
-  {lbl:"Избегание",txt:"Убери привычные триггеры из среды — нет cue = нет activation",dx:280,dy:10},
-  {lbl:"Конкуренция",txt:"Competing response: тренируй альтернативное действие на тот же триггер",dx:270,dy:80},
-  {lbl:"Торможение",txt:"Goal-directed inhibition: осознанно подавляй привычную реакцию (PFC override)",dx:260,dy:150}
-]}
-]},
-
-12:{title:"MODEL-BASED\\nvs MODEL-FREE",sub:"Daw, Niv, Dayan 2005\nNature Neuroscience",c1:"#38bdf8",c2:"#a78bfa",branches:[
-{color:"#38bdf8",label:"MB",title:"MODEL-BASED",desc:"PFC: гибкая система",x:-520,y:-300,leaves:[
-  {lbl:"Что",txt:"Строит внутреннюю модель мира. Просчитывает последствия. 'Если я сделаю X, то произойдёт Y'",dx:-280,dy:-80},
-  {lbl:"Где",txt:"Префронтальная кора + дорсомедиальный стриатум. Медленная, но точная",dx:-300,dy:40},
-  {lbl:"Когда",txt:"Доминирует в новых ситуациях, при высокой мотивации, достаточном времени и энергии",dx:-220,dy:130}
-]},
-{color:"#a78bfa",label:"MF",title:"MODEL-FREE",desc:"Стриатум: привычки",x:520,y:-300,leaves:[
-  {lbl:"Что",txt:"Не строит модель. Просто повторяет то, что раньше давало награду. Cached values",dx:280,dy:-80},
-  {lbl:"Где",txt:"Дорсолатеральный стриатум. Быстрая, энергоэффективная, но негибкая",dx:300,dy:40},
-  {lbl:"Когда",txt:"Доминирует при усталости, стрессе, знакомых ситуациях, высокой неопределённости модели",dx:240,dy:130}
-]},
-{color:"#ffd93d",label:"★",title:"АРБИТРАЖ",desc:"Кто решает?",x:0,y:400,leaves:[
-  {lbl:"Механизм",txt:"Мозг переключается на основе uncertainty: чья модель надёжнее, тот и контролирует",dx:-240,dy:80},
-  {lbl:"Патология",txt:"Зависимости, OCD = застревание в model-free. Нет гибкого переключения на model-based",dx:240,dy:80}
-]}
-]},
-
-14:{title:"REWARD\\nCENTER",sub:"Olds & Milner, 1954\nLandmark Discovery",c1:"#ffd93d",c2:"#ff6b6b",branches:[
-{color:"#ffd93d",label:"01",title:"ОТКРЫТИЕ",desc:"Случайная находка",x:-520,y:-320,leaves:[
-  {lbl:"1954",txt:"Электрод случайно попал в септальную область мозга крысы. Крыса возвращалась к месту стимуляции",dx:-280,dy:-80},
-  {lbl:"Рычаг",txt:"Крысам дали рычаг для самостимуляции. Нажимали до 7000 раз/час без перерыва",dx:-300,dy:40},
-  {lbl:"Приоритет",txt:"Игнорировали еду, воду, секс, сон. Нажимали рычаг до полного истощения",dx:-220,dy:130}
-]},
-{color:"#ff6b6b",label:"02",title:"ПУТЬ",desc:"VTA → NAcc",x:520,y:-300,leaves:[
-  {lbl:"Мезолимбический",txt:"Вентральная тегментальная область (VTA) → Nucleus accumbens (NAcc) — дофаминовый путь",dx:280,dy:-80},
-  {lbl:"Функция",txt:"Не 'центр удовольствия', а 'центр мотивации'. Дофамин = wanting, не liking",dx:300,dy:50}
-]},
-{color:"#a78bfa",label:"★",title:"НАСЛЕДИЕ",desc:"Основа нейронауки наград",x:0,y:380,leaves:[
-  {lbl:"Наука",txt:"Заложило фундамент: теория наград, зависимости, мотивации, reinforcement learning",dx:-240,dy:80},
-  {lbl:"Продукты",txt:"Тот же дофаминовый путь эксплуатируют соцсети, игры, slot machines, junk food",dx:240,dy:80}
-]}
-]},
-
-15:{title:"VARIABLE\\nREWARD",sub:"Anselme 2015\nDopamine & Uncertainty",c1:"#ffd93d",c2:"#a78bfa",branches:[
-{color:"#ffd93d",label:"01",title:"СКИННЕР",desc:"Variable ratio schedule",x:-520,y:-300,leaves:[
-  {lbl:"Фикс",txt:"Фиксированная награда: предсказуемо, быстро теряет мотивирующую силу (hedonic adaptation)",dx:-280,dy:-80},
-  {lbl:"Перем",txt:"Переменная награда: непредсказуема, создаёт МАКСИМАЛЬНО устойчивое поведение",dx:-300,dy:40},
-  {lbl:"Extinction",txt:"Привычку на variable schedule труднее всего погасить — 'а вдруг следующий раз?'",dx:-220,dy:130}
-]},
-{color:"#a78bfa",label:"02",title:"ДОФАМИН\\nОЖИДАНИЯ",desc:"Anticipation > получение",x:520,y:-300,leaves:[
-  {lbl:"Ключ",txt:"Дофамин выделяется при ОЖИДАНИИ награды, не при получении. Неопределённость максимизирует ожидание",dx:280,dy:-80},
-  {lbl:"Механизм",txt:"Uncertainty bonus: мозг добавляет 'бонус' к ожидаемой ценности непредсказуемых наград",dx:300,dy:50}
-]},
-{color:"#ff6b6b",label:"★",title:"ПРИМЕНЕНИЯ",desc:"В дизайне и жизни",x:0,y:380,leaves:[
-  {lbl:"Slot machines",txt:"Непредсказуемый выигрыш → бесконечное нажатие. Казино = applied neuroscience",dx:-240,dy:80},
-  {lbl:"Лента",txt:"Бесконечный скролл: каждый пост может быть интересным или нет → variable reward",dx:240,dy:80},
-  {lbl:"Лут-боксы",txt:"Случайные награды в играх: тот же механизм Скиннера в цифровой обёртке",dx:0,dy:160}
-]}
-]},
-
-16:{title:"THE MOLECULE\\nOF MORE",sub:"Lieberman & Long, 2022\nDopamine = Wanting",c1:"#ffd93d",c2:"#38bdf8",branches:[
-{color:"#ffd93d",label:"DA",title:"ДОФАМИН",desc:"Гормон 'больше'",x:-520,y:-320,leaves:[
-  {lbl:"Wanting",txt:"Мотивирует к ПОИСКУ, не к удовлетворению. 'Хочу ещё!' — бесконечный двигатель желания",dx:-280,dy:-90},
-  {lbl:"Будущее",txt:"Дофамин направлен в будущее: планы, мечты, амбиции, goals. 'Что дальше?'",dx:-300,dy:40},
-  {lbl:"Ловушка",txt:"Больше дофамина ≠ больше счастья. Бесконечная погоня без удовлетворения = ангедония",dx:-220,dy:140}
-]},
-{color:"#38bdf8",label:"H&N",title:"HERE & NOW",desc:"Нейромедиаторы настоящего",x:520,y:-320,leaves:[
-  {lbl:"Серотонин",txt:"Удовлетворённость тем, что есть. Покой, стабильность, 'мне хорошо прямо сейчас'",dx:280,dy:-90},
-  {lbl:"Окситоцин",txt:"Связь с другими. Тепло объятий, близость, доверие — всё в настоящем моменте",dx:300,dy:40},
-  {lbl:"Эндорфины",txt:"Физическое удовольствие и обезболивание. Вкус еды, runner's high, смех",dx:240,dy:140}
-]},
-{color:"#34d399",label:"★",title:"БАЛАНС",desc:"DA ↔ H&N = Счастье",x:0,y:420,leaves:[
-  {lbl:"Проблема",txt:"Современность перекошена к дофамину: соцсети, карьера, потребление. H&N заброшены",dx:-240,dy:80},
-  {lbl:"Решение",txt:"Развивай H&N: присутствие (meditation), связь (relationships), благодарность (gratitude)",dx:240,dy:80}
-]}
-]},
-
-
-
-17:{title:"DOPAMINE:\\nVALUE & RISK",sub:"Schultz 2012\nBehavioural Brain Research",c1:"#ffd93d",c2:"#ff6b6b",branches:[
-{color:"#ffd93d",label:"01",title:"ЦЕННОСТЬ",desc:"DA = субъективная оценка",x:-500,y:-280,leaves:[
-  {lbl:"Сигнал",txt:"Дофаминовые нейроны кодируют субъективную ценность: чем ценнее награда — тем сильнее ответ",dx:-270,dy:-70},
-  {lbl:"Субъективно",txt:"Одна и та же $100 имеет разную DA-ценность для голодного и сытого, бедного и богатого",dx:-280,dy:50}
-]},
-{color:"#ff6b6b",label:"02",title:"РИСК",desc:"DA ↑ при неопределённости",x:500,y:-280,leaves:[
-  {lbl:"Открытие",txt:"Рискованные награды вызывают БОЛЬШИЙ дофаминовый ответ, чем гарантированные той же ценности",dx:270,dy:-70},
-  {lbl:"Азарт",txt:"Нейробиология азартного поведения: мозг буквально 'вознаграждает' за принятие риска",dx:280,dy:50}
-]},
-{color:"#a78bfa",label:"★",title:"ПОСЛЕДСТВИЯ",desc:"Почему мы рискуем",x:0,y:350,leaves:[
-  {lbl:"Трейдинг",txt:"Биржевые спекуляции, крипто, ставки — дофамин от неопределённости, не от прибыли",dx:-240,dy:70},
-  {lbl:"Осознание",txt:"Азарт — биологическая ловушка. Распознай дофаминовый 'кайф от риска' отдельно от рациональности",dx:240,dy:70}
-]}
-]},
-
-18:{title:"3 NEURAL\\nSYSTEMS",sub:"Rangel, Camerer 2007\nNeuroeconomics",c1:"#38bdf8",c2:"#f472b6",branches:[
-{color:"#38bdf8",label:"01",title:"vmPFC",desc:"Оценка ценности",x:-500,y:-300,leaves:[
-  {lbl:"Функция",txt:"Вычисляет субъективную ценность каждой опции. 'Что я получу?' Интегрирует все факторы",dx:-270,dy:-70},
-  {lbl:"Повреждение",txt:"Пациенты с повреждённой vmPFC принимают катастрофические финансовые решения (случай Phineas Gage)",dx:-280,dy:50}
-]},
-{color:"#ffd93d",label:"02",title:"СТРИАТУМ",desc:"Обучение на ошибках",x:500,y:-300,leaves:[
-  {lbl:"RPE",txt:"Кодирует Reward Prediction Error. 'Лучше/хуже чем ожидал?' → обновляет ожидания на будущее",dx:270,dy:-70},
-  {lbl:"TD Learning",txt:"Temporal Difference — тот же алгоритм, что в AI. Мозг = biological reinforcement learning",dx:280,dy:50}
-]},
-{color:"#a78bfa",label:"03",title:"dlPFC",desc:"Самоконтроль",x:0,y:380,leaves:[
-  {lbl:"Override",txt:"Может подавить vmPFC-оценку: 'Торт вкусный, но я на диете'. Модулирует выбор",dx:-240,dy:70},
-  {lbl:"Уязвимость",txt:"Устаёт, ослабевает от стресса/алкоголя/недосыпа → импульсивные решения",dx:240,dy:70}
-]}
-]},
-
-19:{title:"TRYPTOPHAN\\n& SEROTONIN",sub:"Young 1997\nDiet-Mood Connection",c1:"#6bcb77",c2:"#34d399",branches:[
-{color:"#6bcb77",label:"01",title:"МЕХАНИЗМ",desc:"Триптофан → 5-HT",x:-500,y:-280,leaves:[
-  {lbl:"Путь",txt:"Триптофан (аминокислота из пищи) → проникает через ГЭБ → конвертируется в серотонин (5-HT)",dx:-270,dy:-70},
-  {lbl:"Конкуренция",txt:"Триптофан конкурирует с другими аминокислотами (BCAA) за транспорт через ГЭБ",dx:-280,dy:50}
-]},
-{color:"#ff6b6b",label:"02",title:"ДЕФИЦИТ",desc:"↓Tryptophan → ↓Mood",x:500,y:-280,leaves:[
-  {lbl:"Уязвимые",txt:"У людей с историей депрессии: дефицит триптофана → быстрое ухудшение настроения",dx:270,dy:-70},
-  {lbl:"Здоровые",txt:"У здоровых людей: эффект слабее. Серотониновая система более устойчива без анамнеза",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"ПРОДУКТЫ",desc:"Источники триптофана",x:0,y:350,leaves:[
-  {lbl:"Еда",txt:"Индейка, яйца, сыр, орехи, бананы, лосось, тофу, ананас — богаты триптофаном",dx:-240,dy:70},
-  {lbl:"Углеводы",txt:"Углеводы помогают: инсулин снижает BCAA в крови → триптофан проникает в мозг легче",dx:240,dy:70}
-]}
-]},
-
-20:{title:"SEROTONIN:\\nTWO RECEPTORS",sub:"Carhart-Harris & Nutt 2008\nBalance = Resilience",c1:"#6bcb77",c2:"#a78bfa",branches:[
-{color:"#6bcb77",label:"1A",title:"5-HT1A",desc:"Покой и анти-тревога",x:-500,y:-280,leaves:[
-  {lbl:"Функция",txt:"Снижает тревогу, стабилизирует настроение, способствует покою и умиротворению",dx:-270,dy:-70},
-  {lbl:"Активация",txt:"Медитация, глубокое дыхание, природа, тёплые отношения → ↑5-HT1A активность",dx:-280,dy:50}
-]},
-{color:"#a78bfa",label:"2A",title:"5-HT2A",desc:"Пластичность и рост",x:500,y:-280,leaves:[
-  {lbl:"Функция",txt:"Активирует нейропластичность, творчество, гибкость мышления, openness to experience",dx:270,dy:-70},
-  {lbl:"Активация",txt:"Новый опыт, обучение, творческие задачи, исследование неизвестного",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"БАЛАНС",desc:"Покой + Рост",x:0,y:350,leaves:[
-  {lbl:"Формула",txt:"Эмоциональная устойчивость = баланс 1A (покой) и 2A (рост). Не одно вместо другого",dx:-240,dy:70},
-  {lbl:"SSRI",txt:"Антидепрессанты увеличивают 5-HT для обоих рецепторов, восстанавливая баланс",dx:240,dy:70}
-]}
-]},
-
-21:{title:"THE UPWARD\\nSPIRAL",sub:"Alex Korb, 2015\nNeuroscience of Depression",c1:"#6bcb77",c2:"#38bdf8",branches:[
-{color:"#6bcb77",label:"01",title:"БЛАГОДАРНОСТЬ",desc:"↑ Серотонин",x:-500,y:-300,leaves:[
-  {lbl:"Механизм",txt:"Вспоминание позитивного активирует серотонинергические пути → ↑5-HT → ↑настроение",dx:-270,dy:-70},
-  {lbl:"Практика",txt:"3 вещи, за которые благодарен — каждый вечер. Просто, но нейрохимически мощно",dx:-280,dy:50}
-]},
-{color:"#38bdf8",label:"02",title:"РЕШЕНИЯ",desc:"↓ Тревога через PFC",x:500,y:-300,leaves:[
-  {lbl:"Механизм",txt:"Принятие решений активирует PFC и снижает активность амигдалы → меньше тревоги",dx:270,dy:-70},
-  {lbl:"Хитрость",txt:"Даже 'достаточно хорошее' решение лучше, чем бесконечное обдумывание (satisfice>maximize)",dx:280,dy:50}
-]},
-{color:"#fb923c",label:"03",title:"УПРАЖНЕНИЯ",desc:"↑ 5-HT + BDNF",x:-480,y:320,leaves:[
-  {lbl:"Серотонин",txt:"30 мин аэробных упражнений повышает 5-HT. Эффект сравним с лёгким антидепрессантом",dx:-270,dy:-50},
-  {lbl:"BDNF",txt:"Brain-Derived Neurotrophic Factor растёт от спорта → нейропластичность → новые связи",dx:-280,dy:50}
-]},
-{color:"#a78bfa",label:"04",title:"СОН",desc:"Консолидация",x:480,y:320,leaves:[
-  {lbl:"Роль",txt:"Deep sleep консолидирует позитивные нейронные изменения. Без сна спираль не работает",dx:270,dy:-50},
-  {lbl:"Совет",txt:"7-9 часов. Ложись в одно время. Тёмная прохладная комната. Нет экранов за 1 час",dx:280,dy:50}
-]}
-]},
-
-22:{title:"EXERCISE →\\nSEROTONIN",sub:"Young 2016\nJ Psychiatry & Neuroscience",c1:"#6bcb77",c2:"#fb923c",branches:[
-{color:"#6bcb77",label:"01",title:"МЕХАНИЗМ",desc:"Как бег повышает 5-HT",x:-500,y:-280,leaves:[
-  {lbl:"BCAA",txt:"Мышцы при нагрузке потребляют BCAA из крови → конкуренция за ГЭБ снижается",dx:-270,dy:-70},
-  {lbl:"Триптофан",txt:"Свободный триптофан легче проникает через ГЭБ → больше сырья для синтеза 5-HT",dx:-280,dy:50},
-  {lbl:"Синтез",txt:"Tryptophan hydroxylase конвертирует триптофан в 5-HTP → затем в серотонин",dx:-200,dy:140}
-]},
-{color:"#fb923c",label:"02",title:"ПРОТОКОЛ",desc:"Минимальная доза",x:500,y:-280,leaves:[
-  {lbl:"Длительность",txt:"30 минут — минимум для измеримого повышения 5-HT. 45-60 мин — оптимум",dx:270,dy:-70},
-  {lbl:"Тип",txt:"Аэробные: бег, плавание, велосипед, быстрая ходьба. Пульс 60-80% от максимума",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"КУМУЛЯТИВНОСТЬ",desc:"Регулярность > интенсивность",x:0,y:350,leaves:[
-  {lbl:"Эффект",txt:"Регулярные упражнения 3-5 раз/неделю поддерживают стабильно высокий baseline серотонина",dx:-240,dy:70},
-  {lbl:"Vs таблетки",txt:"Эффект сопоставим с SSRI при лёгкой/умеренной депрессии — без побочных эффектов",dx:240,dy:70}
-]}
-]},
-
-23:{title:"4 WAYS TO\\nBOOST 5-HT",sub:"Young 2002\nWithout Drugs",c1:"#6bcb77",c2:"#ffd93d",branches:[
-{color:"#ffd93d",label:"☀",title:"ЯРКИЙ СВЕТ",desc:"30 мин солнца",x:-500,y:-350,leaves:[
-  {lbl:"Механизм",txt:"Свет через сетчатку → raphe nuclei → ↑серотонин. SAD (сезонная депрессия) = дефицит света",dx:-270,dy:-60},
-  {lbl:"Доза",txt:"30 мин на улице утром. Light therapy 10000 lux при невозможности (зима, офис)",dx:-280,dy:50}
-]},
-{color:"#fb923c",label:"🏃",title:"УПРАЖНЕНИЯ",desc:"30 мин аэробных",x:500,y:-350,leaves:[
-  {lbl:"Как",txt:"Бег, плавание, велосипед, танцы — любая аэробная активность 30+ минут",dx:270,dy:-60},
-  {lbl:"Почему",txt:"↑свободный триптофан в крови → ↑проникновение через ГЭБ → ↑синтез 5-HT",dx:280,dy:50}
-]},
-{color:"#ff8fab",label:"🙏",title:"БЛАГОДАРНОСТЬ",desc:"Позитивные мысли",x:-480,y:300,leaves:[
-  {lbl:"Механизм",txt:"Вспоминание позитивного опыта активирует anterior cingulate → ↑серотонинергическая активность",dx:-270,dy:-50},
-  {lbl:"Практика",txt:"Дневник благодарности, визуализация счастливых моментов, выражение признательности",dx:-280,dy:50}
-]},
-{color:"#6bcb77",label:"🥗",title:"ТРИПТОФАН",desc:"Диета",x:480,y:300,leaves:[
-  {lbl:"Продукты",txt:"Индейка, яйца, орехи, сыр, лосось, тофу, бананы — натуральные источники",dx:270,dy:-50},
-  {lbl:"Совет",txt:"Углеводы + триптофан = лучшее усвоение. Каша с бананом утром = отличный старт",dx:280,dy:50}
-]}
-]},
-
-24:{title:"OXYTOCIN\\nINCREASES\\nTRUST",sub:"Kosfeld, Zak 2005\nNature",c1:"#ff8fab",c2:"#ffd93d",branches:[
-{color:"#ff8fab",label:"01",title:"ЭКСПЕРИМЕНТ",desc:"Trust Game",x:-500,y:-300,leaves:[
-  {lbl:"Дизайн",txt:"Двойной слепой. Интраназальный OXT vs плацебо перед экономической игрой на доверие",dx:-270,dy:-80},
-  {lbl:"Trust Game",txt:"Игрок 1 отдаёт деньги Игроку 2 (×3). Игрок 2 решает, сколько вернуть. Мера доверия",dx:-280,dy:40},
-  {lbl:"Контроль",txt:"Risk Game (те же суммы, но без человека) → OXT не влиял. Эффект специфичен для СОЦИАЛЬНОГО доверия",dx:-200,dy:130}
-]},
-{color:"#ffd93d",label:"02",title:"РЕЗУЛЬТАТ",desc:"+17% больше отдавали",x:500,y:-300,leaves:[
-  {lbl:"+17%",txt:"OXT-группа отдавала на 17% больше денег незнакомцам. Разница статистически значима",dx:270,dy:-70},
-  {lbl:"Nature",txt:"Публикация в Nature — одна из самых цитируемых статей в социальной нейронауке",dx:280,dy:50}
-]},
-{color:"#a78bfa",label:"★",title:"ЗНАЧЕНИЕ",desc:"Доверие = химия",x:0,y:380,leaves:[
-  {lbl:"Вывод",txt:"Доверие имеет конкретную нейрохимическую основу. OXT = биологический substrate доверия",dx:-240,dy:70},
-  {lbl:"Практика",txt:"Объятия, зрительный контакт, совместная еда, пение в группе → ↑OXT → ↑доверие",dx:240,dy:70}
-]}
-]},
-
-25:{title:"OXYTOCIN &\\nSOCIAL BONDS",sub:"Feldman 2012\nSocial Glue",c1:"#ff8fab",c2:"#a78bfa",branches:[
-{color:"#ff8fab",label:"01",title:"МАТЬ-РЕБЁНОК",desc:"Первичная связь",x:-500,y:-300,leaves:[
-  {lbl:"Кормление",txt:"OXT ↑ при грудном вскармливании. У обоих — у матери и у ребёнка",dx:-270,dy:-70},
-  {lbl:"Кожа",txt:"Контакт кожа-к-коже в первые часы = критическое окно для OXT-привязанности",dx:-280,dy:50}
-]},
-{color:"#a78bfa",label:"02",title:"РОМАНТИКА",desc:"Партнёрская связь",x:500,y:-300,leaves:[
-  {lbl:"Начало",txt:"Высокий OXT в начале отношений предсказывает длительность пары через 6 месяцев",dx:270,dy:-70},
-  {lbl:"Поддержка",txt:"Совместное преодоление трудностей → ↑OXT → укрепление связи",dx:280,dy:50}
-]},
-{color:"#34d399",label:"03",title:"ДРУЖБА",desc:"Широкие связи",x:0,y:380,leaves:[
-  {lbl:"Групповые",txt:"Совместная деятельность, пение, танцы, спорт → ↑OXT у всех участников",dx:-240,dy:70},
-  {lbl:"Предиктор",txt:"Уровень OXT предсказывает субъективное качество отношений и удовлетворённость",dx:240,dy:70}
-]}
-]},
-
-26:{title:"THE MORAL\\nMOLECULE",sub:"Paul Zak, 2012\n8 Hugs/Day",c1:"#ff8fab",c2:"#fb923c",branches:[
-{color:"#ff8fab",label:"01",title:"8 ОБЪЯТИЙ",desc:"Оптимальная доза",x:-500,y:-300,leaves:[
-  {lbl:"Исследование",txt:"Zak обнаружил: 8 объятий в день = оптимальный уровень OXT для здоровья и well-being",dx:-270,dy:-70},
-  {lbl:"Минимум",txt:"Даже 20-секундное объятие значимо повышает OXT. Рукопожатие — слабее, но тоже работает",dx:-280,dy:50}
-]},
-{color:"#ffd93d",label:"02",title:"МОРАЛЬ",desc:"OXT → этичное поведение",x:500,y:-300,leaves:[
-  {lbl:"Доверие",txt:"↑OXT → ↑доверие, эмпатия, щедрость. Люди становятся более кооперативными и честными",dx:270,dy:-70},
-  {lbl:"Ripple",txt:"Даже НАБЛЮДЕНИЕ за добротой повышает OXT у зрителя → каскад (ripple effect)",dx:280,dy:50}
-]},
-{color:"#a78bfa",label:"★",title:"ПРАКТИКА",desc:"Как повысить OXT",x:0,y:380,leaves:[
-  {lbl:"Физически",txt:"Объятия, массаж, рукопожатие, зрительный контакт, кормление ребёнка, игра с питомцем",dx:-240,dy:70},
-  {lbl:"Социально",txt:"Доверяй первым, делай подарки (не дорогие!), благодарение вслух, пение в хоре",dx:240,dy:70}
-]}
-]},
-
-27:{title:"OXT &\\nAMYGDALA",sub:"Gamer & Büchel 2009\nHappy Face Recognition",c1:"#ff8fab",c2:"#6bcb77",branches:[
-{color:"#ff8fab",label:"01",title:"ПОЗИТИВ ↑",desc:"Счастливые лица",x:-500,y:-280,leaves:[
-  {lbl:"fMRI",txt:"OXT усиливает ответ амигдалы на СЧАСТЛИВЫЕ лица — лучше распознаём позитивные сигналы",dx:-270,dy:-60},
-  {lbl:"Социально",txt:"Это улучшает социальную перцепцию: легче замечаешь одобрение и принятие",dx:-280,dy:50}
-]},
-{color:"#6bcb77",label:"02",title:"НЕГАТИВ ↓",desc:"Угрожающие лица",x:500,y:-280,leaves:[
-  {lbl:"fMRI",txt:"OXT СНИЖАЕТ ответ амигдалы на угрожающие/злые лица — меньше реактивности к угрозе",dx:270,dy:-60},
-  {lbl:"Тревога",txt:"Это объясняет анксиолитический эффект OXT — снижение социальной тревожности",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"ВЫВОД",desc:"OXT = социальный фильтр",x:0,y:330,leaves:[
-  {lbl:"Фильтр",txt:"OXT перенастраивает амигдалу: больше позитива, меньше угрозы → мир кажется дружелюбнее",dx:0,dy:70}
-]}
-]},
-
-28:{title:"NEURO-\\nENDOCRINOLOGY\\nOF ATTACHMENT",sub:"Insel & Young 2003\nVole Studies",c1:"#ff8fab",c2:"#34d399",branches:[
-{color:"#ff8fab",label:"01",title:"СТЕПНЫЕ\\nПОЛЁВКИ",desc:"Высокий OXT",x:-500,y:-300,leaves:[
-  {lbl:"Поведение",txt:"Моногамные, парные связи на всю жизнь, совместное воспитание потомства, гнездостроение",dx:-270,dy:-80},
-  {lbl:"Рецепторы",txt:"Высокая плотность OXT-рецепторов в nucleus accumbens → привязанность = награда",dx:-280,dy:40}
-]},
-{color:"#34d399",label:"02",title:"ГОРНЫЕ\\nПОЛЁВКИ",desc:"Низкий OXT",x:500,y:-300,leaves:[
-  {lbl:"Поведение",txt:"Одиночные, полигамные, минимальный родительский уход, нет парных связей",dx:270,dy:-80},
-  {lbl:"Рецепторы",txt:"Низкая плотность OXT-рецепторов в NAcc → социальный контакт не вознаграждается",dx:280,dy:40}
-]},
-{color:"#a78bfa",label:"★",title:"ГЕНЕТИКА",desc:"Перенос генов",x:0,y:380,leaves:[
-  {lbl:"Эксперимент",txt:"Внедрение гена OXT-рецепторов из степных в горных полёвок → горные СТАЛИ социальными!",dx:-240,dy:70},
-  {lbl:"Вывод",txt:"Привязанность имеет генетическую и нейрохимическую основу. Не просто 'выбор' или 'воспитание'",dx:240,dy:70}
-]}
-]},
-
-
-
-29:{title:"RUNNER'S\\nHIGH",sub:"Boecker 2008\nPET Scan Proof",c1:"#a78bfa",c2:"#ff8fab",branches:[
-{color:"#a78bfa",label:"01",title:"PET-СКАН",desc:"Прямое доказательство",x:-500,y:-300,leaves:[
-  {lbl:"Метод",txt:"Позитронно-эмиссионная томография после 2 часов непрерывного бега. Маркер на опиоидные рецепторы",dx:-270,dy:-80},
-  {lbl:"Результат",txt:"β-эндорфины связались с опиоидными рецепторами в PFC и лимбической системе",dx:-280,dy:40},
-  {lbl:"Первое",txt:"ПЕРВОЕ прямое доказательство, что runner's high = реальный нейрохимический феномен, не плацебо",dx:-200,dy:130}
-]},
-{color:"#ff8fab",label:"02",title:"ОБЛАСТИ",desc:"Где в мозге",x:500,y:-300,leaves:[
-  {lbl:"PFC",txt:"Префронтальная кора: эйфория, изменённое состояние сознания, ощущение 'всё хорошо'",dx:270,dy:-70},
-  {lbl:"Лимбика",txt:"Лимбическая система: обезболивание, снижение тревоги, эмоциональная регуляция",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"ПОРОГ",desc:"Когда наступает",x:0,y:380,leaves:[
-  {lbl:"Время",txt:">60-90 мин непрерывного бега для полного эффекта. Короткие пробежки — частичный",dx:-240,dy:70},
-  {lbl:"Субъективно",txt:"Корреляция: чем больше эндорфинов на PET — тем выше субъективная эйфория",dx:240,dy:70}
-]}
-]},
-
-30:{title:"SOCIAL\\nLAUGHTER",sub:"Dunbar 2012\nEndorphin Release",c1:"#a78bfa",c2:"#ffd93d",branches:[
-{color:"#a78bfa",label:"01",title:"ЭКСПЕРИМЕНТ",desc:"Смех + болевой порог",x:-500,y:-280,leaves:[
-  {lbl:"Метод",txt:"Измеряли болевой порог до и после просмотра комедии. Группа vs одиночка",dx:-270,dy:-70},
-  {lbl:"Результат",txt:"Социальный смех в группе → +10% болевой порог. Индикатор эндорфиновой активности",dx:-280,dy:50}
-]},
-{color:"#ffd93d",label:"02",title:"ГРУППА > ОДИНОЧКА",desc:"Социальный контекст",x:500,y:-280,leaves:[
-  {lbl:"Факт",txt:"Смех в группе значительно эффективнее одиночного для выброса эндорфинов",dx:270,dy:-70},
-  {lbl:"Эволюция",txt:"Групповой смех = эволюционный механизм bonding. Синхронизация через эндорфины",dx:280,dy:50}
-]},
-{color:"#ff8fab",label:"★",title:"ДРУГИЕ\\nАКТИВНОСТИ",desc:"Не только смех",x:0,y:350,leaves:[
-  {lbl:"Пение",txt:"Хоровое пение → синхронный выброс эндорфинов → чувство единения ('warm glow')",dx:-240,dy:70},
-  {lbl:"Танцы",txt:"Групповые танцы → координация + физ.нагрузка + социальность = тройной эндорфиновый удар",dx:240,dy:70}
-]}
-]},
-
-31:{title:"ANANDAMIDE:\\nTRUE RUNNER'S\\nHIGH",sub:"Fuss 2017\nPNAS",c1:"#a78bfa",c2:"#34d399",branches:[
-{color:"#a78bfa",label:"01",title:"ПРОБЛЕМА",desc:"Эндорфины слишком большие",x:-500,y:-280,leaves:[
-  {lbl:"ГЭБ",txt:"β-эндорфины — крупные пептиды, плохо проникающие через гематоэнцефалический барьер",dx:-270,dy:-70},
-  {lbl:"Вопрос",txt:"Если эндорфины не проходят через ГЭБ — что РЕАЛЬНО создаёт runner's high в мозге?",dx:-280,dy:50}
-]},
-{color:"#34d399",label:"02",title:"АНАНДАМИД",desc:"Настоящий игрок",x:500,y:-280,leaves:[
-  {lbl:"Молекула",txt:"Анандамид = эндоканнабиноид ('bliss molecule'). Маленький, легко проникает через ГЭБ",dx:270,dy:-70},
-  {lbl:"CB1",txt:"Связывается с CB1 каннабиноидными рецепторами в мозге → эйфория, анальгезия, снижение тревоги",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"ДОКАЗАТЕЛЬСТВО",desc:"Блокада рецепторов",x:0,y:350,leaves:[
-  {lbl:"Опиоидная",txt:"Блокирование опиоидных рецепторов (налоксон) НЕ устраняло runner's high",dx:-240,dy:70},
-  {lbl:"Каннабиноидная",txt:"Блокирование CB рецепторов УСТРАНЯЛО эффект. Анандамид = ключевой медиатор",dx:240,dy:70}
-]}
-]},
-
-32:{title:"β-ENDORPHIN\\nTHRESHOLD",sub:"Goldfarb 2011\nExercise Intensity",c1:"#a78bfa",c2:"#fb923c",branches:[
-{color:"#a78bfa",label:"01",title:"ИНТЕНСИВНОСТЬ",desc:">70% VO2max",x:-500,y:-280,leaves:[
-  {lbl:"Порог",txt:"Значимый выброс β-эндорфина начинается только при >70% от максимального потребления кислорода",dx:-270,dy:-70},
-  {lbl:"Ниже",txt:"При <70% VO2max — выброс минимален. Лёгкая прогулка не даёт эндорфинового эффекта",dx:-280,dy:50}
-]},
-{color:"#fb923c",label:"02",title:"ДЛИТЕЛЬНОСТЬ",desc:">30 минут",x:500,y:-280,leaves:[
-  {lbl:"Минимум",txt:"30 минут непрерывной нагрузки >70% VO2max — порог для значимого β-эндорфинового ответа",dx:270,dy:-70},
-  {lbl:"Оптимум",txt:"45-60 минут — пиковый эндорфиновый выброс. Дальше — plateau",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"ПРАКТИКА",desc:"Как достичь",x:0,y:350,leaves:[
-  {lbl:"Расчёт",txt:"70% VO2max ≈ 75-85% max HR. Формула: (220-возраст) × 0.75-0.85 = целевой пульс",dx:-240,dy:70},
-  {lbl:"Примеры",txt:"Быстрый бег, интенсивный cycling, HIIT, плавание в темпе — не прогулка!",dx:240,dy:70}
-]}
-]},
-
-33:{title:"EGO\\nDEPLETION",sub:"Baumeister 1998\nWillpower = Limited Resource",c1:"#fb923c",c2:"#ff6b6b",branches:[
-{color:"#fb923c",label:"01",title:"ЭКСПЕРИМЕНТ",desc:"Редиска vs шоколад",x:-500,y:-300,leaves:[
-  {lbl:"Дизайн",txt:"Группа 1: сопротивлялась шоколаду, ела редиску. Группа 2: ела шоколад свободно. Контроль: без еды",dx:-270,dy:-80},
-  {lbl:"Затем",txt:"Все решали неразрешимую головоломку. Время до сдачи = мера оставшейся воли",dx:-280,dy:40},
-  {lbl:"Результат",txt:"Редисочная группа сдалась через 8 мин (vs 19 мин у шоколадной). Воля была 'потрачена' на сопротивление",dx:-200,dy:130}
-]},
-{color:"#ff6b6b",label:"02",title:"МОДЕЛЬ\\nМУСКУЛА",desc:"Воля устаёт",x:500,y:-300,leaves:[
-  {lbl:"Аналогия",txt:"Самоконтроль = мускул: имеет ограниченный запас, устаёт при использовании, восстанавливается",dx:270,dy:-70},
-  {lbl:"Глюкоза",txt:"Сахар в крови восстанавливает волевой ресурс. Голод → плохие решения (decision fatigue)",dx:280,dy:50}
-]},
-{color:"#a78bfa",label:"03",title:"DECISION\\nFATIGUE",desc:"Решения тратят волю",x:0,y:380,leaves:[
-  {lbl:"Судьи",txt:"Израильские судьи: 70% условных утром, 10% перед обедом. После еды — снова 65%",dx:-240,dy:70},
-  {lbl:"Вывод",txt:"Важные решения — утром. Рутинные — автоматизируй. Экономь волевой ресурс",dx:240,dy:70}
-]},
-{color:"#ffd93d",label:"!",title:"КРИТИКА",desc:"Replication crisis",x:-450,y:300,leaves:[
-  {lbl:"2016",txt:"Мета-анализ 2016: эффект ego depletion слабее, чем думали. Но базовая идея: воля конечна — верна",dx:-260,dy:-20}
-]}
-]},
-
-35:{title:"WILLPOWER",sub:"Baumeister & Tierney 2011\nGreatest Human Strength",c1:"#fb923c",c2:"#ffd93d",branches:[
-{color:"#fb923c",label:"01",title:"ВОЛЯ > IQ",desc:"Главный предиктор",x:-500,y:-300,leaves:[
-  {lbl:"Исследования",txt:"Самоконтроль предсказывает оценки, доход, здоровье, отношения сильнее, чем IQ",dx:-270,dy:-70},
-  {lbl:"Duckworth",txt:"Self-discipline у 8-классников объяснял оценки вдвое лучше IQ. Воля = #1 ресурс",dx:-280,dy:50}
-]},
-{color:"#ffd93d",label:"02",title:"МУСКУЛ ВОЛИ",desc:"Устаёт, но тренируется",x:500,y:-300,leaves:[
-  {lbl:"Истощение",txt:"Каждое решение, каждый акт самоконтроля расходует один и тот же ресурс (ego depletion)",dx:270,dy:-70},
-  {lbl:"Тренировка",txt:"Маленькие ежедневные вызовы (осанка, недоминантная рука, отказ от сленга) укрепляют волю",dx:280,dy:50}
-]},
-{color:"#ff6b6b",label:"03",title:"DECISION\\nFATIGUE",desc:"Решения истощают",x:0,y:380,leaves:[
-  {lbl:"Проблема",txt:"Чем больше решений за день — тем хуже каждое следующее. Zuckerberg носит одинаковые футболки не зря",dx:-250,dy:70},
-  {lbl:"Стратегия",txt:"Автоматизируй рутину (одежда, еда, маршрут). Экономь волю для важного",dx:250,dy:70}
-]}
-]},
-
-36:{title:"WILLPOWER\\nINSTINCT",sub:"McGonigal 2012\nStanford Willpower Course",c1:"#fb923c",c2:"#a78bfa",branches:[
-{color:"#fb923c",label:"01",title:"БИОЛОГИЯ",desc:"Воля ≠ мораль",x:-500,y:-300,leaves:[
-  {lbl:"HRV",txt:"Heart Rate Variability = физиологический маркер воли. Высокий HRV = больше самоконтроля",dx:-270,dy:-70},
-  {lbl:"PFC",txt:"Воля живёт в префронтальной коре. Медитация увеличивает её объём за 8 недель",dx:-280,dy:50}
-]},
-{color:"#a78bfa",label:"02",title:"3 ТОПЛИВА",desc:"Сон + Спорт + Еда",x:500,y:-300,leaves:[
-  {lbl:"Сон",txt:"<6 часов = −40% самоконтроля. Мозг не восстанавливается → PFC offline",dx:270,dy:-70},
-  {lbl:"Спорт",txt:"20 мин/день повышает HRV и укрепляет PFC. Любая активность лучше никакой",dx:280,dy:30},
-  {lbl:"Глюкоза",txt:"Стабильная глюкоза = стабильная воля. Избегай сахарных скачков (complex carbs)",dx:240,dy:110}
-]},
-{color:"#34d399",label:"★",title:"STRESS PAUSE",desc:"10-секундный ресет",x:0,y:380,leaves:[
-  {lbl:"Техника",txt:"При импульсе: замри → 10 сек глубокого дыхания → осознанный выбор. PFC перехватывает у лимбики",dx:-240,dy:70},
-  {lbl:"Surfing",txt:"'Surf the urge': наблюдай за желанием как за волной — оно нарастает и спадает без действия",dx:240,dy:70}
-]}
-]},
-
-37:{title:"DUNEDIN\\nSTUDY",sub:"Moffitt 2011\n1000 People, 32 Years",c1:"#fb923c",c2:"#34d399",branches:[
-{color:"#fb923c",label:"01",title:"ДИЗАЙН",desc:"Лонгитюдное исследование",x:-500,y:-300,leaves:[
-  {lbl:"Выборка",txt:"1000 человек в Dunedin, Новая Зеландия. Отслеживались от рождения до 32 лет",dx:-270,dy:-80},
-  {lbl:"Измерение",txt:"Самоконтроль в детстве оценивали учителя, родители и сами дети (мультиинформантно)",dx:-280,dy:40}
-]},
-{color:"#34d399",label:"02",title:"РЕЗУЛЬТАТЫ",desc:"Всё предсказано",x:500,y:-300,leaves:[
-  {lbl:"Здоровье",txt:"Высокий самоконтроль → меньше болезней, ниже BMI, меньше зависимостей к 32 годам",dx:270,dy:-80},
-  {lbl:"Финансы",txt:"Выше доход, больше сбережений, лучше кредитная история. Финансовая безопасность",dx:280,dy:30},
-  {lbl:"Закон",txt:"Значительно меньше судимостей. Самоконтроль = лучший предиктор законопослушности",dx:240,dy:110}
-]},
-{color:"#ffd93d",label:"★",title:"КОНТРОЛЬ",desc:"Не IQ, не класс",x:0,y:380,leaves:[
-  {lbl:"Контролировали",txt:"Эффект сохранялся после контроля за IQ, социальным классом, условиями жизни семьи",dx:-240,dy:70},
-  {lbl:"Вывод",txt:"Самоконтроль = НЕЗАВИСИМЫЙ предиктор жизненных результатов. Инвестируй в него с детства",dx:240,dy:70}
-]}
-]},
-
-38:{title:"MENTAL\\nCONTRASTING\\n+ IF-THEN",sub:"Duckworth & Gollwitzer 2010\n×2 Self-Discipline",c1:"#fb923c",c2:"#38bdf8",branches:[
-{color:"#fb923c",label:"01",title:"MENTAL\\nCONTRASTING",desc:"Визуализация + препятствия",x:-500,y:-280,leaves:[
-  {lbl:"Шаг 1",txt:"ВИЗУАЛИЗИРУЙ желаемый результат максимально ярко. Почувствуй, каково это — достичь",dx:-270,dy:-70},
-  {lbl:"Шаг 2",txt:"ОСОЗНАЙ главные препятствия на пути. Что может помешать? Будь честен с собой",dx:-280,dy:50}
-]},
-{color:"#38bdf8",label:"02",title:"IF-THEN\\nPLANS",desc:"Автоматические ответы",x:500,y:-280,leaves:[
-  {lbl:"Формула",txt:"'Если [ситуация/препятствие], то [конкретное действие]'. Превращает решение в автоматизм",dx:270,dy:-70},
-  {lbl:"Пример",txt:"'Если хочу пропустить тренировку, то надену кроссовки и выйду хотя бы на 5 мин'",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"WOOP",desc:"Wish-Outcome-Obstacle-Plan",x:0,y:350,leaves:[
-  {lbl:"Результат",txt:"Комбинация mental contrasting + if-then УДВАИВАЕТ самодисциплину у подростков",dx:-240,dy:70},
-  {lbl:"Oettingen",txt:"Gabriele Oettingen развила в метод WOOP: Wish, Outcome, Obstacle, Plan — 4 шага",dx:240,dy:70}
-]}
-]},
-
-40:{title:"RISE OF\\nSUPERMAN",sub:"Kotler 2014\nFlow +500%",c1:"#38bdf8",c2:"#ffd93d",branches:[
-{color:"#38bdf8",label:"01",title:"+500%",desc:"McKinsey данные",x:-500,y:-300,leaves:[
-  {lbl:"Исследование",txt:"McKinsey: топ-менеджеры в потоке продуктивнее на 500%. 10-летнее исследование",dx:-270,dy:-70},
-  {lbl:"DARPA",txt:"Военные снайперы: обучение в потоке сокращает время до мастерства на 50%",dx:-280,dy:50}
-]},
-{color:"#ffd93d",label:"02",title:"5 ХИМИКАТОВ",desc:"Нейрококтейль потока",x:500,y:-300,leaves:[
-  {lbl:"Дофамин",txt:"Фокус + мотивация + pattern recognition. Вход в поток через novelty/risk",dx:270,dy:-80},
-  {lbl:"Норадр",txt:"Бдительность + энергия. Повышает signal-to-noise ratio. 'Зона' активации",dx:280,dy:10},
-  {lbl:"Эндорфины",txt:"Обезболивание. Можешь работать/бежать часами без ощущения дискомфорта",dx:270,dy:70},
-  {lbl:"Анандамид",txt:"Латеральное мышление. Связи между далёкими идеями. Creative breakthroughs",dx:280,dy:140},
-  {lbl:"Серотонин",txt:"Afterglow: чувство удовлетворения и покоя ПОСЛЕ выхода из потока",dx:240,dy:210}
-]},
-{color:"#a78bfa",label:"03",title:"FLOW CYCLE",desc:"4 фазы",x:0,y:420,leaves:[
-  {lbl:"Struggle",txt:"Фаза 1: нагрузка информацией, фрустрация, активация PFC. Тяжело, но необходимо",dx:-240,dy:70},
-  {lbl:"Release→Flow→Recovery",txt:"Отпусти (прогулка) → Поток (PFC offline, стриатум online) → Восстановление (сон, еда)",dx:240,dy:70}
-]}
-]},
-
-
-
-43:{title:"GRIT",sub:"Angela Duckworth 2016\nPassion + Perseverance",c1:"#fb923c",c2:"#ffd93d",branches:[
-{color:"#fb923c",label:"01",title:"GRIT > ТАЛАНТ",desc:"Настойчивость побеждает",x:-500,y:-300,leaves:[
-  {lbl:"West Point",txt:"+60% завершения Beast Barracks у кадетов с высоким Grit. Талант не предсказывал",dx:-270,dy:-70},
-  {lbl:"Spelling Bee",txt:"Gritty дети тренировались больше часов и проходили дальше в соревнованиях",dx:-280,dy:50}
-]},
-{color:"#ffd93d",label:"02",title:"4 КОМПОНЕНТА",desc:"Interest+Practice+Purpose+Hope",x:500,y:-300,leaves:[
-  {lbl:"Interest",txt:"Глубокий, устойчивый интерес к области. Не мимолётное увлечение, а fascination",dx:270,dy:-90},
-  {lbl:"Practice",txt:"Deliberate practice: целенаправленная, на границе способностей, с обратной связью",dx:280,dy:0},
-  {lbl:"Purpose",txt:"Связь работы с чем-то большим: 'Я помогаю людям', а не 'Я зарабатываю'",dx:260,dy:70},
-  {lbl:"Hope",txt:"Не наивный оптимизм, а рост через неудачи. 'Упал — встал — стал сильнее'",dx:270,dy:140}
-]},
-{color:"#a78bfa",label:"★",title:"GRIT SCALE",desc:"Измерение",x:0,y:400,leaves:[
-  {lbl:"Тест",txt:"10 вопросов: 'Я заканчиваю всё, что начинаю', 'Неудачи не обескураживают меня'",dx:-240,dy:70},
-  {lbl:"Развитие",txt:"Grit развивается: через deliberate practice, mentor relationships, growth mindset",dx:240,dy:70}
-]}
-]},
-
-44:{title:"DEEP WORK",sub:"Cal Newport 2016\n4 Rules of Focus",c1:"#38bdf8",c2:"#a78bfa",branches:[
-{color:"#38bdf8",label:"01",title:"DEEP vs SHALLOW",desc:"Не все часы равны",x:-500,y:-300,leaves:[
-  {lbl:"Deep",txt:"Когнитивно-требовательная работа в состоянии полной концентрации без отвлечений",dx:-270,dy:-70},
-  {lbl:"Shallow",txt:"Email, meetings, admin — не создают новой ценности. Среднее время до отвлечения: 11 мин",dx:-280,dy:50},
-  {lbl:"Attention residue",txt:"После переключения мозг 'тянет' предыдущую задачу 15-25 мин. Multitasking = миф",dx:-200,dy:140}
-]},
-{color:"#a78bfa",label:"02",title:"4 ПРАВИЛА",desc:"Система Ньюпорта",x:500,y:-300,leaves:[
-  {lbl:"Rule 1",txt:"WORK DEEPLY: ритуалы, расписание 90-мин блоков, священное пространство для фокуса",dx:270,dy:-90},
-  {lbl:"Rule 2",txt:"EMBRACE BOREDOM: тренируй способность не отвлекаться. Скука = тренажёр концентрации",dx:280,dy:0},
-  {lbl:"Rule 3",txt:"QUIT SOCIAL MEDIA: если не можешь доказать конкретную пользу — удали",dx:260,dy:70},
-  {lbl:"Rule 4",txt:"DRAIN THE SHALLOWS: минимизируй мелкие задачи. Batch email. Фиксируй shallow бюджет",dx:270,dy:140}
-]}
-]},
-
-47:{title:"PREDICTABLY\\nIRRATIONAL",sub:"Dan Ariely 2008\nSystematic Biases",c1:"#34d399",c2:"#ffd93d",branches:[
-{color:"#34d399",label:"01",title:"FREE!",desc:"Магия бесплатного",x:-500,y:-300,leaves:[
-  {lbl:"Эксперимент",txt:"Lindt 15¢ vs Hershey's 1¢ → большинство выбрали Lindt. Lindt 14¢ vs Hershey's FREE → Hershey's!",dx:-270,dy:-80},
-  {lbl:"Механизм",txt:"FREE активирует непропорциональный эмоциональный отклик. Ноль = особая точка для мозга",dx:-280,dy:40}
-]},
-{color:"#ffd93d",label:"02",title:"ANCHORING",desc:"Первое число = якорь",x:500,y:-300,leaves:[
-  {lbl:"Эксперимент",txt:"Последние 2 цифры SSN → готовность платить за вино. Высокие цифры → платили ×3 больше!",dx:270,dy:-70},
-  {lbl:"Вывод",txt:"Любое число, увиденное перед оценкой, искажает суждение. Даже случайное и нерелевантное",dx:280,dy:50}
-]},
-{color:"#fb923c",label:"03",title:"DECOY EFFECT",desc:"Третий вариант меняет выбор",x:-480,y:320,leaves:[
-  {lbl:"Economist",txt:"Web $59 vs Print $125 vs Web+Print $125. 'Print only' = decoy → все выбирают combo",dx:-270,dy:-50},
-  {lbl:"Механизм",txt:"Асимметрично доминируемый вариант делает другой 'выгоднее' по сравнению",dx:-280,dy:50}
-]},
-{color:"#a78bfa",label:"04",title:"ЭФФЕКТ\\nВЛАДЕНИЯ",desc:"Моё = дороже",x:480,y:320,leaves:[
-  {lbl:"WTA vs WTP",txt:"Willingness To Accept (продать) = 2-3× Willingness To Pay (купить). Одна и та же вещь!",dx:270,dy:-50},
-  {lbl:"IKEA effect",txt:"Собрал сам → ценишь больше. Даже если результат объективно хуже профессионального",dx:280,dy:50}
-]}
-]},
-
-49:{title:"TINY HABITS",sub:"BJ Fogg 2009\nStanford Behavior Design",c1:"#34d399",c2:"#6bcb77",branches:[
-{color:"#34d399",label:"B",title:"BEHAVIOR",desc:"B = MAP",x:-500,y:-350,leaves:[
-  {lbl:"M",txt:"Motivation: переменная, ненадёжная. НЕ строй систему на мотивации — она приходит и уходит",dx:-270,dy:-60},
-  {lbl:"A",txt:"Ability: чем ПРОЩЕ действие — тем вероятнее. 2-Minute Rule: начни с 2-минутной версии",dx:-280,dy:40},
-  {lbl:"P",txt:"Prompt: триггер. Без него даже мотивированный и способный человек забудет. Якорь обязателен",dx:-200,dy:120}
-]},
-{color:"#6bcb77",label:"01",title:"ANCHOR",desc:"Привязка к существующему",x:500,y:-300,leaves:[
-  {lbl:"Формула",txt:"'После [существующая привычка], я [новое tiny действие]' — конкретная привязка к якорю",dx:270,dy:-70},
-  {lbl:"Примеры",txt:"После чистки зубов → 2 приседания. После включения ноутбука → записать 1 благодарность",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"02",title:"CELEBRATION",desc:"Ключ закрепления!",x:0,y:380,leaves:[
-  {lbl:"Почему",txt:"Маленькое празднование СРАЗУ после действия = положительная эмоция = мозг связывает: cue→action→JOY",dx:-250,dy:70},
-  {lbl:"Как",txt:"Fist pump, 'Yes!', улыбка, мысленное 'молодец'. Даже 1 секунда celebration работает",dx:250,dy:70}
-]},
-{color:"#ff6b6b",label:"★",title:"SHINE",txt:"",desc:"Grow from tiny",x:-450,y:300,leaves:[
-  {lbl:"Рост",txt:"Начни с 2 приседаний → через неделю сам захочешь 5 → через месяц 20. Organic growth, не force",dx:-260,dy:-20}
-]}
-]},
-
-50:{title:"ENDOWMENT\\nEFFECT",sub:"Kahneman, Thaler 1999\nLoss Aversion × Ownership",c1:"#34d399",c2:"#ff6b6b",branches:[
-{color:"#34d399",label:"01",title:"ЭФФЕКТ\\nВЛАДЕНИЯ",desc:"Моё = ×2-3 дороже",x:-500,y:-280,leaves:[
-  {lbl:"Кружки",txt:"Студентам раздали кружки. Цена продажи: $7.12. Цена покупки: $2.87. Разница ×2.5!",dx:-270,dy:-70},
-  {lbl:"Механизм",txt:"Владение активирует loss aversion: продать = потерять → переоценка",dx:-280,dy:50}
-]},
-{color:"#ff6b6b",label:"02",title:"LOSS AVERSION",desc:"Потеря > Приобретение",x:500,y:-280,leaves:[
-  {lbl:"Коэффициент",txt:"Потеря ощущается в ~2 раза сильнее эквивалентного приобретения (λ ≈ 2.0-2.5)",dx:270,dy:-70},
-  {lbl:"Эволюция",txt:"Эволюционно: потеря ресурсов = смерть. Мозг настроен избегать потерь любой ценой",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"03",title:"STATUS QUO\\nBIAS",desc:"Лучше не менять",x:0,y:350,leaves:[
-  {lbl:"Привычки",txt:"Люди остаются на текущем варианте (default), даже когда альтернатива объективно лучше",dx:-240,dy:70},
-  {lbl:"Инертия",txt:"Объясняет, почему люди не меняют работу, отношения, привычки — status quo = safe",dx:240,dy:70}
-]}
-]},
-
-51:{title:"TD LEARNING\\nIN THE BRAIN",sub:"Schultz 2000\nDopamine = AI Algorithm",c1:"#f472b6",c2:"#ffd93d",branches:[
-{color:"#f472b6",label:"01",title:"VTA → NAcc",desc:"Дофаминовый путь",x:-500,y:-280,leaves:[
-  {lbl:"Нейроны",txt:"Дофаминовые нейроны VTA проецируют на nucleus accumbens (NAcc) — центр награды",dx:-270,dy:-70},
-  {lbl:"Не удовольствие",txt:"Кодируют НЕ удовольствие, а ОТКЛОНЕНИЕ от ожидания. RPE = prediction error",dx:-280,dy:50}
-]},
-{color:"#ffd93d",label:"02",title:"TD ALGORITHM",desc:"Temporal Difference",x:500,y:-280,leaves:[
-  {lbl:"Совпадение",txt:"Математически идентичен TD-learning в AI/ML. Мозг = biological reinforcement learning agent",dx:270,dy:-70},
-  {lbl:"Мост",txt:"Объединяет нейронауку и computer science. Фундамент computational neuroscience",dx:280,dy:50}
-]},
-{color:"#a78bfa",label:"★",title:"ПРИМЕНЕНИЕ",desc:"От мозга к AI",x:0,y:350,leaves:[
-  {lbl:"DeepMind",txt:"AlphaGo, Atari games — используют reward prediction error, вдохновлённый DA нейронами",dx:-240,dy:70},
-  {lbl:"Обратно",txt:"AI-модели помогают понять нейропсихиатрические расстройства (зависимости, депрессия)",dx:240,dy:70}
-]}
-]},
-
-52:{title:"DEFAULT MODE\\nNETWORK",sub:"Raichle 2011\nBrain at Rest",c1:"#f472b6",c2:"#38bdf8",branches:[
-{color:"#f472b6",label:"01",title:"DMN",desc:"Сеть покоя",x:-500,y:-300,leaves:[
-  {lbl:"Области",txt:"mPFC (медиальная PFC), PCC (posterior cingulate), precuneus, lateral temporal",dx:-270,dy:-70},
-  {lbl:"Активна когда",txt:"Покой, мечтания, self-referential thinking, planning, mind wandering",dx:-280,dy:50}
-]},
-{color:"#ff6b6b",label:"02",title:"ГИПЕРАКТИВНОСТЬ",desc:"DMN и депрессия",x:500,y:-300,leaves:[
-  {lbl:"Руминация",txt:"Чрезмерная активность DMN → бесконечное 'пережёвывание' негативных мыслей",dx:270,dy:-70},
-  {lbl:"Депрессия",txt:"У людей с депрессией DMN гиперактивна. Мозг 'застревает' в self-referential loop",dx:280,dy:50}
-]},
-{color:"#38bdf8",label:"★",title:"МЕДИТАЦИЯ",desc:"Снижение DMN",x:0,y:380,leaves:[
-  {lbl:"Механизм",txt:"Mindfulness meditation снижает активность DMN — выводит из autopilot mind wandering",dx:-240,dy:70},
-  {lbl:"Результат",txt:"Меньше руминации, больше присутствия в моменте, улучшение при депрессии и тревожности",dx:240,dy:70}
-]}
-]},
-
-53:{title:"NEURO-\\nPLASTICITY",sub:"Norman Doidge 2007\nThe Brain That Changes Itself",c1:"#f472b6",c2:"#34d399",branches:[
-{color:"#f472b6",label:"01",title:"HEBB'S LAW",desc:"Fire together, wire together",x:-500,y:-300,leaves:[
-  {lbl:"Принцип",txt:"Нейроны, которые активируются одновременно, укрепляют связь между собой",dx:-270,dy:-70},
-  {lbl:"Обратное",txt:"Use it or lose it: неиспользуемые связи ослабевают (synaptic pruning)",dx:-280,dy:50}
-]},
-{color:"#34d399",label:"02",title:"ТАКСИСТЫ",desc:"Лондонское исследование",x:500,y:-300,leaves:[
-  {lbl:"+20%",txt:"Гиппокамп лондонских таксистов (навигация по 25000 улиц) на 20% больше, чем у водителей автобусов",dx:270,dy:-70},
-  {lbl:"Стаж",txt:"Чем больше лет за рулём — тем больше гиппокамп. Мозг буквально растёт от практики",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"03",title:"КРОСС-\\nМОДАЛЬНОСТЬ",desc:"Мозг перестраивается",x:0,y:380,leaves:[
-  {lbl:"Слепые",txt:"Зрительная кора слепых людей перестраивается для чтения брайля (тактильная обработка)",dx:-240,dy:70},
-  {lbl:"Возраст",txt:"Нейропластичность работает в ЛЮБОМ возрасте. Не так быстро, как в детстве, но работает",dx:240,dy:70}
-]}
-]},
-
-54:{title:"NOVELTY →\\nDOPAMINE",sub:"Wittmann 2004\nExploration Reward",c1:"#f472b6",c2:"#ffd93d",branches:[
-{color:"#f472b6",label:"01",title:"МЕХАНИЗМ",desc:"fMRI доказательство",x:-500,y:-280,leaves:[
-  {lbl:"fMRI",txt:"Новые стимулы активируют VTA и вентральный стриатум → дофаминовый выброс",dx:-270,dy:-70},
-  {lbl:"Автоматически",txt:"Происходит автоматически, до осознанной оценки. Мозг 'вознаграждает' за исследование",dx:-280,dy:50}
-]},
-{color:"#ffd93d",label:"02",title:"ЭВОЛЮЦИЯ",desc:"Зачем новизна",x:500,y:-280,leaves:[
-  {lbl:"Адаптация",txt:"Исследование нового = адаптивное поведение. Новая пища, территория, ресурсы = выживание",dx:270,dy:-70},
-  {lbl:"Обучение",txt:"Дофамин от новизны → запоминание. Новая информация лучше кодируется в памяти",dx:280,dy:50}
-]},
-{color:"#34d399",label:"★",title:"ПРАКТИКА",desc:"Здоровый дофамин",x:0,y:350,leaves:[
-  {lbl:"Источники",txt:"Новые маршруты, книги, кухни, люди, навыки — естественный, здоровый дофаминовый стимул",dx:-240,dy:70},
-  {lbl:"Vs digital",txt:"В отличие от соцсетей: реальная новизна обогащает, а не истощает дофаминовую систему",dx:240,dy:70}
-]}
-]},
-
-55:{title:"DMS → DLS\\nTRANSITION",sub:"Yin & Knowlton 2006\nHabit Neuroanatomy",c1:"#f472b6",c2:"#a78bfa",branches:[
-{color:"#f472b6",label:"DMS",title:"ДОРСО-\\nМЕДИАЛЬНЫЙ",desc:"Целенаправленное",x:-500,y:-280,leaves:[
-  {lbl:"Функция",txt:"Чувствителен к outcome (результату). Если reward обесценивается → поведение прекращается",dx:-270,dy:-70},
-  {lbl:"Когда",txt:"Новые действия, обучение, принятие решений — DMS в контроле",dx:-280,dy:50}
-]},
-{color:"#a78bfa",label:"DLS",title:"ДОРСО-\\nЛАТЕРАЛЬНЫЙ",desc:"Привычки",x:500,y:-280,leaves:[
-  {lbl:"Функция",txt:"НЕ чувствителен к outcome. Даже если reward обесценивается — поведение продолжается",dx:270,dy:-70},
-  {lbl:"Когда",txt:"После многократного повторения. Автоматическое, 'бездумное' выполнение",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"ПЕРЕХОД",desc:"DMS → DLS = привычка",x:0,y:350,leaves:[
-  {lbl:"Процесс",txt:"С каждым повторением: контроль постепенно переходит от DMS к DLS. Gradual shift",dx:-240,dy:70},
-  {lbl:"Lesion",txt:"Поражение DLS = возврат к goal-directed поведению. Мозг 'забывает' привычку",dx:240,dy:70}
-]}
-]},
-
-56:{title:"BIOLOGY OF\\nHAPPINESS",sub:"Dfarhud 2015\nSystematic Review",c1:"#f472b6",c2:"#facc15",branches:[
-{color:"#f472b6",label:"01",title:"ГЕНЕТИКА",desc:"35-50% счастья",x:-500,y:-300,leaves:[
-  {lbl:"Twin studies",txt:"Исследования близнецов: однояйцевые более похожи по счастью, чем разнояйцевые",dx:-270,dy:-70},
-  {lbl:"Гены",txt:"5-HTTLPR (серотониновый транспортер), DRD4 (дофаминовый рецептор) — связаны с настроением",dx:-280,dy:50}
-]},
-{color:"#facc15",label:"02",title:"НЕЙРО-\\nМЕДИАТОРЫ",desc:"Химическая основа",x:500,y:-300,leaves:[
-  {lbl:"Дофамин",txt:"Позитивный аффект, мотивация. Ashby et al.: ↑DA ↔ ↑positive mood (bidirectional)",dx:270,dy:-80},
-  {lbl:"Серотонин",txt:"Стабильность настроения. SSRI повышают 5-HT → ↓депрессия (но не ↑счастье напрямую)",dx:280,dy:10},
-  {lbl:"Эндорфины",txt:"Физическое удовольствие, эйфория. Спорт, смех, острая еда → ↑эндорфины",dx:260,dy:80}
-]},
-{color:"#fb923c",label:"03",title:"ГОРМОНЫ",desc:"Кортизол и OXT",x:0,y:380,leaves:[
-  {lbl:"Кортизол",txt:"Стресс-гормон: хронический ↑кортизол → ↓счастье, ↓иммунитет, ↓нейрогенез",dx:-240,dy:70},
-  {lbl:"Окситоцин",txt:"Привязанность и доверие. ↑OXT → ↑субъективное благополучие в отношениях",dx:240,dy:70}
-]}
-]},
-
-
-
-58:{title:"STUMBLING ON\\nHAPPINESS",sub:"Daniel Gilbert 2005\nAffective Forecasting",c1:"#facc15",c2:"#fb923c",branches:[
-{color:"#facc15",label:"01",title:"IMPACT BIAS",desc:"Переоцениваем будущее",x:-500,y:-300,leaves:[
-  {lbl:"Что",txt:"Люди переоценивают силу И длительность будущих эмоций — и позитивных, и негативных",dx:-270,dy:-70},
-  {lbl:"Пример",txt:"'Если меня уволят — я буду несчастен годами'. Реальность: адаптация за 3-6 месяцев",dx:-280,dy:50}
-]},
-{color:"#fb923c",label:"02",title:"ПСИХОЛОГИЧЕСКИЙ\\nИММУНИТЕТ",desc:"Адаптация быстрее ожиданий",x:500,y:-300,leaves:[
-  {lbl:"Система",txt:"Мозг имеет 'иммунитет': рационализация, reframing, нахождение позитива в негативе",dx:270,dy:-70},
-  {lbl:"Данные",txt:"Паралич и лотерея: через 1 год уровни счастья СБЛИЖАЮТСЯ. Hedonic adaptation мощнее, чем кажется",dx:280,dy:50}
-]},
-{color:"#a78bfa",label:"★",title:"ИЛЛЮЗИИ",desc:"Мозг-обманщик",x:0,y:380,leaves:[
-  {lbl:"Imagination",txt:"Воображение добавляет и удаляет детали: мы представляем ДРУГОЕ будущее, чем наступит",dx:-240,dy:70},
-  {lbl:"Presentism",txt:"Проецируем текущее состояние на будущее: голодный покупает больше в магазине",dx:240,dy:70}
-]}
-]},
-
-59:{title:"HAPPINESS\\nHYPOTHESIS",sub:"Jonathan Haidt 2006\nH = S + C + V",c1:"#facc15",c2:"#34d399",branches:[
-{color:"#facc15",label:"S",title:"SET POINT",desc:"Генетический baseline",x:-500,y:-350,leaves:[
-  {lbl:"Что",txt:"Врождённый уровень счастья, к которому возвращаешься после событий (hedonic treadmill)",dx:-270,dy:-60},
-  {lbl:"Сколько",txt:"~50% вариации счастья. Определяется темпераментом, генами нейромедиаторных систем",dx:-280,dy:50}
-]},
-{color:"#38bdf8",label:"C",title:"CONDITIONS",desc:"Жизненные условия",x:500,y:-350,leaves:[
-  {lbl:"Что",txt:"Доход, статус, здоровье, внешность, климат, семейное положение — то, что 'случилось'",dx:270,dy:-60},
-  {lbl:"Парадокс",txt:"Всего ~10%. Люди тратят 90% энергии на 10% счастья. Деньги важны лишь до порога ($75K)",dx:280,dy:50}
-]},
-{color:"#34d399",label:"V",title:"VOLUNTARY",desc:"40% — наш контроль!",x:0,y:380,leaves:[
-  {lbl:"Что",txt:"Медитация, благодарность, отношения, поток, физическая активность, цели, духовность",dx:-250,dy:70},
-  {lbl:"Ключ",txt:"V = единственное, что мы реально контролируем. Инвестируй сюда, а не в C",dx:250,dy:70}
-]},
-{color:"#fb923c",label:"★",title:"ELEPHANT\\n& RIDER",desc:"Метафора Хайдта",x:-450,y:250,leaves:[
-  {lbl:"Слон",txt:"Эмоции, автоматические реакции, интуиция (Система 1). Мощный, но неуправляемый",dx:-260,dy:-20},
-  {lbl:"Наездник",txt:"Разум, осознанность, планирование (Система 2). Слабый, но стратегический. Нужен БАЛАНС",dx:-240,dy:60}
-]}
-]},
-
-60:{title:"3 GOOD\\nTHINGS",sub:"Seligman 2005\n1 Week → 6 Months",c1:"#facc15",c2:"#6bcb77",branches:[
-{color:"#facc15",label:"01",title:"УПРАЖНЕНИЕ",desc:"Самое эффективное",x:-500,y:-280,leaves:[
-  {lbl:"Метод",txt:"Каждый вечер запиши 3 хорошие вещи, произошедшие за день, и ПОЧЕМУ они произошли",dx:-270,dy:-70},
-  {lbl:"Почему",txt:"Причинный анализ усиливает эффект: 'потому что я подготовился' vs 'повезло'",dx:-280,dy:50}
-]},
-{color:"#6bcb77",label:"02",title:"РЕЗУЛЬТАТ",desc:"1 неделя → 6 месяцев",x:500,y:-280,leaves:[
-  {lbl:"Депрессия",txt:"Значимое снижение симптомов депрессии, сохраняющееся 6 МЕСЯЦЕВ после 1 недели практики",dx:270,dy:-70},
-  {lbl:"Счастье",txt:"Рост субъективного счастья + участники продолжали практику добровольно (intrinsic)",dx:280,dy:50}
-]},
-{color:"#a78bfa",label:"★",title:"ТАКЖЕ",desc:"Визит благодарности",x:0,y:350,leaves:[
-  {lbl:"Метод",txt:"Напиши благодарственное письмо (300 слов) и прочитай его лично адресату",dx:-240,dy:70},
-  {lbl:"Эффект",txt:"Максимальный краткосрочный буст счастья среди всех позитивных интервенций",dx:240,dy:70}
-]}
-]},
-
-62:{title:"12 STRATEGIES\\nOF HAPPINESS",sub:"Lyubomirsky 2007\nPerson-Activity Fit",c1:"#facc15",c2:"#ff8fab",branches:[
-{color:"#facc15",label:"01",title:"БЛАГОДАРНОСТЬ\\n& ОПТИМИЗМ",desc:"Внутренний фокус",x:-500,y:-350,leaves:[
-  {lbl:"Благодарность",txt:"Дневник, визит, ментальное вычитание ('Что если бы этого не было?')",dx:-270,dy:-60},
-  {lbl:"Оптимизм",txt:"Best possible self: визуализация лучшего будущего. Journaling о позитивных сценариях",dx:-280,dy:40}
-]},
-{color:"#ff8fab",label:"02",title:"СОЦИАЛЬНЫЕ",desc:"Доброта и отношения",x:500,y:-350,leaves:[
-  {lbl:"Доброта",txt:"5 актов доброты в неделю (все в один день для максимального эффекта!)",dx:270,dy:-60},
-  {lbl:"Отношения",txt:"Инвестируй время в близкие отношения: quality time, active listening, поддержка",dx:280,dy:40}
-]},
-{color:"#38bdf8",label:"03",title:"АКТИВНОСТИ",desc:"Поток, цели, тело",x:-480,y:300,leaves:[
-  {lbl:"Поток",txt:"Регулярные занятия с Challenge≈Skill: музыка, спорт, программирование, рисование",dx:-270,dy:-50},
-  {lbl:"Тело",txt:"Упражнения, сон, медитация — физическая основа для всех остальных стратегий",dx:-280,dy:50}
-]},
-{color:"#a78bfa",label:"04",title:"ДУХОВНОСТЬ\\n& ЦЕЛИ",desc:"Смысл и направление",x:480,y:300,leaves:[
-  {lbl:"Цели",txt:"Значимые, достижимые цели → прогресс → дофамин → мотивация. Circular loop",dx:270,dy:-50},
-  {lbl:"Духовность",txt:"Молитва, медитация, природа, община — connection to something larger",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"PERSON-FIT",desc:"Ключевой принцип",x:0,y:450,leaves:[
-  {lbl:"Принцип",txt:"Не все 12 стратегий подходят всем. Выбери 3-4, которые резонируют с ТВОЕЙ личностью",dx:0,dy:70}
-]}
-]},
-
-63:{title:"TD ALGORITHM\\nIN NEURONS",sub:"Schultz, Dayan, Montague 1997\nScience",c1:"#ffd93d",c2:"#f472b6",branches:[
-{color:"#ffd93d",label:"01",title:"ФОРМАЛИЗАЦИЯ",desc:"DA = TD error",x:-500,y:-280,leaves:[
-  {lbl:"TD Learning",txt:"δ = r + γV(s') - V(s). Ошибка предсказания = полученное + будущее − ожидаемое. ТОЧНО так стреляют DA нейроны",dx:-280,dy:-70},
-  {lbl:"Science",txt:"Публикация в Science 1997 — один из краеугольных камней вычислительной нейронауки",dx:-280,dy:50}
-]},
-{color:"#f472b6",label:"02",title:"МОСТ",desc:"AI ↔ Мозг",x:500,y:-280,leaves:[
-  {lbl:"К AI",txt:"Нейронаука вдохновила reinforcement learning в AI: AlphaGo, робототехника, рекомендации",dx:270,dy:-70},
-  {lbl:"От AI",txt:"AI-модели помогают моделировать нейропсихиатрические расстройства и тестировать терапии",dx:280,dy:50}
-]},
-{color:"#a78bfa",label:"★",title:"ЗНАЧЕНИЕ",desc:"Unified framework",x:0,y:350,leaves:[
-  {lbl:"Вывод",txt:"Один математический принцип объясняет: обучение, мотивацию, зависимости, decision-making",dx:0,dy:70}
-]}
-]},
-
-64:{title:"INDISTRACTABLE",sub:"Nir Eyal 2017\nAntidote to Hooked",c1:"#34d399",c2:"#38bdf8",branches:[
-{color:"#34d399",label:"01",title:"INTERNAL\\nTRIGGERS",desc:"Корень отвлечения",x:-500,y:-300,leaves:[
-  {lbl:"Не техника",txt:"Отвлечение = не проблема телефона, а проблема управления дискомфортом: скука, тревога, усталость",dx:-270,dy:-70},
-  {lbl:"10-min rule",txt:"'Я могу отвлечься, но через 10 минут'. Обычно urge проходит за это время",dx:-280,dy:50}
-]},
-{color:"#38bdf8",label:"02",title:"TRACTION",desc:"Выдели время",x:500,y:-300,leaves:[
-  {lbl:"Timeboxing",txt:"Заранее запланируй ВСЕ время: работа, отдых, семья, здоровье. Пустые слоты = уязвимость",dx:270,dy:-70},
-  {lbl:"Values",txt:"Планируй из ценностей, не из задач. 'Я ценю здоровье → слот для спорта непереговариваем'",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"03",title:"EXTERNAL\\nTRIGGERS",desc:"Hack back",x:-480,y:320,leaves:[
-  {lbl:"Audit",txt:"Каждое уведомление: 'Это служит МНЕ или приложению?' Отключи всё, что служит приложению",dx:-270,dy:-50},
-  {lbl:"Desktop",txt:"Email batch 2x/day, Slack scheduled, phone on DND. Защити среду от чужих триггеров",dx:-280,dy:50}
-]},
-{color:"#a78bfa",label:"04",title:"PACTS",desc:"3 типа обязательств",x:480,y:320,leaves:[
-  {lbl:"Effort",txt:"Увеличь усилие для отвлечения: app blocker, телефон в другой комнате, Forest app",dx:270,dy:-50},
-  {lbl:"Price",txt:"Финансовое обязательство: $100 другу, если нарушишь. StickK.com",dx:280,dy:30},
-  {lbl:"Identity",txt:"'Я indistractable'. Самый мощный pact: привязка к идентичности",dx:260,dy:100}
-]}
-]},
-
-65:{title:"MINDFULNESS\\n→ BRAIN\\nCHANGES",sub:"Hölzel 2009\n8 Weeks MBSR",c1:"#f472b6",c2:"#6bcb77",branches:[
-{color:"#f472b6",label:"01",title:"ПРОТОКОЛ",desc:"8 недель MBSR",x:-500,y:-300,leaves:[
-  {lbl:"MBSR",txt:"Mindfulness-Based Stress Reduction (Jon Kabat-Zinn). 8 недель, ~27 мин/день медитации",dx:-270,dy:-70},
-  {lbl:"MRI",txt:"Структурная МРТ до и после. Сравнение с контрольной группой (waitlist)",dx:-280,dy:50}
-]},
-{color:"#6bcb77",label:"02",title:"↑ СЕРОЕ\\nВЕЩЕСТВО",desc:"Рост структур",x:500,y:-300,leaves:[
-  {lbl:"Гиппокамп",txt:"↑ плотность серого вещества: память, обучение, пространственная навигация",dx:270,dy:-70},
-  {lbl:"TPJ",txt:"↑ temporo-parietal junction: эмпатия, theory of mind, перспектива других",dx:280,dy:30},
-  {lbl:"Мозжечок",txt:"↑ cerebellum: координация, emotional regulation, timing",dx:240,dy:100}
-]},
-{color:"#ff6b6b",label:"03",title:"↓ АМИГДАЛА",desc:"Меньше тревоги",x:0,y:400,leaves:[
-  {lbl:"Уменьшение",txt:"Объём амигдалы (центр страха/тревоги) УМЕНЬШИЛСЯ после 8 недель MBSR",dx:-240,dy:70},
-  {lbl:"Корреляция",txt:"Степень уменьшения амигдалы коррелировала со снижением субъективного стресса",dx:240,dy:70}
-]}
-]},
-
-66:{title:"CHUNKING",sub:"Graybiel 2007\nBasal Ganglia & Habits",c1:"#ff6b6b",c2:"#a78bfa",branches:[
-{color:"#ff6b6b",label:"01",title:"ЧТО ТАКОЕ\\nCHUNKING",desc:"Объединение в куски",x:-500,y:-280,leaves:[
-  {lbl:"Определение",txt:"Мозг объединяет последовательности действий в единый 'кусок' (chunk) для автоматического выполнения",dx:-270,dy:-70},
-  {lbl:"Пример",txt:"Набор текста: сначала буква за буквой, потом слова, потом фразы целиком — каждый уровень = chunk",dx:-280,dy:50}
-]},
-{color:"#a78bfa",label:"02",title:"БАЗАЛЬНЫЕ\\nГАНГЛИИ",desc:"Центр привычек",x:500,y:-280,leaves:[
-  {lbl:"Роль",txt:"Базальные ганглии (стриатум) — 'центр привычек'. Здесь хранятся автоматизированные chunks",dx:270,dy:-70},
-  {lbl:"Нейроны",txt:"Специальные нейроны маркируют начало и конец chunk — 'скрипт' привычки",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"ПРИМЕНЕНИЕ",desc:"Как использовать",x:0,y:350,leaves:[
-  {lbl:"Обучение",txt:"Разбей сложный навык на sub-chunks → автоматизируй каждый → объедини",dx:-240,dy:70},
-  {lbl:"Привычки",txt:"Morning routine = один большой chunk: alarm→water→stretch→journal→breakfast. Автопилот",dx:240,dy:70}
-]}
-]},
-
-67:{title:"HAPPINESS\\nADVANTAGE",sub:"Shawn Achor 2010\nHappiness → Success",c1:"#facc15",c2:"#fb923c",branches:[
-{color:"#facc15",label:"01",title:"ПЕРЕВЁРНУТАЯ\\nФОРМУЛА",desc:"Счастье → Успех",x:-500,y:-300,leaves:[
-  {lbl:"Не наоборот",txt:"Не 'добейся успеха и будешь счастлив', а 'будь счастлив — и добьёшься успеха'",dx:-270,dy:-70},
-  {lbl:"+31%",txt:"Позитивный мозг на 31% продуктивнее негативного или нейтрального (meta-analysis)",dx:-280,dy:50},
-  {lbl:"Врачи",txt:"Врачи в хорошем настроении ставят правильный диагноз на 19% быстрее",dx:-200,dy:130}
-]},
-{color:"#fb923c",label:"02",title:"7 ПРИНЦИПОВ",desc:"Практические стратегии",x:500,y:-300,leaves:[
-  {lbl:"20-sec rule",txt:"Уменьши барьер для хороших привычек на 20 сек (гитара без чехла vs в шкафу)",dx:270,dy:-80},
-  {lbl:"Zorro Circle",txt:"Начни с малого круга контроля, расширяй. Не пытайся менять всё сразу",dx:280,dy:10},
-  {lbl:"Social invest",txt:"В кризис люди уходят в себя — это ошибка. Социальные инвестиции = #1 предиктор resilience",dx:240,dy:80}
-]}
-]},
-
-68:{title:"ENDORPHIN\\nSYNCHRONY",sub:"Machin & Dunbar 2016\nGroup Bonding",c1:"#a78bfa",c2:"#ff8fab",branches:[
-{color:"#a78bfa",label:"01",title:"МЕХАНИЗМ",desc:"Синхронные эндорфины",x:-500,y:-280,leaves:[
-  {lbl:"Открытие",txt:"Групповые активности (смех, пение, танцы) вызывают СИНХРОННЫЙ выброс эндорфинов у всех участников",dx:-270,dy:-70},
-  {lbl:"Связь",txt:"Синхронные эндорфины создают чувство единения, доверия и принадлежности к группе",dx:-280,dy:50}
-]},
-{color:"#ff8fab",label:"02",title:"ЭВОЛЮЦИЯ",desc:"Почему это существует",x:500,y:-280,leaves:[
-  {lbl:"Bonding",txt:"Эволюционный механизм: группы, которые 'кайфуют вместе', лучше кооперируются и выживают",dx:270,dy:-70},
-  {lbl:"Приматы",txt:"У приматов: grooming (взаимное чесание) = эквивалент → эндорфины → социальная связь",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"АКТИВНОСТИ",desc:"Что делать",x:0,y:350,leaves:[
-  {lbl:"Хор",txt:"Хоровое пение — один из самых мощных социальных эндорфиновых триггеров",dx:-240,dy:70},
-  {lbl:"Танцы+спорт",txt:"Групповые танцы, командный спорт, совместный смех — все работают через тот же механизм",dx:240,dy:70}
-]}
-]},
-
-69:{title:"HOT / COOL\\nSYSTEM",sub:"Walter Mischel 2014\nMarshmallow Test Book",c1:"#fb923c",c2:"#38bdf8",branches:[
-{color:"#fb923c",label:"HOT",title:"ГОРЯЧАЯ\\nСИСТЕМА",desc:"Эмоциональная, быстрая",x:-500,y:-280,leaves:[
-  {lbl:"Мозг",txt:"Амигдала + вентральный стриатум. Автоматическая, рефлекторная. 'Хочу СЕЙЧАС!'",dx:-270,dy:-70},
-  {lbl:"Когда",txt:"Доминирует при стрессе, голоде, усталости, эмоциональном возбуждении, у детей",dx:-280,dy:50}
-]},
-{color:"#38bdf8",label:"COOL",title:"ХОЛОДНАЯ\\nСИСТЕМА",desc:"Когнитивная, стратегическая",x:500,y:-280,leaves:[
-  {lbl:"Мозг",txt:"dlPFC + vmPFC. Медленная, осознанная. 'Если подожду — получу БОЛЬШЕ'",dx:270,dy:-70},
-  {lbl:"Когда",txt:"Доминирует при низком стрессе, сытости, отдохнувшем мозге, у взрослых с тренировкой",dx:280,dy:50}
-]},
-{color:"#a78bfa",label:"★",title:"СТРАТЕГИИ",desc:"Усиление Cool",x:0,y:370,leaves:[
-  {lbl:"Reframing",txt:"Представь маршмеллоу как облако/картинку. Снимает 'горячий' эмоциональный заряд",dx:-240,dy:70},
-  {lbl:"Distancing",txt:"'Как бы мой мудрый друг поступил?' — психологическая дистанция активирует Cool систему",dx:240,dy:70}
-]}
-]},
-
-70:{title:"BROADEN\\nAND BUILD",sub:"Fredrickson 2004\nPositive Emotions Theory",c1:"#38bdf8",c2:"#34d399",branches:[
-{color:"#38bdf8",label:"01",title:"BROADEN",desc:"Расширение",x:-500,y:-280,leaves:[
-  {lbl:"Мышление",txt:"Позитивные эмоции расширяют спектр мыслей и действий (attention + cognition)",dx:-270,dy:-70},
-  {lbl:"Vs негатив",txt:"Негативные эмоции сужают: fight-or-flight = туннельное зрение. Позитив = панорамное",dx:-280,dy:50}
-]},
-{color:"#34d399",label:"02",title:"BUILD",desc:"Строительство ресурсов",x:500,y:-280,leaves:[
-  {lbl:"Социальные",txt:"Позитив → дружелюбие → новые контакты → социальная сеть → resilience",dx:270,dy:-70},
-  {lbl:"Интеллект",txt:"Позитив → любопытство → обучение → компетенции → уверенность → больше позитива",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"3:1",desc:"Порог процветания",x:0,y:350,leaves:[
-  {lbl:"Соотношение",txt:"Оптимум: 3 позитивных эмоции на 1 негативную. Ниже = languishing, выше = flourishing",dx:-240,dy:70},
-  {lbl:"Undo",txt:"Позитивные эмоции 'отменяют' физиологические эффекты стресса (undo effect)",dx:240,dy:70}
-]}
-]},
-
-71:{title:"DARK SIDE\\nOF OXYTOCIN",sub:"De Dreu 2010\nIn-Group Favoritism",c1:"#ff8fab",c2:"#ff6b6b",branches:[
-{color:"#ff8fab",label:"01",title:"IN-GROUP ↑",desc:"Кооперация со своими",x:-500,y:-280,leaves:[
-  {lbl:"Результат",txt:"OXT увеличивает кооперацию, доверие и щедрость к членам СВОЕЙ группы",dx:-270,dy:-70},
-  {lbl:"Механизм",txt:"Усиливает empathy и prosocial behavior внутри 'мы' — позитивный эффект",dx:-280,dy:50}
-]},
-{color:"#ff6b6b",label:"02",title:"OUT-GROUP ↓",desc:"Предвзятость к чужим",x:500,y:-280,leaves:[
-  {lbl:"Результат",txt:"OXT может УСИЛИВАТЬ предвзятость, defensive aggression к 'чужой' группе",dx:270,dy:-70},
-  {lbl:"Ethnocentrism",txt:"'Нас vs них': OXT укрепляет внутригрупповую лояльность за счёт межгрупповой враждебности",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"ВЫВОД",desc:"OXT ≠ просто 'любовь'",x:0,y:350,leaves:[
-  {lbl:"Нюанс",txt:"OXT = гормон социальной привязанности, не универсальной любви. Усиливает 'мы', не 'все'",dx:0,dy:70}
-]}
-]},
-
-72:{title:"BEHAVE",sub:"Robert Sapolsky 2017\nBiology at Best & Worst",c1:"#f472b6",c2:"#fb923c",branches:[
-{color:"#f472b6",label:"01",title:"КАСКАД",desc:"мс → тысячелетия",x:-500,y:-320,leaves:[
-  {lbl:"Секунды",txt:"Нейромедиаторы: DA, 5-HT, OXT, кортизол — мгновенные реакции",dx:-270,dy:-90},
-  {lbl:"Минуты-часы",txt:"Гормоны: тестостерон, кортизол, адреналин — тело готовится к действию",dx:-280,dy:0},
-  {lbl:"Дни-месяцы",txt:"Нейропластичность: опыт перестраивает мозг. Стресс shrinks гиппокамп",dx:-220,dy:70},
-  {lbl:"Тысячелетия",txt:"Эволюция: наши реакции сформированы миллионами лет. Amygdala = древний мозг",dx:-280,dy:140}
-]},
-{color:"#fb923c",label:"02",title:"СТРЕСС",desc:"Кортизол разрушает",x:500,y:-300,leaves:[
-  {lbl:"PFC ↓",txt:"Хронический стресс ухудшает PFC: хуже решения, меньше самоконтроля, больше импульсивности",dx:270,dy:-70},
-  {lbl:"Амигдала ↑",txt:"Стресс усиливает амигдалу: больше тревоги, больше страха, больше fight-or-flight",dx:280,dy:30},
-  {lbl:"Гиппокамп",txt:"Длительный кортизол уменьшает гиппокамп → ухудшение памяти и обучения",dx:240,dy:110}
-]},
-{color:"#a78bfa",label:"★",title:"ВЫВОД",desc:"Free will is complicated",x:0,y:420,leaves:[
-  {lbl:"Мульти",txt:"Поведение = результат ВСЕХ уровней каскада одновременно. Нет одной причины",dx:-240,dy:70},
-  {lbl:"Сострадание",txt:"Понимание биологии → больше сострадания. Люди не 'плохие' — они в сложных биологических контекстах",dx:240,dy:70}
-]}
-]},
-
-73:{title:"GRATITUDE\\n& SLEEP",sub:"Wood 2009\n3 Weeks → +25% Sleep",c1:"#6bcb77",c2:"#a78bfa",branches:[
-{color:"#6bcb77",label:"01",title:"МЕХАНИЗМ",desc:"5-HT ↑ Кортизол ↓",x:-500,y:-280,leaves:[
-  {lbl:"Серотонин",txt:"Благодарность активирует серотонинергические пути → улучшение настроения и предсна",dx:-270,dy:-70},
-  {lbl:"Кортизол",txt:"Фокус на позитивном снижает руминацию и worry → ↓кортизол → легче заснуть",dx:-280,dy:50}
-]},
-{color:"#a78bfa",label:"02",title:"РЕЗУЛЬТАТ",desc:"3 недели практики",x:500,y:-280,leaves:[
-  {lbl:"Сон +25%",txt:"Качество сна улучшилось на 25% — измеряли через Pittsburgh Sleep Quality Index (PSQI)",dx:270,dy:-70},
-  {lbl:"Жизнь",txt:"Удовлетворённость жизнью также значимо выросла. Двойной эффект: сон + благополучие",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"ПРОТОКОЛ",desc:"Вечерний дневник",x:0,y:350,leaves:[
-  {lbl:"Когда",txt:"Перед сном: 5-10 мин. Заменяет руминацию (worry about tomorrow) на позитивную рефлексию",dx:-240,dy:70},
-  {lbl:"Что писать",txt:"3 вещи, за которые благодарен + почему они случились. Конкретно и подробно",dx:240,dy:70}
-]}
-]},
-
-74:{title:"DOPAMINE &\\nSMARTPHONES",sub:"Haynes (Harvard) 2016\n150 Checks/Day",c1:"#ffd93d",c2:"#ff6b6b",branches:[
-{color:"#ffd93d",label:"01",title:"ЛАЙК = DA",desc:"Микро-доза дофамина",x:-500,y:-280,leaves:[
-  {lbl:"Каждый лайк",txt:"Уведомление/лайк = микро-доза дофамина. Тот же нейронный путь, что у slot machine",dx:-270,dy:-70},
-  {lbl:"Variable",txt:"Variable ratio schedule: не знаешь, будет ли лайк/комментарий → anticipatory DA ↑↑",dx:-280,dy:50}
-]},
-{color:"#ff6b6b",label:"02",title:"150 РАЗ",desc:"Проверки в день",x:500,y:-280,leaves:[
-  {lbl:"Среднее",txt:"Средний пользователь проверяет телефон ~150 раз/день. Каждая проверка = mini DA loop",dx:270,dy:-70},
-  {lbl:"Дизайн",txt:"Silicon Valley use neuroscience intentionally: pull-to-refresh, red badges, infinite scroll",dx:280,dy:50}
-]},
-{color:"#a78bfa",label:"★",title:"ОСОЗНАННОСТЬ",desc:"Что делать",x:0,y:350,leaves:[
-  {lbl:"Осознай",txt:"Телефон = slot machine in your pocket. Первый шаг: awareness",dx:-240,dy:70},
-  {lbl:"Действуй",txt:"Отключи уведомления, batch checking 3x/day, greyscale screen, Forest app",dx:240,dy:70}
-]}
-]},
-
-75:{title:"FRICTION\\n& FUEL",sub:"Wendy Wood 2024\nGood Habits, Bad Habits",c1:"#ff6b6b",c2:"#34d399",branches:[
-{color:"#ff6b6b",label:"01",title:"FRICTION",desc:"Трение = барьер",x:-500,y:-300,leaves:[
-  {lbl:"Для плохих ↑",txt:"Увеличь трение: убери чипсы с виду, удали приложения, заблокируй сайты, положи пульт далеко",dx:-270,dy:-70},
-  {lbl:"Для хороших ↓",txt:"Уменьши трение: положи кроссовки у двери, подготовь еду заранее, открой книгу на подушке",dx:-280,dy:50}
-]},
-{color:"#34d399",label:"02",title:"FUEL",desc:"Немедленная награда",x:500,y:-300,leaves:[
-  {lbl:"Проблема",txt:"Хорошие привычки дают отложенную награду (здоровье через годы). Мозг ценит СЕЙЧАС",dx:270,dy:-70},
-  {lbl:"Решение",txt:"Добавь немедленную награду после действия: podcast только при беге, tracking = visual reward",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"43%",desc:"Привычки = почти половина",x:0,y:380,leaves:[
-  {lbl:"Факт",txt:"43% дневных действий = привычки. Управляя friction и fuel, управляешь почти половиной жизни",dx:0,dy:70}
-]}
-]},
-
-76:{title:"IF-THEN\\nPLANS",sub:"Gollwitzer & Sheeran 2003\nMeta-Analysis d=0.65",c1:"#34d399",c2:"#ffd93d",branches:[
-{color:"#34d399",label:"01",title:"МЕТА-АНАЛИЗ",desc:"94 исследования",x:-500,y:-300,leaves:[
-  {lbl:"d = 0.65",txt:"Средний effect size 0.65 (medium-to-large). Это значительный и устойчивый эффект",dx:-270,dy:-70},
-  {lbl:"×2-3",txt:"Implementation intentions увеличивают достижение цели в 2-3 раза vs простое намерение",dx:-280,dy:50}
-]},
-{color:"#ffd93d",label:"02",title:"МЕХАНИЗМ",desc:"Автоматизация через связь",x:500,y:-300,leaves:[
-  {lbl:"Формула",txt:"'Если [ситуация X], то [действие Y]'. Создаёт mental link между ситуацией и действием",dx:270,dy:-70},
-  {lbl:"Автоматичность",txt:"При столкновении с ситуацией X — действие Y активируется автоматически, без обдумывания",dx:280,dy:50}
-]},
-{color:"#a78bfa",label:"★",title:"ПРИМЕРЫ",desc:"Как формулировать",x:0,y:380,leaves:[
-  {lbl:"Здоровье",txt:"'Если 15:00 → пойду на прогулку 10 мин' вместо 'буду больше гулять'",dx:-240,dy:70},
-  {lbl:"Привычки",txt:"'Если хочу перекусить вечером → возьму яблоко из холодильника' — конкретно!",dx:240,dy:70}
-]}
-]},
-
-77:{title:"HAPPY PEOPLE\\nLIVE LONGER",sub:"Lyubomirsky 2011\n225 Studies Meta-Analysis",c1:"#facc15",c2:"#34d399",branches:[
-{color:"#facc15",label:"01",title:"225 ИССЛЕДОВАНИЙ",desc:"Масштабный мета-анализ",x:-500,y:-300,leaves:[
-  {lbl:"Выборка",txt:"Сотни тысяч участников по всему миру. Лонгитюдные, экспериментальные и кросс-секционные дизайны",dx:-270,dy:-70},
-  {lbl:"Направление",txt:"Каузальность: Счастье → Успех (подтверждено лонгитюдными данными), не наоборот",dx:-280,dy:50}
-]},
-{color:"#34d399",label:"02",title:"РЕЗУЛЬТАТЫ",desc:"Конкретные цифры",x:500,y:-300,leaves:[
-  {lbl:"+$750K",txt:"Счастливые люди зарабатывают в среднем на $750K больше за жизнь",dx:270,dy:-80},
-  {lbl:"+7.5 лет",txt:"Живут на 7.5 лет дольше. Сравнимо с эффектом отказа от курения",dx:280,dy:10},
-  {lbl:"Здоровье",txt:"Лучший иммунитет, меньше хронических болезней, быстрее восстановление",dx:240,dy:80}
-]},
-{color:"#ff8fab",label:"★",title:"ОТНОШЕНИЯ",desc:"Крепче браки",x:0,y:400,leaves:[
-  {lbl:"Социальные",txt:"Шире сеть контактов, крепче браки, больше друзей, лучше отношения на работе",dx:0,dy:70}
-]}
-]},
-
-78:{title:"WHY WE\\nSLEEP",sub:"Matthew Walker 2018\n#1 Health Habit",c1:"#f472b6",c2:"#38bdf8",branches:[
-{color:"#f472b6",label:"01",title:"<6 ЧАСОВ",desc:"Катастрофические последствия",x:-500,y:-320,leaves:[
-  {lbl:"Контроль",txt:"−40% самоконтроля. PFC offline → импульсивные решения, переедание, срыв привычек",dx:-270,dy:-90},
-  {lbl:"Когнитив",txt:"−20% когнитивные функции. Реакция, память, креативность, обучение — всё падает",dx:-280,dy:0},
-  {lbl:"Иммунитет",txt:"×4 риск простуды за одну ночь <6ч. Хронически: ×2 рак, ×3 Альцгеймер",dx:-220,dy:80}
-]},
-{color:"#38bdf8",label:"02",title:"REM vs DEEP",desc:"Два ключевых этапа",x:500,y:-320,leaves:[
-  {lbl:"REM",txt:"Обработка эмоций: мозг 'проигрывает' дневной опыт в безопасном контексте → emotional regulation",dx:270,dy:-70},
-  {lbl:"Deep (N3)",txt:"Консолидация памяти и привычек: декларативные воспоминания переносятся из гиппокампа в неокортекс",dx:280,dy:30},
-  {lbl:"Творчество",txt:"REM = creative problem solving. 'Утро вечера мудренее' = REM работает ночью над задачей",dx:240,dy:110}
-]},
-{color:"#ffd93d",label:"★",title:"ГИГИЕНА СНА",desc:"Протокол Уокера",x:0,y:420,leaves:[
-  {lbl:"7-9 часов",txt:"Без исключений. Нет 'я из тех, кому хватает 5'. Генетический вариант <1% популяции",dx:-250,dy:70},
-  {lbl:"Правила",txt:"Нет кофеина после 14:00. Прохладная спальня (18°C). Нет экранов за 1 час. Одно время каждый день",dx:250,dy:70}
-]}
-]},
-
-79:{title:"START/STOP\\nNEURONS",sub:"Martiros, Graybiel (MIT) 2018\nNeural Script of Habit",c1:"#ff6b6b",c2:"#f472b6",branches:[
-{color:"#ff6b6b",label:"01",title:"ОТКРЫТИЕ",desc:"Нейронный скрипт",x:-500,y:-280,leaves:[
-  {lbl:"Start",txt:"Специализированные нейроны стриатума АКТИВИРУЮТСЯ в начале привычной последовательности",dx:-270,dy:-70},
-  {lbl:"Stop",txt:"Другая группа нейронов АКТИВИРУЕТСЯ при завершении последовательности",dx:-280,dy:50}
-]},
-{color:"#f472b6",label:"02",title:"СЕРЕДИНА",desc:"Молчание = автопилот",x:500,y:-280,leaves:[
-  {lbl:"Тишина",txt:"Между Start и Stop — нейроны молчат. Рутина выполняется без осознанного контроля",dx:270,dy:-70},
-  {lbl:"Скрипт",txt:"Start→...autopilot...→Stop = 'нейронный скрипт' привычки. Как программа",dx:280,dy:50}
-]},
-{color:"#ffd93d",label:"★",title:"ЗНАЧЕНИЕ",desc:"Как это использовать",x:0,y:350,leaves:[
-  {lbl:"Chunking",txt:"Мозг упаковывает привычку как единый блок. Чем больше повторений — тем прочнее скрипт",dx:-240,dy:70},
-  {lbl:"Практика",txt:"Для ломки привычки: вмешивайся в START (измени триггер) — середину изменить труднее всего",dx:240,dy:70}
-]}
-]},
-
-
-// Generate basic maps for sources that don't have custom ones
-function generateDefaultMap(id) {
-  // Find source data from the page that linked here
-  const params = new URLSearchParams(window.location.search);
-  const title = params.get('title') || 'SOURCE ' + id;
-  const authors = params.get('authors') || '';
-  const cat = params.get('cat') || 'habits';
-  const finding = params.get('finding') || '';
-  const stat = params.get('stat') || '';
-  const concepts = params.get('concepts') ? params.get('concepts').split('|') : [];
-  const practices = params.get('practices') ? params.get('practices').split('|') : [];
-
-  const catColors = {habits:"#ff6b6b",dopamine:"#ffd93d",serotonin:"#6bcb77",oxytocin:"#ff8fab",endorphins:"#a78bfa",willpower:"#fb923c",flow:"#38bdf8",behavior:"#34d399",neuro:"#f472b6",positive:"#facc15"};
-  const color = catColors[cat] || "#ff6b6b";
-
-  const branches = [];
+// ============ Fallback for sources without custom maps ============
+function fallbackMap(id) {
+  var p = new URLSearchParams(window.location.search);
+  var title = (p.get('title')||'SOURCE '+id).substring(0,28).toUpperCase();
+  var authors = p.get('authors')||'';
+  var cat = p.get('cat')||'habits';
+  var finding = p.get('finding')||'';
+  var concepts = p.get('concepts') ? p.get('concepts').split('|').filter(Boolean) : [];
+  var practices = p.get('practices') ? p.get('practices').split('|').filter(Boolean) : [];
+  var cc = {habits:"#ff6b6b",dopamine:"#ffd93d",serotonin:"#6bcb77",oxytocin:"#ff8fab",endorphins:"#a78bfa",willpower:"#fb923c",flow:"#38bdf8",behavior:"#34d399",neuro:"#f472b6",positive:"#facc15"};
+  var color = cc[cat]||"#ff6b6b";
+  var branches = [];
   if (finding) {
-    const sentences = finding.split(/\.\s+/).filter(s => s.length > 10);
-    sentences.slice(0, 4).forEach((s, i) => {
-      const angle = (i / Math.min(sentences.length, 4)) * Math.PI * 2 - Math.PI / 2;
-      const dist = 420;
-      branches.push({
-        color: [color, "#38bdf8", "#34d399", "#a78bfa", "#ffd93d"][i % 5],
-        label: String(i + 1).padStart(2, '0'),
-        title: s.substring(0, 30).toUpperCase(),
-        desc: "",
-        x: Math.cos(angle) * dist,
-        y: Math.sin(angle) * dist,
-        leaves: []
-      });
-    });
+    var sents = finding.split(/\.\s+/).filter(function(s){return s.length>15;});
+    for (var i=0; i<Math.min(sents.length,4); i++) {
+      var angle = (i/Math.min(sents.length,4))*Math.PI*2 - Math.PI/2;
+      branches.push({color:[color,"#38bdf8","#34d399","#a78bfa"][i%4],label:String(i+1).padStart(2,'0'),title:sents[i].substring(0,25).toUpperCase(),desc:"",x:Math.round(Math.cos(angle)*450),y:Math.round(Math.sin(angle)*400),leaves:[]});
+    }
   }
-
-  if (concepts.length > 0) {
-    const cx = concepts.length > 4 ? -450 : 450;
-    branches.push({
-      color: "#a78bfa",
-      label: "◆",
-      title: "КОНЦЕПЦИИ",
-      desc: concepts.length + " ключевых",
-      x: cx, y: concepts.length > 4 ? 350 : -200,
-      leaves: concepts.slice(0, 5).map((c, i) => ({
-        lbl: "•", txt: c, dx: cx > 0 ? 250 : -250, dy: -80 + i * 55
-      }))
-    });
+  if (concepts.length>0) {
+    var leaves = [];
+    for (var j=0; j<Math.min(concepts.length,5); j++) {
+      leaves.push({lbl:"•",txt:concepts[j],dx:260,dy:-80+j*50});
+    }
+    branches.push({color:"#a78bfa",label:"◆",title:"КОНЦЕПЦИИ",desc:concepts.length+" ключевых",x:480,y:250,leaves:leaves});
   }
-
-  if (practices.length > 0) {
-    branches.push({
-      color: "#34d399",
-      label: "✓",
-      title: "ПРАКТИКА",
-      desc: practices.length + " выводов",
-      x: concepts.length > 4 ? 450 : -450, y: 350,
-      leaves: practices.slice(0, 4).map((p, i) => ({
-        lbl: "→", txt: p, dx: concepts.length > 4 ? 250 : -250, dy: -60 + i * 55
-      }))
-    });
+  if (practices.length>0) {
+    var pl = [];
+    for (var k=0; k<Math.min(practices.length,4); k++) {
+      pl.push({lbl:"→",txt:practices[k],dx:-260,dy:-60+k*50});
+    }
+    branches.push({color:"#34d399",label:"✓",title:"ПРАКТИКА",desc:practices.length+" выводов",x:-480,y:280,leaves:pl});
   }
-
-  return {
-    title: title.substring(0, 30).toUpperCase(),
-    sub: authors + (authors ? '\n' : '') + 'Source #' + id,
-    c1: color,
-    c2: "#f7c948",
-    branches
-  };
+  return {title:title.replace(/\n/g,'\\n'),sub:authors+'\\n#'+id,c1:color,c2:"#f7c948",branches:branches};
 }
 
-// ============ RENDER ENGINE ============
-const world = document.getElementById('world');
-const canvas = document.getElementById('canvas');
-const svg = document.getElementById('svg');
+// ============ PAN / ZOOM ENGINE ============
+var world=document.getElementById('world'),canvas=document.getElementById('canvas'),svg=document.getElementById('svg');
+var scale=0.48,panX=0,panY=0,isDrag=false,sx,sy;
+function upd(){world.style.transform='translate('+panX+'px,'+panY+'px) scale('+scale+')';}
+canvas.addEventListener('mousedown',function(e){isDrag=true;sx=e.clientX-panX;sy=e.clientY-panY;canvas.classList.add('grabbing');});
+window.addEventListener('mousemove',function(e){if(!isDrag)return;panX=e.clientX-sx;panY=e.clientY-sy;upd();});
+window.addEventListener('mouseup',function(){isDrag=false;canvas.classList.remove('grabbing');});
+canvas.addEventListener('touchstart',function(e){if(e.touches.length===1){isDrag=true;sx=e.touches[0].clientX-panX;sy=e.touches[0].clientY-panY;}},{passive:true});
+canvas.addEventListener('touchmove',function(e){if(!isDrag||e.touches.length!==1)return;panX=e.touches[0].clientX-sx;panY=e.touches[0].clientY-sy;upd();},{passive:true});
+canvas.addEventListener('touchend',function(){isDrag=false;});
+canvas.addEventListener('wheel',function(e){e.preventDefault();var d=e.deltaY>0?.9:1.1;var ns=Math.min(2,Math.max(.12,scale*d));var r=canvas.getBoundingClientRect();var mx=e.clientX-r.left,my=e.clientY-r.top;panX=mx-(mx-panX)*(ns/scale);panY=my-(my-panY)*(ns/scale);scale=ns;upd();},{passive:false});
+function zi(){scale=Math.min(2,scale*1.3);upd();}
+function zo(){scale=Math.max(.12,scale*.75);upd();}
+function rv(){var vw=window.innerWidth,vh=window.innerHeight;scale=0.48;panX=vw/2-3000*scale;panY=vh/2-2000*scale;upd();}
 
-let scale = 0.5, panX = 0, panY = 0;
-let isDragging = false, startX, startY;
-
-function updateTransform() {
-  world.style.transform = `translate(${panX}px,${panY}px) scale(${scale})`;
+function curve(x1,y1,x2,y2,col){
+  var dx=x2-x1,dy=y2-y1;
+  var p=document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d','M '+x1+' '+y1+' C '+(x1+dx*.4)+' '+(y1+dy*.08)+', '+(x2-dx*.4)+' '+(y2-dy*.08)+', '+x2+' '+y2);
+  p.setAttribute('stroke',col);
+  svg.appendChild(p);
 }
 
-canvas.addEventListener('mousedown', e => { isDragging = true; startX = e.clientX - panX; startY = e.clientY - panY; canvas.classList.add('grabbing'); });
-window.addEventListener('mousemove', e => { if (!isDragging) return; panX = e.clientX - startX; panY = e.clientY - startY; updateTransform(); });
-window.addEventListener('mouseup', () => { isDragging = false; canvas.classList.remove('grabbing'); });
-canvas.addEventListener('touchstart', e => { if (e.touches.length===1) { isDragging=true; startX=e.touches[0].clientX-panX; startY=e.touches[0].clientY-panY; } }, {passive:true});
-canvas.addEventListener('touchmove', e => { if (!isDragging||e.touches.length!==1) return; panX=e.touches[0].clientX-startX; panY=e.touches[0].clientY-startY; updateTransform(); }, {passive:true});
-canvas.addEventListener('touchend', () => { isDragging=false; });
-canvas.addEventListener('wheel', e => { e.preventDefault(); const d=e.deltaY>0?.92:1.08; const ns=Math.min(2,Math.max(.15,scale*d)); const r=canvas.getBoundingClientRect(); const mx=e.clientX-r.left,my=e.clientY-r.top; panX=mx-(mx-panX)*(ns/scale); panY=my-(my-panY)*(ns/scale); scale=ns; updateTransform(); }, {passive:false});
-
-function zoomIn(){scale=Math.min(2,scale*1.25);updateTransform()}
-function zoomOut(){scale=Math.max(.15,scale*.8);updateTransform()}
-function resetView(){
-  const vw=window.innerWidth, vh=window.innerHeight;
-  scale=0.5; panX=vw/2-3000*scale; panY=vh/2-2000*scale;
-  updateTransform();
-}
-
-function drawCurve(x1,y1,x2,y2,color) {
-  const dx=x2-x1, dy=y2-y1;
-  const cx1=x1+dx*.4, cy1=y1+dy*.1;
-  const cx2=x2-dx*.4, cy2=y2-dy*.1;
-  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-  path.setAttribute('d',`M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`);
-  path.setAttribute('stroke',color);
-  svg.appendChild(path);
-}
-
-function makeNode(html,x,y,cls,delay) {
-  const el=document.createElement('div');
+function node(html,x,y,cls,delay){
+  var el=document.createElement('div');
   el.className='nd '+cls;
   el.innerHTML=html;
   el.style.left=x+'px';
@@ -1576,56 +316,35 @@ function makeNode(html,x,y,cls,delay) {
   return el;
 }
 
-function render(data) {
-  const CX=3000, CY=2000;
-  // Center node
-  const ce = makeNode(
-    `<div class="t">${data.title.replace(/\n/g,'<br>')}</div><div class="s">${data.sub.replace(/\n/g,'<br>')}</div>`,
-    CX-100, CY-100, 'nd--center', 0
-  );
-  ce.style.setProperty('--c1', data.c1);
-  ce.style.setProperty('--c2', data.c2);
-  ce.style.setProperty('--glow', data.c1 + '44');
-
-  document.getElementById('legend').textContent = data.title.replace(/\n/g,' ') + ' · scroll/drag';
-
-  let delay = 0.1;
-  data.branches.forEach(b => {
-    const bx = CX + b.x, by = CY + b.y;
-    drawCurve(CX, CY, bx+75, by+25, b.color);
-
-    const bn = makeNode(
-      `<div class="num">${b.label}</div><div class="t">${b.title.replace(/\n/g,'<br>')}</div><div class="d">${b.desc}</div>`,
-      bx, by, 'nd--branch', delay
-    );
-    bn.style.setProperty('--bc', b.color);
-    bn.style.setProperty('--bg', b.color + '0d');
-    delay += 0.06;
-
-    (b.leaves||[]).forEach(l => {
-      const lx = bx + l.dx, ly = by + l.dy;
-      drawCurve(bx+75, by+25, lx+90, ly+15, b.color);
-      const ln = makeNode(
-        `<div class="lbl" style="color:${b.color}">${l.lbl}</div><div>${l.txt}</div>`,
-        lx, ly, 'nd--leaf', delay
-      );
-      delay += 0.04;
+function render(data){
+  var CX=3000,CY=2000;
+  var ce=node('<div class="t">'+data.title.replace(/\\n/g,'<br>')+'</div><div class="s">'+data.sub.replace(/\\n/g,'<br>')+'</div>',CX-105,CY-105,'ct',0);
+  ce.style.background='linear-gradient(135deg,'+data.c1+','+data.c2+')';
+  ce.style.boxShadow='0 0 60px '+data.c1+'44, 0 0 120px '+data.c1+'15';
+  document.getElementById('hd').textContent=data.title.replace(/\\n/g,' ')+' · scroll / drag';
+  var dl=0.1;
+  data.branches.forEach(function(b){
+    var bx=CX+b.x,by=CY+b.y;
+    curve(CX,CY,bx+75,by+25,b.color);
+    var bn=node('<div class="n">'+b.label+'</div><div class="t">'+b.title.replace(/\\n/g,'<br>')+'</div><div class="d">'+b.desc+'</div>',bx,by,'br',dl);
+    bn.style.borderColor=b.color;
+    bn.style.background=b.color+'0d';
+    bn.style.color=b.color+'dd';
+    dl+=0.06;
+    (b.leaves||[]).forEach(function(l){
+      var lx=bx+l.dx,ly=by+l.dy;
+      curve(bx+75,by+25,lx+90,ly+15,b.color);
+      node('<div class="k" style="color:'+b.color+'">'+l.lbl+'</div><div>'+l.txt+'</div>',lx,ly,'lf',dl);
+      dl+=0.04;
     });
   });
-
-  // Center view
-  setTimeout(() => {
-    const vw=window.innerWidth, vh=window.innerHeight;
-    panX = vw/2 - CX*scale;
-    panY = vh/2 - CY*scale;
-    updateTransform();
-  }, 50);
+  setTimeout(rv,80);
 }
 
 // ============ INIT ============
-const params = new URLSearchParams(window.location.search);
-const sourceId = parseInt(params.get('id')) || 1;
-const mapData = MAPS[sourceId] || generateDefaultMap(sourceId);
+var params=new URLSearchParams(window.location.search);
+var sourceId=parseInt(params.get('id'))||1;
+var mapData=MAPS[sourceId]||fallbackMap(sourceId);
 render(mapData);
 </script>
 </body>
