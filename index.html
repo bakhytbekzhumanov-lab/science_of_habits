@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Science of Habits — 80 научных источников</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', -apple-system, sans-serif; background: #08080d; color: #e8e6e1; }
+    select option { background: #1a1a2e; color: #e8e6e1; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState, useMemo } = React;
+
+const CATEGORIES = [
+  { id: "all", label: "Все", color: "#ffffff" },
+  { id: "habits", label: "Привычки", color: "#ff6b6b" },
+  { id: "dopamine", label: "Дофамин и награда", color: "#ffd93d" },
+  { id: "serotonin", label: "Серотонин и настроение", color: "#6bcb77" },
+  { id: "oxytocin", label: "Окситоцин и связь", color: "#ff8fab" },
+  { id: "endorphins", label: "Эндорфины", color: "#a78bfa" },
+  { id: "willpower", label: "Воля и самоконтроль", color: "#fb923c" },
+  { id: "flow", label: "Поток и мотивация", color: "#38bdf8" },
+  { id: "behavior", label: "Поведение и nudge", color: "#34d399" },
+  { id: "neuro", label: "Нейронауки", color: "#f472b6" },
+  { id: "positive", label: "Позитивная психология", color: "#facc15" },
+];
+
+const SOURCES = [
+  { id: 1, type: "paper", cat: "habits", year: 2010, title: "How are habits formed: Modelling habit formation in the real world", authors: "Lally P., van Jaarsveld C., Potts H., Wardle J.", journal: "European Journal of Social Psychology", finding: "Среднее время формирования привычки — 66 дней (диапазон 18–254). Пропуск одного дня не разрушает прогресс. Простые действия (вода) закрепляются за ~20 дней, сложные (50 приседаний) — за 100+.", stat: "66 дней", statLabel: "среднее", impact: 95 },
+  { id: 2, type: "book", cat: "habits", year: 2012, title: "The Power of Habit", authors: "Charles Duhigg", journal: "Random House", finding: "Habit loop: cue → routine → reward. Привычки нельзя стереть, но можно перезаписать, заменив routine при том же cue. «Краеугольные привычки» (keystone habits) каскадно меняют поведение.", stat: "40%", statLabel: "действий — привычки", impact: 92 },
+  { id: 3, type: "book", cat: "habits", year: 2018, title: "Atomic Habits", authors: "James Clear", journal: "Avery", finding: "4 закона изменения поведения: сделай очевидным, привлекательным, лёгким, удовлетворяющим. 1% улучшение в день = ×37 за год. Системы важнее целей.", stat: "1%/день = ×37", statLabel: "за год", impact: 97 },
+  { id: 4, type: "paper", cat: "habits", year: 2006, title: "Habits — A Repeat Performance", authors: "Wood W., Neal D.", journal: "Current Directions in Psychological Science", finding: "~43% повседневных действий выполняются автоматически в одном и том же контексте. Привычки контролируются контекстом, а не намерениями.", stat: "43%", statLabel: "действий автоматичны", impact: 88 },
+  { id: 5, type: "paper", cat: "habits", year: 2002, title: "Habit and Intention in Everyday Life", authors: "Wood W., Quinn J., Kashy D.", journal: "Journal of Personality and Social Psychology", finding: "Сила привычки предсказывает будущее поведение лучше, чем намерения. Изменение контекста (переезд) — окно для сброса привычек.", stat: "Контекст > Намерения", statLabel: "", impact: 85 },
+  { id: 6, type: "book", cat: "habits", year: 2014, title: "Hooked: How to Build Habit-Forming Products", authors: "Nir Eyal", journal: "Portfolio/Penguin", finding: "Hook Model: Trigger → Action → Variable Reward → Investment. Переменное подкрепление (Скиннер) сильнее фиксированного. Цель — внутренний триггер (эмоция).", stat: "4 фазы Hook", statLabel: "модель", impact: 89 },
+  { id: 7, type: "paper", cat: "habits", year: 2016, title: "Habit formation (Smith & Graybiel)", authors: "Smith K., Graybiel A.", journal: "Dialogues in Clinical Neuroscience", finding: "Привычки формируются через переход активности из префронтальной коры в дорсолатеральный стриатум (DLS). Нейроны базальных ганглиев «окаймляют» привычку — активны в начале и конце.", stat: "PFC → DLS", statLabel: "нейронный переход", impact: 86 },
+  { id: 8, type: "paper", cat: "habits", year: 2023, title: "What can machine learning teach us about habit formation?", authors: "Buyalskaya A., Camerer C. et al.", journal: "PNAS", finding: "ML-анализ 12М+ наблюдений из фитнес-центров: контекстные факторы (день недели, время) предсказывают поведение. Люди с менее предсказуемыми паттернами сильнее реагируют на интервенции.", stat: "12M+", statLabel: "наблюдений", impact: 82 },
+  { id: 9, type: "book", cat: "habits", year: 2015, title: "Better Than Before", authors: "Gretchen Rubin", journal: "Crown", finding: "4 типа по отношению к ожиданиям: Upholder, Questioner, Obliger, Rebel. Стратегия формирования привычки должна соответствовать типу личности.", stat: "4 тенденции", statLabel: "типа личности", impact: 75 },
+  { id: 10, type: "paper", cat: "habits", year: 2024, title: "Leveraging cognitive neuroscience for making and breaking habits", authors: "Buabang E., Donegan K., Gillan C.", journal: "Trends in Cognitive Sciences", finding: "Два конкурирующих механизма: S-R (стимул-реакция) в стриатуме и целенаправленная система в PFC. Стресс ускоряет формирование привычек.", stat: "Стресс → привычки", statLabel: "ускоряет", impact: 84 },
+  { id: 11, type: "paper", cat: "dopamine", year: 1998, title: "Predictive Reward Signal of Dopamine Neurons", authors: "Schultz W.", journal: "Journal of Neurophysiology", finding: "Дофаминовые нейроны кодируют ошибку предсказания награды (reward prediction error). Неожиданная награда → всплеск дофамина. Ожидаемая → нет всплеска.", stat: "RPE", statLabel: "ошибка предсказания", impact: 98 },
+  { id: 12, type: "paper", cat: "dopamine", year: 2005, title: "Uncertainty-based competition between prefrontal and dorsomedial striatal systems", authors: "Daw N., Niv Y., Dayan P.", journal: "Nature Neuroscience", finding: "Модель арбитража: мозг переключается между model-based (PFC) и model-free (стриатум) системами в зависимости от неопределённости.", stat: "2 системы", statLabel: "принятия решений", impact: 90 },
+  { id: 13, type: "book", cat: "dopamine", year: 2021, title: "Dopamine Nation", authors: "Anna Lembke", journal: "Dutton", finding: "Баланс удовольствия-боли: мозг стремится к гомеостазу. Избыток дофамина → толерантность → ангедония. «Дофаминовый пост» на 30 дней восстанавливает чувствительность.", stat: "30 дней", statLabel: "дофаминовый пост", impact: 88 },
+  { id: 14, type: "paper", cat: "dopamine", year: 1954, title: "Positive reinforcement produced by electrical stimulation of septal area", authors: "Olds J., Milner P.", journal: "J Comparative and Physiological Psychology", finding: "Открытие «центра удовольствия»: крысы нажимали рычаг до 7000 раз/час для стимуляции мозга, игнорируя еду и воду.", stat: "7000 раз/час", statLabel: "самостимуляция", impact: 96 },
+  { id: 15, type: "paper", cat: "dopamine", year: 2015, title: "Variable reward and dopamine: The role of uncertainty", authors: "Anselme P.", journal: "Behavioural Brain Research", finding: "Непредсказуемость награды усиливает дофаминовый отклик сильнее, чем гарантированная награда. Основа slot machines, соцсетей, лут-боксов.", stat: "Переменная > фикс", statLabel: "награда", impact: 83 },
+  { id: 16, type: "book", cat: "dopamine", year: 2022, title: "The Molecule of More", authors: "Lieberman D., Long M.", journal: "BenBella Books", finding: "Дофамин — гормон «больше», не «хорошо». Он мотивирует к поиску, а не к удовлетворению. H&N нейромедиаторы дают удовлетворённость.", stat: "Wanting ≠ Liking", statLabel: "", impact: 80 },
+  { id: 17, type: "paper", cat: "dopamine", year: 2012, title: "Dopamine signals for reward value and risk", authors: "Schultz W.", journal: "Behavioural Brain Research", finding: "Дофамин кодирует и ценность, и риск. Более рискованные награды увеличивают дофаминовый ответ — нейробиология азартного поведения.", stat: "Риск ↑ = DA ↑", statLabel: "", impact: 85 },
+  { id: 18, type: "paper", cat: "dopamine", year: 2007, title: "The neural basis of human decision-making", authors: "Rangel A., Camerer C., Montague P.", journal: "Nature Neuroscience", finding: "vmPFC вычисляет субъективную ценность, стриатум кодирует RPE, dlPFC осуществляет самоконтроль. Три нейросистемы принятия решений.", stat: "3 нейросистемы", statLabel: "решений", impact: 89 },
+  { id: 19, type: "paper", cat: "serotonin", year: 1997, title: "Acute tryptophan depletion and serotonin function", authors: "Young S.", journal: "Pharmacology Biochemistry and Behavior", finding: "Снижение триптофана вызывает ухудшение настроения у людей с историей депрессии. Серотонин — ключевой модулятор настроения.", stat: "5-HT", statLabel: "модулятор настроения", impact: 84 },
+  { id: 20, type: "paper", cat: "serotonin", year: 2008, title: "Serotonin and brain function: a tale of two receptors", authors: "Carhart-Harris R., Nutt D.", journal: "Journal of Psychopharmacology", finding: "5-HT1A снижает стресс и тревогу, 5-HT2A активирует нейропластичность. Баланс рецепторов определяет эмоциональную устойчивость.", stat: "5-HT1A vs 5-HT2A", statLabel: "баланс рецепторов", impact: 82 },
+  { id: 21, type: "book", cat: "serotonin", year: 2015, title: "The Upward Spiral", authors: "Alex Korb", journal: "New Harbinger", finding: "Маленькие действия (благодарность, сон, упражнения, решения) создают восходящую спираль через серотонин и норадреналин.", stat: "4 действия", statLabel: "восходящая спираль", impact: 79 },
+  { id: 22, type: "paper", cat: "serotonin", year: 2016, title: "Effects of exercise on serotonin in the brain", authors: "Young S.", journal: "J Psychiatry & Neuroscience", finding: "Аэробные упражнения повышают серотонин через увеличение триптофана в мозге. 30 мин бега увеличивает 5-HT синтез.", stat: "30 мин", statLabel: "бег → ↑5-HT", impact: 80 },
+  { id: 23, type: "paper", cat: "serotonin", year: 2002, title: "How to increase serotonin in the human brain without drugs", authors: "Young S.", journal: "J Psychiatry & Neuroscience", finding: "4 способа: яркий свет/солнце, упражнения, позитивные воспоминания/благодарность, диета с триптофаном.", stat: "4 способа", statLabel: "без лекарств", impact: 86 },
+  { id: 24, type: "paper", cat: "oxytocin", year: 2005, title: "Oxytocin increases trust in humans", authors: "Kosfeld M., Heinrichs M., Zak P. et al.", journal: "Nature", finding: "Интраназальный окситоцин увеличивает доверие в экономических играх на 17%.", stat: "+17%", statLabel: "рост доверия", impact: 93 },
+  { id: 25, type: "paper", cat: "oxytocin", year: 2012, title: "Oxytocin and social bonds", authors: "Feldman R.", journal: "Neuroscience & Biobehavioral Reviews", finding: "Окситоцин — «социальный клей»: укрепляет связь мать-ребёнок, романтические отношения, дружбу.", stat: "Социальный клей", statLabel: "", impact: 87 },
+  { id: 26, type: "book", cat: "oxytocin", year: 2012, title: "The Moral Molecule", authors: "Paul Zak", journal: "Dutton", finding: "Окситоцин = молекула морали. 8 объятий в день оптимальны. Доверие, эмпатия и щедрость коррелируют с уровнем окситоцина.", stat: "8 объятий/день", statLabel: "оптимум", impact: 78 },
+  { id: 27, type: "paper", cat: "oxytocin", year: 2009, title: "Oxytocin increases amygdala reactivity to happy faces", authors: "Gamer M., Büchel C.", journal: "Journal of Neuroscience", finding: "Окситоцин усиливает реакцию миндалевидного тела на счастливые лица, улучшая распознавание позитивных сигналов.", stat: "Amygdala + OXT", statLabel: "→ счастливые лица", impact: 76 },
+  { id: 28, type: "paper", cat: "oxytocin", year: 2003, title: "The Neuroendocrinology of Social Attachment", authors: "Insel T., Young L.", journal: "Nature Reviews Neuroscience", finding: "Окситоцин и вазопрессин определяют социальную привязанность. Полёвки с высоким OXT — моногамны.", stat: "OXT = привязанность", statLabel: "", impact: 88 },
+  { id: 29, type: "paper", cat: "endorphins", year: 2008, title: "The runner's high: Opioidergic mechanisms in the human brain", authors: "Boecker H. et al.", journal: "Cerebral Cortex", finding: "Первое прямое доказательство «кайфа бегуна» через ПЭТ: после 2 часов бега β-эндорфины связываются с опиоидными рецепторами в PFC.", stat: "2 часа бега", statLabel: "→ эндорфиновый кайф", impact: 85 },
+  { id: 30, type: "paper", cat: "endorphins", year: 2012, title: "Social laughter triggers endorphin release", authors: "Dunbar R. et al.", journal: "Proceedings of the Royal Society B", finding: "Социальный смех повышает болевой порог на 10% — индикатор эндорфиновой активности. Смех в группе эффективнее.", stat: "+10%", statLabel: "болевой порог", impact: 80 },
+  { id: 31, type: "paper", cat: "endorphins", year: 2017, title: "Exercise and the brain: Endocannabinoids and beyond", authors: "Fuss J. et al.", journal: "PNAS", finding: "«Кайф бегуна» вызывается не только эндорфинами, но и эндоканнабиноидами (анандамид). Они легче проникают через ГЭБ.", stat: "Anandamide", statLabel: "эндоканнабиноид", impact: 82 },
+  { id: 32, type: "paper", cat: "endorphins", year: 2011, title: "β-Endorphin response to exercise", authors: "Goldfarb A., Jamurtas A.", journal: "Sports Medicine", finding: "Интенсивность >70% VO2max и длительность >30 мин необходимы для значимого выброса β-эндорфина.", stat: ">70% VO2max", statLabel: "порог эндорфинов", impact: 78 },
+  { id: 33, type: "paper", cat: "willpower", year: 1998, title: "Ego Depletion: Is the Active Self a Limited Resource?", authors: "Baumeister R. et al.", journal: "JPSP", finding: "Самоконтроль = ограниченный ресурс (модель «мускула»). Использование воли в одной задаче снижает её в следующей.", stat: "Ego depletion", statLabel: "ограниченный ресурс", impact: 91 },
+  { id: 34, type: "paper", cat: "willpower", year: 1972, title: "The Marshmallow Experiment", authors: "Mischel W., Ebbesen E.", journal: "JPSP", finding: "Дети, отложившие маршмеллоу на 15 мин, через 30 лет имели выше SAT на 210 баллов. Самоконтроль в 4 года предсказывает успех.", stat: "+210 SAT", statLabel: "через 30 лет", impact: 95 },
+  { id: 35, type: "book", cat: "willpower", year: 2011, title: "Willpower: Rediscovering the Greatest Human Strength", authors: "Baumeister R., Tierney J.", journal: "Penguin Press", finding: "Самоконтроль сильнее IQ предсказывает успех. Воля — мускул: устаёт, но тренируется. Decision fatigue.", stat: "Воля > IQ", statLabel: "предиктор успеха", impact: 87 },
+  { id: 36, type: "book", cat: "willpower", year: 2012, title: "The Willpower Instinct", authors: "Kelly McGonigal", journal: "Avery", finding: "Воля — биологический ответ. Медитация за 8 недель увеличивает серое вещество в PFC. Сон, упражнения, питание — топливо воли.", stat: "8 недель", statLabel: "медитация → PFC", impact: 84 },
+  { id: 37, type: "paper", cat: "willpower", year: 2011, title: "Self-control in childhood predicts health, wealth, and public safety", authors: "Moffitt T. et al.", journal: "PNAS", finding: "1000 человек от рождения до 32 лет: самоконтроль в детстве предсказывает здоровье, финансы и отсутствие судимостей.", stat: "1000 чел", statLabel: "32 года наблюдений", impact: 93 },
+  { id: 38, type: "paper", cat: "willpower", year: 2010, title: "Self-regulation strategies improve self-discipline in adolescents", authors: "Duckworth A., Gollwitzer P. et al.", journal: "Educational Psychology", finding: "Mental contrasting + implementation intentions удваивают выполнение планов у подростков.", stat: "×2", statLabel: "выполнение планов", impact: 81 },
+  { id: 39, type: "book", cat: "flow", year: 1990, title: "Flow: The Psychology of Optimal Experience", authors: "Csikszentmihalyi M.", journal: "Harper & Row", finding: "Поток = оптимальное состояние, когда сложность задачи ≈ навык. 8 компонентов: ясные цели, обратная связь, баланс challenge/skill.", stat: "Challenge ≈ Skill", statLabel: "условие потока", impact: 97 },
+  { id: 40, type: "book", cat: "flow", year: 2014, title: "The Rise of Superman", authors: "Steven Kotler", journal: "Houghton Mifflin", finding: "В потоке продуктивность +500% (McKinsey). 5 нейрохимических веществ: дофамин, норадреналин, эндорфины, анандамид, серотонин.", stat: "+500%", statLabel: "продуктивность", impact: 85 },
+  { id: 41, type: "book", cat: "flow", year: 2009, title: "Drive: The Surprising Truth About What Motivates Us", authors: "Daniel Pink", journal: "Riverhead Books", finding: "Внутренняя мотивация > внешней. 3 элемента: Autonomy, Mastery, Purpose. Внешние награды за творческую работу снижают производительность.", stat: "AMP", statLabel: "3 элемента мотивации", impact: 90 },
+  { id: 42, type: "paper", cat: "flow", year: 1985, title: "Self-Determination Theory", authors: "Deci E., Ryan R.", journal: "Various SDT publications", finding: "3 базовые потребности: компетентность, автономия, связь. Их удовлетворение = внутренняя мотивация.", stat: "3 потребности", statLabel: "SDT", impact: 96 },
+  { id: 43, type: "book", cat: "flow", year: 2016, title: "Grit: The Power of Passion and Perseverance", authors: "Angela Duckworth", journal: "Scribner", finding: "Grit предсказывает успех лучше таланта. Кадеты West Point с высоким Grit на 60% чаще заканчивали программу.", stat: "+60%", statLabel: "завершение (high grit)", impact: 88 },
+  { id: 44, type: "book", cat: "flow", year: 2016, title: "Deep Work", authors: "Cal Newport", journal: "Grand Central", finding: "Глубокая работа без отвлечений. 4 правила: work deeply, embrace boredom, quit social media, drain the shallows. Среднее внимание = 11 мин.", stat: "11 мин", statLabel: "до отвлечения", impact: 86 },
+  { id: 45, type: "book", cat: "behavior", year: 2008, title: "Nudge: Improving Decisions About Health, Wealth, and Happiness", authors: "Thaler R., Sunstein C.", journal: "Yale University Press", finding: "Архитектура выбора: opt-out вместо opt-in увеличивает донорство органов с ~15% до ~90%.", stat: "15% → 90%", statLabel: "opt-in vs opt-out", impact: 94 },
+  { id: 46, type: "book", cat: "behavior", year: 2011, title: "Thinking, Fast and Slow", authors: "Daniel Kahneman", journal: "FSG", finding: "Система 1 (быстрая) vs Система 2 (медленная). >90% решений — Система 1. Loss aversion: потеря ощущается вдвое сильнее.", stat: "×2", statLabel: "loss aversion", impact: 99 },
+  { id: 47, type: "book", cat: "behavior", year: 2008, title: "Predictably Irrational", authors: "Dan Ariely", journal: "HarperCollins", finding: "Иррациональность системна и предсказуема. «Бесплатное» активирует непропорциональный дофаминовый отклик.", stat: "FREE!", statLabel: "непропорциональный отклик", impact: 86 },
+  { id: 48, type: "book", cat: "behavior", year: 2007, title: "Influence: The Psychology of Persuasion", authors: "Robert Cialdini", journal: "Harper Business", finding: "6 принципов влияния: reciprocity, commitment, social proof, authority, liking, scarcity.", stat: "6 принципов", statLabel: "влияния", impact: 92 },
+  { id: 49, type: "book", cat: "behavior", year: 2009, title: "Tiny Habits", authors: "BJ Fogg", journal: "Houghton Mifflin", finding: "B = MAP: Behavior = Motivation × Ability × Prompt. Начни с 2-минутного действия. Celebration — ключ.", stat: "B = MAP", statLabel: "формула поведения", impact: 87 },
+  { id: 50, type: "paper", cat: "behavior", year: 1999, title: "The Endowment Effect, Loss Aversion, and Status Quo Bias", authors: "Kahneman D., Knetsch J., Thaler R.", journal: "J Economic Perspectives", finding: "Люди оценивают вещи, которыми владеют, в 2-3 раза выше рыночной стоимости.", stat: "×2–3", statLabel: "эффект владения", impact: 88 },
+  { id: 51, type: "paper", cat: "neuro", year: 2000, title: "Reward-related signals carried by dopamine neurons", authors: "Schultz W.", journal: "Handbook of Behavioral Neuroscience", finding: "Дофаминовые нейроны VTA→NAcc кодируют не удовольствие, а отклонение от ожидания. TD-learning в мозге.", stat: "TD learning", statLabel: "в мозге", impact: 93 },
+  { id: 52, type: "paper", cat: "neuro", year: 2011, title: "The Default Mode Network", authors: "Raichle M.", journal: "Annals of NY Academy of Sciences", finding: "DMN активна в покое. Гиперактивность DMN → руминация и депрессия. Медитация снижает активность DMN.", stat: "DMN", statLabel: "сеть покоя", impact: 90 },
+  { id: 53, type: "book", cat: "neuro", year: 2007, title: "The Brain That Changes Itself", authors: "Norman Doidge", journal: "Viking", finding: "Нейропластичность: мозг перестраивается в любом возрасте. Гиппокамп лондонских таксистов на 20% больше.", stat: "+20%", statLabel: "гиппокамп таксистов", impact: 89 },
+  { id: 54, type: "paper", cat: "neuro", year: 2004, title: "Striatal activity underlies novelty-based choice", authors: "Wittmann B. et al.", journal: "Neuron", finding: "Новизна активирует стриатум и VTA → дофаминовый выброс. Мозг «вознаграждает» за исследование нового.", stat: "Новизна → DA", statLabel: "", impact: 81 },
+  { id: 55, type: "paper", cat: "neuro", year: 2006, title: "Neuroanatomical basis of habit learning", authors: "Yin H., Knowlton B.", journal: "Nature Reviews Neuroscience", finding: "DMS = целенаправленное поведение, DLS = привычки. Переход DMS→DLS = формирование привычки.", stat: "DMS → DLS", statLabel: "нейроанатомия привычки", impact: 87 },
+  { id: 56, type: "paper", cat: "neuro", year: 2015, title: "Biological and psychological factors in happiness", authors: "Dfarhud D. et al.", journal: "Iran J Public Health", finding: "Генетика определяет 35-50% уровня счастья. Нейромедиаторы (DA, 5-HT, NE, эндорфины) — биологическая основа.", stat: "35–50%", statLabel: "генетика → счастье", impact: 82 },
+  { id: 57, type: "book", cat: "positive", year: 2002, title: "Authentic Happiness", authors: "Martin Seligman", journal: "Free Press", finding: "PERMA: Positive Emotion, Engagement, Relationships, Meaning, Accomplishment. Счастье = многогранная конструкция.", stat: "PERMA", statLabel: "5 столпов счастья", impact: 93 },
+  { id: 58, type: "book", cat: "positive", year: 2005, title: "Stumbling on Happiness", authors: "Daniel Gilbert", journal: "Knopf", finding: "Аффективное прогнозирование: люди ошибаются, предсказывая будущие эмоции. Impact bias: переоцениваем будущие чувства.", stat: "Impact bias", statLabel: "ошибка прогноза", impact: 86 },
+  { id: 59, type: "book", cat: "positive", year: 2006, title: "The Happiness Hypothesis", authors: "Jonathan Haidt", journal: "Basic Books", finding: "H = S + C + V (Set point + Conditions + Voluntary activities). 40% — V-компонент, который мы контролируем.", stat: "H = S + C + V", statLabel: "формула счастья", impact: 87 },
+  { id: 60, type: "paper", cat: "positive", year: 2005, title: "Positive Psychology Progress: Validated Interventions", authors: "Seligman M. et al.", journal: "American Psychologist", finding: "«Три хорошие вещи» за день в течение 1 недели снижают депрессию на 6 месяцев.", stat: "1 нед → 6 мес", statLabel: "эффект благодарности", impact: 90 },
+  { id: 61, type: "paper", cat: "positive", year: 2005, title: "Pursuing Happiness: The Architecture of Sustainable Change", authors: "Lyubomirsky S., Sheldon K., Schkade D.", journal: "Review of General Psychology", finding: "Модель пирога счастья: 50% — генетика, 10% — обстоятельства, 40% — намеренные действия.", stat: "50/10/40", statLabel: "пирог счастья", impact: 91 },
+  { id: 62, type: "book", cat: "positive", year: 2007, title: "The How of Happiness", authors: "Sonja Lyubomirsky", journal: "Penguin Press", finding: "12 научно-обоснованных стратегий счастья: благодарность, оптимизм, доброта, отношения, поток, духовность, цели.", stat: "12 стратегий", statLabel: "счастья", impact: 83 },
+  { id: 63, type: "paper", cat: "dopamine", year: 1997, title: "A Neural Substrate of Prediction and Reward", authors: "Schultz W., Dayan P., Montague P.", journal: "Science", finding: "Дофаминовые нейроны реализуют TD алгоритм. Связь нейронауки и machine learning.", stat: "TD algorithm", statLabel: "в нейронах", impact: 97 },
+  { id: 64, type: "book", cat: "behavior", year: 2017, title: "Indistractable", authors: "Nir Eyal", journal: "BenBella Books", finding: "Отвлечение = управление внутренними триггерами (скука, тревога). 4 стратегии против отвлечений.", stat: "4 стратегии", statLabel: "против отвлечений", impact: 77 },
+  { id: 65, type: "paper", cat: "neuro", year: 2009, title: "Mindfulness practice leads to increases in regional brain gray matter density", authors: "Hölzel B. et al.", journal: "Psychiatry Research: Neuroimaging", finding: "8 недель MBSR увеличивает серое вещество в гиппокампе и уменьшает миндалевидное тело (тревога).", stat: "8 недель", statLabel: "изменения мозга", impact: 88 },
+  { id: 66, type: "paper", cat: "habits", year: 2007, title: "Contributions of the basal ganglia to habit learning", authors: "Graybiel A.", journal: "Annual Review of Neuroscience", finding: "Базальные ганглии — «центр привычек». Chunking: мозг объединяет действия в единый «кусок» для автоматизации.", stat: "Chunking", statLabel: "автоматизация", impact: 89 },
+  { id: 67, type: "book", cat: "positive", year: 2010, title: "The Happiness Advantage", authors: "Shawn Achor", journal: "Crown Business", finding: "Счастье → успех, не наоборот. Позитивный мозг на 31% продуктивнее. Врачи в хорошем настроении на 19% точнее.", stat: "+31%", statLabel: "продуктивность", impact: 84 },
+  { id: 68, type: "paper", cat: "endorphins", year: 2016, title: "Analgesia in social bonding contexts", authors: "Machin A., Dunbar R.", journal: "Behaviour", finding: "Эндорфиновая система — основа социальных связей. Смех, пение, танцы в группе → синхронный выброс эндорфинов.", stat: "Синхронные эндорфины", statLabel: "социальная связь", impact: 76 },
+  { id: 69, type: "book", cat: "willpower", year: 2014, title: "The Marshmallow Test", authors: "Walter Mischel", journal: "Little, Brown", finding: "Hot/cool система: «горячая» (лимбическая) vs «холодная» (PFC). Стратегии: отвлечение, переосмысление, дистанцирование.", stat: "Hot vs Cool", statLabel: "2 системы", impact: 86 },
+  { id: 70, type: "paper", cat: "flow", year: 2004, title: "What Good are Positive Emotions?", authors: "Fredrickson B.", journal: "Review of General Psychology", finding: "Broaden-and-build: позитивные эмоции расширяют мышление и строят долгосрочные ресурсы.", stat: "Broaden & Build", statLabel: "теория", impact: 89 },
+  { id: 71, type: "paper", cat: "oxytocin", year: 2010, title: "Intranasal oxytocin and cooperation", authors: "De Dreu C. et al.", journal: "Science", finding: "Окситоцин увеличивает кооперацию внутри группы, но может усиливать предвзятость к чужой группе.", stat: "In-group bias", statLabel: "тёмная сторона OXT", impact: 83 },
+  { id: 72, type: "book", cat: "neuro", year: 2017, title: "Behave: The Biology of Humans at Our Best and Worst", authors: "Robert Sapolsky", journal: "Penguin Press", finding: "Поведение определяется каскадом от секунд (нейромедиаторы) до тысячелетий (эволюция). Стресс ухудшает PFC.", stat: "Многоуровневый каскад", statLabel: "", impact: 91 },
+  { id: 73, type: "paper", cat: "serotonin", year: 2009, title: "Gratitude and well-being: A review", authors: "Wood A. et al.", journal: "Clinical Psychology Review", finding: "Дневник благодарности за 3 недели улучшает сон на 25% и удовлетворённость жизнью.", stat: "+25%", statLabel: "качество сна", impact: 82 },
+  { id: 74, type: "paper", cat: "dopamine", year: 2016, title: "Dopamine, smartphones, and you", authors: "Haynes T.", journal: "Harvard SITN Blog", finding: "Каждый лайк = микро-доза дофамина. Средний пользователь проверяет телефон 150 раз/день.", stat: "150 раз/день", statLabel: "проверка телефона", impact: 78 },
+  { id: 75, type: "book", cat: "habits", year: 2024, title: "Good Habits, Bad Habits", authors: "Wendy Wood", journal: "FSG", finding: "Friction (трение) и Fuel (топливо) — два главных рычага. Увеличь трение для плохих, уменьши для хороших.", stat: "Friction & Fuel", statLabel: "2 рычага", impact: 85 },
+  { id: 76, type: "paper", cat: "behavior", year: 2003, title: "Implementation Intentions and Goal Achievement", authors: "Gollwitzer P., Sheeran P.", journal: "Advances in Experimental Social Psychology", finding: "«Если-то» планы увеличивают достижение цели на 2-3×. Мета-анализ 94 исследований, d = 0.65.", stat: "d = 0.65", statLabel: "94 исследования", impact: 90 },
+  { id: 77, type: "paper", cat: "positive", year: 2011, title: "The Benefits of Frequent Positive Affect", authors: "Lyubomirsky S., King L., Diener E.", journal: "Psychological Bulletin", finding: "Мета-анализ 225 исследований: счастливые люди живут дольше (+7.5 лет), зарабатывают больше.", stat: "+7.5 лет", statLabel: "жизни", impact: 88 },
+  { id: 78, type: "book", cat: "neuro", year: 2018, title: "Why We Sleep", authors: "Matthew Walker", journal: "Scribner", finding: "Сон <6ч снижает самоконтроль на 40%, когнитивные функции на 20%. REM обрабатывает эмоции, deep sleep — привычки.", stat: "−40%", statLabel: "самоконтроль (<6ч)", impact: 90 },
+  { id: 79, type: "paper", cat: "habits", year: 2018, title: "Habitual action in the human brain", authors: "Martiros N., Burgess C., Graybiel A.", journal: "Nature Neuroscience", finding: "Нейроны стриатума «окаймляют» привычку: всплеск в начале и конце. Start/Stop = нейронный скрипт.", stat: "Start/Stop", statLabel: "нейронный скрипт", impact: 84 },
+  { id: 80, type: "book", cat: "flow", year: 2012, title: "Mindset: The New Psychology of Success", authors: "Carol Dweck", journal: "Ballantine Books", finding: "Growth mindset vs fixed mindset. Студенты с growth mindset улучшают оценки на 20%+.", stat: "+20%", statLabel: "оценки (growth)", impact: 91 },
+];
+
+const STATS_DATA = {
+  habitTimeline: [
+    { day: 1, auto: 5 }, { day: 7, auto: 15 }, { day: 14, auto: 28 },
+    { day: 21, auto: 40 }, { day: 30, auto: 55 }, { day: 40, auto: 65 },
+    { day: 50, auto: 73 }, { day: 60, auto: 78 }, { day: 66, auto: 82 },
+    { day: 80, auto: 88 }, { day: 100, auto: 92 }, { day: 120, auto: 95 },
+  ],
+  hormoneActions: [
+    { hormone: "Дофамин", triggers: "Цели, новизна, ожидание, музыка, еда", effect: "Мотивация, фокус, обучение", risk: "Зависимость, толерантность" },
+    { hormone: "Серотонин", triggers: "Солнце, упражнения, благодарность, триптофан", effect: "Стабильность настроения, сон, покой", risk: "Дефицит → депрессия" },
+    { hormone: "Окситоцин", triggers: "Объятия, доверие, кормление, пение в группе", effect: "Привязанность, эмпатия, доверие", risk: "In-group bias" },
+    { hormone: "Эндорфины", triggers: "Спорт (>70% VO2max), смех, острая еда", effect: "Обезболивание, эйфория", risk: "Нужен порог интенсивности" },
+    { hormone: "GABA", triggers: "Медитация, йога, ферментированные продукты", effect: "Успокоение, снижение тревоги", risk: "Дисбаланс → тревожность" },
+    { hormone: "Норадреналин", triggers: "Стресс, холод, физические нагрузки", effect: "Бдительность, энергия, внимание", risk: "Хронический стресс → выгорание" },
+  ],
+  happinessPie: [
+    { label: "Генетика", value: 50, color: "#6b7280" },
+    { label: "Обстоятельства", value: 10, color: "#9ca3af" },
+    { label: "Действия", value: 40, color: "#22c55e" },
+  ],
+};
+
+function ImpactBar({ value, color }) {
+  return React.createElement("div", { className: "flex items-center gap-2 w-full" },
+    React.createElement("div", { className: "flex-1 h-2 rounded-full overflow-hidden", style: { background: "rgba(255,255,255,0.06)" } },
+      React.createElement("div", { className: "h-full rounded-full", style: { width: value + "%", background: color || "#38bdf8" } })
+    ),
+    React.createElement("span", { className: "text-xs font-mono opacity-50 w-8 text-right" }, value)
+  );
+}
+
+function StatCard({ value, label, sub, color }) {
+  return (
+    <div className="rounded-2xl p-4 flex flex-col items-center text-center" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="text-2xl font-bold font-mono" style={{ color, fontFamily: "'Space Mono', monospace" }}>{value}</div>
+      <div className="text-xs mt-1 opacity-60 uppercase tracking-wider">{label}</div>
+      {sub && <div className="text-xs mt-1 opacity-40">{sub}</div>}
+    </div>
+  );
+}
+
+function HabitCurveChart() {
+  const w = 560, h = 200, pad = 40;
+  const data = STATS_DATA.habitTimeline;
+  const xS = (d) => pad + ((d - 1) / 120) * (w - pad * 2);
+  const yS = (a) => h - pad - (a / 100) * (h - pad * 2);
+  const pts = data.map(d => xS(d.day) + "," + yS(d.auto)).join(" ");
+  const area = xS(1) + "," + yS(0) + " " + pts + " " + xS(120) + "," + yS(0);
+  return (
+    <svg viewBox={"0 0 " + w + " " + h} className="w-full">
+      <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#ff6b6b" stopOpacity="0.3"/><stop offset="100%" stopColor="#ff6b6b" stopOpacity="0"/></linearGradient></defs>
+      {[0,25,50,75,100].map(v => <g key={v}><line x1={pad} x2={w-pad} y1={yS(v)} y2={yS(v)} stroke="rgba(255,255,255,0.06)"/><text x={pad-6} y={yS(v)+4} fill="rgba(255,255,255,0.3)" fontSize="9" textAnchor="end" fontFamily="monospace">{v}%</text></g>)}
+      {[1,21,66,120].map(d => <g key={d}><line x1={xS(d)} x2={xS(d)} y1={pad} y2={h-pad} stroke={d===66?"#ff6b6b":"rgba(255,255,255,0.06)"} strokeDasharray={d===66?"4 2":"none"}/><text x={xS(d)} y={h-pad+16} fill={d===66?"#ff6b6b":"rgba(255,255,255,0.3)"} fontSize="9" textAnchor="middle" fontFamily="monospace">{d}d</text></g>)}
+      <polygon points={area} fill="url(#cg)"/>
+      <polyline points={pts} fill="none" stroke="#ff6b6b" strokeWidth="2.5" strokeLinejoin="round"/>
+      {data.map((d,i) => <circle key={i} cx={xS(d.day)} cy={yS(d.auto)} r="3" fill="#08080d" stroke="#ff6b6b" strokeWidth="1.5"/>)}
+      <text x={xS(66)+6} y={yS(82)-8} fill="#ff6b6b" fontSize="10" fontWeight="bold" fontFamily="monospace">← 66 дней</text>
+    </svg>
+  );
+}
+
+function HappinessPie() {
+  const data = STATS_DATA.happinessPie;
+  let cum = 0;
+  const r = 70, cx = 90, cy = 90;
+  return (
+    <svg viewBox="0 0 260 180" className="w-full max-w-xs mx-auto">
+      {data.map((d,i) => {
+        const start = cum; cum += d.value;
+        const a1 = (start/100)*Math.PI*2 - Math.PI/2, a2 = (cum/100)*Math.PI*2 - Math.PI/2;
+        const large = d.value > 50 ? 1 : 0;
+        const x1 = cx+r*Math.cos(a1), y1 = cy+r*Math.sin(a1);
+        const x2 = cx+r*Math.cos(a2), y2 = cy+r*Math.sin(a2);
+        const mid = (a1+a2)/2, lx = cx+(r+20)*Math.cos(mid), ly = cy+(r+20)*Math.sin(mid);
+        return <g key={i}><path d={"M "+cx+" "+cy+" L "+x1+" "+y1+" A "+r+" "+r+" 0 "+large+" 1 "+x2+" "+y2+" Z"} fill={d.color} opacity="0.8"/><text x={lx} y={ly} fill="white" fontSize="9" textAnchor="middle" fontWeight="bold" fontFamily="monospace">{d.value}%</text></g>;
+      })}
+      {data.map((d,i) => <g key={i} transform={"translate(190,"+(40+i*28)+")"}><rect width="12" height="12" rx="3" fill={d.color} opacity="0.8"/><text x="18" y="10" fill="rgba(255,255,255,0.7)" fontSize="11">{d.label}</text></g>)}
+    </svg>
+  );
+}
+
+function App() {
+  const [activeCat, setActiveCat] = useState("all");
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("impact");
+  const [expanded, setExpanded] = useState(null);
+  const [view, setView] = useState("list");
+
+  const filtered = useMemo(() => {
+    let res = SOURCES;
+    if (activeCat !== "all") res = res.filter(s => s.cat === activeCat);
+    if (typeFilter !== "all") res = res.filter(s => s.type === typeFilter);
+    if (search) { const q = search.toLowerCase(); res = res.filter(s => s.title.toLowerCase().includes(q) || s.authors.toLowerCase().includes(q) || s.finding.toLowerCase().includes(q)); }
+    if (sortBy === "impact") res = [...res].sort((a,b) => b.impact - a.impact);
+    else if (sortBy === "year") res = [...res].sort((a,b) => b.year - a.year);
+    else if (sortBy === "alpha") res = [...res].sort((a,b) => a.title.localeCompare(b.title));
+    return res;
+  }, [activeCat, search, typeFilter, sortBy]);
+
+  const catColor = (cat) => (CATEGORIES.find(c => c.id === cat) || {}).color || "#fff";
+  const stats = useMemo(() => ({ total: SOURCES.length, books: SOURCES.filter(s => s.type==="book").length, papers: SOURCES.filter(s => s.type==="paper").length, cats: new Set(SOURCES.map(s => s.cat)).size, avgImpact: Math.round(SOURCES.reduce((a,s) => a+s.impact, 0)/SOURCES.length) }), []);
+  const hColors = ["#ffd93d","#6bcb77","#ff8fab","#a78bfa","#38bdf8","#fb923c"];
+
+  return (
+    <div className="min-h-screen text-gray-100" style={{ background: "#08080d" }}>
+      <div className="px-4 sm:px-6 pt-8 pb-4 max-w-7xl mx-auto">
+        <div className="flex items-start justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ fontFamily: "'Space Mono', monospace" }}><span style={{ color: "#ff6b6b" }}>SCIENCE</span> OF HABITS</h1>
+            <p className="text-sm opacity-40 mt-1">80 ключевых книг и научных статей</p>
+          </div>
+          <div className="flex gap-2">
+            {["list","stats"].map(v => <button key={v} onClick={() => setView(v)} className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider" style={{ background: view===v?"rgba(255,107,107,0.15)":"rgba(255,255,255,0.03)", color: view===v?"#ff6b6b":"rgba(255,255,255,0.4)", border: "1px solid "+(view===v?"rgba(255,107,107,0.3)":"rgba(255,255,255,0.06)") }}>{v==="list"?"Источники":"Дэшборд"}</button>)}
+          </div>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-6">
+          <StatCard value={stats.total} label="Источников" color="#ff6b6b"/><StatCard value={stats.papers} label="Статей" color="#38bdf8"/><StatCard value={stats.books} label="Книг" color="#a78bfa"/><StatCard value={stats.cats} label="Категорий" color="#34d399"/><StatCard value={stats.avgImpact} label="Avg Impact" sub="/100" color="#ffd93d"/>
+        </div>
+      </div>
+
+      {view === "stats" ? (
+        <div className="px-4 sm:px-6 pb-12 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 mt-6">
+            <div className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <h3 className="text-sm font-bold uppercase tracking-wider opacity-50 mb-2">Кривая формирования привычки</h3>
+              <p className="text-xs opacity-30 mb-4">Lally et al. 2010 · n=96</p>
+              <HabitCurveChart/>
+              <p className="text-xs opacity-40 mt-3">Диапазон: 18–254 дня. Пропуск 1 дня незначим.</p>
+            </div>
+            <div className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <h3 className="text-sm font-bold uppercase tracking-wider opacity-50 mb-2">Формула счастья (Lyubomirsky 2005)</h3>
+              <p className="text-xs opacity-30 mb-4">50% генетика · 10% обстоятельства · 40% действия</p>
+              <HappinessPie/>
+            </div>
+            <div className="rounded-2xl p-5 md:col-span-2 overflow-x-auto" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <h3 className="text-sm font-bold uppercase tracking-wider opacity-50 mb-4">Гормоны счастья</h3>
+              <table className="w-full text-sm"><thead><tr className="text-left opacity-40 uppercase text-xs tracking-wider"><th className="pb-3 pr-4">Гормон</th><th className="pb-3 pr-4">Триггеры</th><th className="pb-3 pr-4">Эффект</th><th className="pb-3">Риск</th></tr></thead><tbody>
+                {STATS_DATA.hormoneActions.map((h,i) => <tr key={i} className="border-t" style={{ borderColor: "rgba(255,255,255,0.04)" }}><td className="py-3 pr-4 font-bold whitespace-nowrap" style={{ color: hColors[i] }}>{h.hormone}</td><td className="py-3 pr-4 opacity-70 text-xs">{h.triggers}</td><td className="py-3 pr-4 opacity-70 text-xs">{h.effect}</td><td className="py-3 opacity-50 text-xs">{h.risk}</td></tr>)}
+              </tbody></table>
+            </div>
+            <div className="rounded-2xl p-5 md:col-span-2" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <h3 className="text-sm font-bold uppercase tracking-wider opacity-50 mb-4">Ключевые цифры</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <StatCard value="66 дн" label="Формирование привычки" sub="Lally 2010" color="#ff6b6b"/><StatCard value="43%" label="Действий автоматичны" sub="Wood 2002" color="#38bdf8"/><StatCard value="+500%" label="Продуктивность в потоке" sub="Kotler" color="#a78bfa"/><StatCard value="×2" label="Loss aversion" sub="Kahneman" color="#ffd93d"/><StatCard value="+210" label="SAT (самоконтроль)" sub="Mischel 1972" color="#34d399"/><StatCard value="50/10/40" label="Генетика/Среда/Действия" sub="Lyubomirsky" color="#ff8fab"/><StatCard value="8 нед" label="Медитация → PFC" sub="Hölzel 2009" color="#fb923c"/><StatCard value="−40%" label="Самоконтроль (<6ч сна)" sub="Walker 2018" color="#f472b6"/>
+              </div>
+            </div>
+            <div className="rounded-2xl p-5 md:col-span-2" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <h3 className="text-sm font-bold uppercase tracking-wider opacity-50 mb-4">Распределение по категориям</h3>
+              <div className="space-y-2">
+                {CATEGORIES.filter(c => c.id !== "all").map(cat => { const count = SOURCES.filter(s => s.cat === cat.id).length; const pct = Math.round((count/SOURCES.length)*100); return (
+                  <div key={cat.id} className="flex items-center gap-3"><span className="text-xs w-40 opacity-60 truncate">{cat.label}</span><div className="flex-1 h-4 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}><div className="h-full rounded-full flex items-center pl-2" style={{ width: Math.max(pct,5)+"%", background: cat.color+"33" }}><span className="text-xs font-mono font-bold" style={{ color: cat.color }}>{count}</span></div></div></div>
+                ); })}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="px-4 sm:px-6 pb-12 max-w-7xl mx-auto">
+          <div className="mt-4 mb-4">
+            <div className="flex flex-wrap gap-2 mb-4">
+              {CATEGORIES.map(cat => <button key={cat.id} onClick={() => setActiveCat(cat.id)} className="px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: activeCat===cat.id?cat.color+"22":"rgba(255,255,255,0.03)", color: activeCat===cat.id?cat.color:"rgba(255,255,255,0.4)", border: "1px solid "+(activeCat===cat.id?cat.color+"44":"rgba(255,255,255,0.06)") }}>{cat.label}{cat.id!=="all" && <span className="ml-1 opacity-50">({SOURCES.filter(s => s.cat===cat.id).length})</span>}</button>)}
+            </div>
+            <div className="flex flex-wrap gap-3 items-center">
+              <input type="text" placeholder="Поиск..." value={search} onChange={e => setSearch(e.target.value)} className="flex-1 min-w-48 px-4 py-2 rounded-xl text-sm bg-transparent outline-none" style={{ border: "1px solid rgba(255,255,255,0.08)", color: "#e8e6e1" }}/>
+              <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} className="px-3 py-2 rounded-xl text-xs bg-transparent outline-none cursor-pointer" style={{ border: "1px solid rgba(255,255,255,0.08)", color: "#aaa" }}><option value="all">Все типы</option><option value="book">Книги</option><option value="paper">Статьи</option></select>
+              <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="px-3 py-2 rounded-xl text-xs bg-transparent outline-none cursor-pointer" style={{ border: "1px solid rgba(255,255,255,0.08)", color: "#aaa" }}><option value="impact">По Impact</option><option value="year">По году</option><option value="alpha">По алфавиту</option></select>
+              <span className="text-xs opacity-30 font-mono">{filtered.length}/{SOURCES.length}</span>
+            </div>
+          </div>
+          <div className="space-y-2">
+            {filtered.map(s => { const isOpen = expanded===s.id; const color = catColor(s.cat); return (
+              <div key={s.id} onClick={() => setExpanded(isOpen?null:s.id)} className="rounded-xl cursor-pointer" style={{ background: isOpen?"rgba(255,255,255,0.04)":"rgba(255,255,255,0.015)", border: "1px solid "+(isOpen?color+"33":"rgba(255,255,255,0.04)") }}>
+                <div className="flex items-start gap-3 p-4">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: color+"15", color }}>{s.type==="book"?"📖":"📄"}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div><h4 className="text-sm font-semibold leading-snug" style={{ color: isOpen?color:"#e8e6e1" }}>{s.title}</h4><p className="text-xs opacity-40 mt-0.5">{s.authors} · {s.journal} · {s.year}</p></div>
+                      {s.stat && <div className="flex-shrink-0 text-right"><div className="text-lg font-bold font-mono leading-none" style={{ color, fontFamily: "'Space Mono', monospace" }}>{s.stat}</div>{s.statLabel && <div className="text-xs opacity-30 mt-0.5">{s.statLabel}</div>}</div>}
+                    </div>
+                    {isOpen && <div className="mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}><p className="text-sm opacity-70 leading-relaxed">{s.finding}</p><div className="mt-3 flex items-center gap-3"><span className="text-xs opacity-30 uppercase tracking-wider">Impact</span><div className="flex-1"><ImpactBar value={s.impact} color={color}/></div></div></div>}
+                    {!isOpen && <div className="mt-1"><ImpactBar value={s.impact} color={color}/></div>}
+                  </div>
+                </div>
+              </div>
+            ); })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  </script>
+</body>
+</html>

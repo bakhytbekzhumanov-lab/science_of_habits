@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hooked — Mind Map</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0a0a0f;
+    color: #e8e6e1;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  #canvas {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    position: relative;
+    overflow: hidden;
+  }
+  #canvas.grabbing { cursor: grabbing; }
+
+  #world {
+    position: absolute;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+
+  svg.connections {
+    position: absolute;
+    top: 0; left: 0;
+    width: 4000px;
+    height: 3000px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  svg.connections path {
+    fill: none;
+    stroke-width: 2;
+    opacity: 0.4;
+  }
+
+  .node {
+    position: absolute;
+    border-radius: 16px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s ease, opacity 0.5s ease;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeIn 0.6s ease forwards;
+    user-select: none;
+  }
+  .node:hover {
+    transform: scale(1.06) !important;
+    z-index: 10;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Central node */
+  .node--center {
+    background: linear-gradient(135deg, #ff6b35, #f7c948);
+    color: #0a0a0f;
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(255,107,53,0.3), 0 0 120px rgba(255,107,53,0.1);
+    z-index: 5;
+    font-family: 'Space Mono', monospace;
+  }
+  .node--center .node__title { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
+  .node--center .node__sub { font-size: 11px; opacity: 0.7; margin-top: 4px; }
+
+  /* Phase nodes */
+  .node--phase {
+    border: 2px solid;
+    backdrop-filter: blur(10px);
+    min-width: 160px;
+    text-align: center;
+  }
+  .node--phase .node__num {
+    font-family: 'Space Mono', monospace;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1;
+    opacity: 0.15;
+    position: absolute;
+    top: 8px;
+    right: 14px;
+  }
+  .node--phase .node__title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .node--phase .node__desc {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  /* Detail nodes */
+  .node--detail {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(6px);
+    max-width: 200px;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 12px 16px;
+  }
+  .node--detail .node__label {
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+    opacity: 0.6;
+  }
+
+  /* Color themes for phases */
+  .theme-trigger { --c: #ff6b6b; }
+  .theme-action  { --c: #4ecdc4; }
+  .theme-reward  { --c: #ffe66d; }
+  .theme-invest  { --c: #a29bfe; }
+  .theme-ethics  { --c: #fd79a8; }
+  .theme-habit   { --c: #55efc4; }
+
+  .theme-trigger .node--phase { border-color: #ff6b6b; background: rgba(255,107,107,0.08); color: #ff8a8a; }
+  .theme-action  .node--phase { border-color: #4ecdc4; background: rgba(78,205,196,0.08); color: #7eddd7; }
+  .theme-reward  .node--phase { border-color: #ffe66d; background: rgba(255,230,109,0.08); color: #ffe66d; }
+  .theme-invest  .node--phase { border-color: #a29bfe; background: rgba(162,155,254,0.08); color: #b8b3fe; }
+  .theme-ethics  .node--phase { border-color: #fd79a8; background: rgba(253,121,168,0.08); color: #fd9abb; }
+  .theme-habit   .node--phase { border-color: #55efc4; background: rgba(85,239,196,0.08); color: #7df3d4; }
+
+  .theme-trigger .node--detail .node__label { color: #ff6b6b; }
+  .theme-action  .node--detail .node__label { color: #4ecdc4; }
+  .theme-reward  .node--detail .node__label { color: #ffe66d; }
+  .theme-invest  .node--detail .node__label { color: #a29bfe; }
+  .theme-ethics  .node--detail .node__label { color: #fd79a8; }
+  .theme-habit   .node--detail .node__label { color: #55efc4; }
+
+  /* Controls */
+  .controls {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+  }
+  .controls button {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(10px);
+    color: #e8e6e1;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .controls button:hover { background: rgba(255,255,255,0.1); }
+
+  .legend {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    z-index: 100;
+    font-size: 12px;
+    opacity: 0.5;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Grain overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="300" height="300" filter="url(%23n)" opacity="0.04"/></svg>');
+    pointer-events: none;
+    z-index: 999;
+  }
+</style>
+</head>
+<body>
+
+<div class="legend">scroll / drag to navigate &nbsp;·&nbsp; Hooked by Nir Eyal</div>
+
+<div class="controls">
+  <button onclick="zoomIn()" title="Zoom In">+</button>
+  <button onclick="zoomOut()" title="Zoom Out">−</button>
+  <button onclick="resetView()" title="Reset">⊙</button>
+</div>
+
+<div id="canvas">
+  <div id="world">
+    <svg class="connections" id="svg"></svg>
+  </div>
+</div>
+
+<script>
+const DATA = {
+  center: { x: 1800, y: 1300, title: "HOOKED", sub: "Nir Eyal\nHabit-Forming Products" },
+  branches: [
+    {
+      theme: "trigger",
+      phase: { x: 1200, y: 800, num: "01", title: "ТРИГГЕР", desc: "Что запускает действие" },
+      details: [
+        { x: 900, y: 600, label: "Внешние", text: "Push-уведомления, email, реклама, рекомендации друзей, call-to-action" },
+        { x: 1050, y: 520, label: "Внутренние", text: "Эмоции: скука, одиночество, страх, неуверенность, FOMO" },
+        { x: 880, y: 780, label: "Цель", text: "Перейти от внешних триггеров к внутренним — продукт = ответ на эмоцию" },
+        { x: 1080, y: 920, label: "Пример", text: "Instagram → чувство скуки → открываешь приложение автоматически" },
+      ]
+    },
+    {
+      theme: "action",
+      phase: { x: 2450, y: 750, num: "02", title: "ДЕЙСТВИЕ", desc: "Простейшее поведение\nради награды" },
+      details: [
+        { x: 2700, y: 540, label: "Модель Фогга", text: "B = MAT: Мотивация × Способность × Триггер — все три нужны одновременно" },
+        { x: 2780, y: 700, label: "Мотивация", text: "Удовольствие/боль, надежда/страх, принятие/отвержение" },
+        { x: 2680, y: 870, label: "Способность", text: "6 факторов: время, деньги, физ. усилие, ментальное усилие, социальная норма, привычность" },
+        { x: 2500, y: 980, label: "Принцип", text: "Уменьши трение → больше действий. Один скролл, один клик, один свайп" },
+      ]
+    },
+    {
+      theme: "reward",
+      phase: { x: 1150, y: 1700, num: "03", title: "ПЕРЕМЕННАЯ\nНАГРАДА", desc: "Непредсказуемость\nподкрепления" },
+      details: [
+        { x: 780, y: 1550, label: "Племя", text: "Социальные награды: лайки, комментарии, признание, статус в сообществе" },
+        { x: 750, y: 1750, label: "Охота", text: "Поиск ресурсов и информации: лента новостей, поисковые результаты, скроллинг" },
+        { x: 800, y: 1930, label: "Себя", text: "Внутреннее мастерство: прогресс-бары, уровни, завершение задач, компетентность" },
+        { x: 1100, y: 2000, label: "Ключ", text: "Опыты Скиннера: переменное подкрепление сильнее постоянного → дофамин от ожидания" },
+      ]
+    },
+    {
+      theme: "invest",
+      phase: { x: 2500, y: 1750, num: "04", title: "ИНВЕСТИЦИЯ", desc: "Вложение в будущие\nциклы" },
+      details: [
+        { x: 2800, y: 1550, label: "Данные", text: "Профиль, настройки, история — персонализация делает продукт ценнее" },
+        { x: 2850, y: 1730, label: "Контент", text: "Посты, фото, плейлисты, документы — создают привязку к платформе" },
+        { x: 2830, y: 1900, label: "Репутация", text: "Рейтинги, фолловеры, отзывы — социальный капитал не переносится" },
+        { x: 2600, y: 2050, label: "Навык", text: "Изученные горячие клавиши, workflow — switching cost растёт" },
+      ]
+    },
+    {
+      theme: "ethics",
+      phase: { x: 1000, y: 1200, num: "★", title: "ЭТИКА", desc: "Manipulation Matrix" },
+      details: [
+        { x: 650, y: 1050, label: "Фасилитатор", text: "Сам используешь + улучшает жизнь → этичный продукт" },
+        { x: 600, y: 1220, label: "Развлекатель", text: "Сам используешь, но не улучшает → развлечение, не вред" },
+        { x: 620, y: 1380, label: "Дилер", text: "Не используешь + не улучшает → манипуляция → избегать" },
+      ]
+    },
+    {
+      theme: "habit",
+      phase: { x: 2550, y: 1250, num: "∞", title: "ЗОНА\nПРИВЫЧКИ", desc: "Когда продукт\nстановится привычкой" },
+      details: [
+        { x: 2850, y: 1100, label: "Частота", text: "Чем чаще цикл — тем прочнее привычка. Идеал: несколько раз в день" },
+        { x: 2900, y: 1280, label: "Витамин→боль", text: "Продукт из nice-to-have становится must-have — отсутствие = дискомфорт" },
+        { x: 2750, y: 1400, label: "CLTV", text: "Привычки увеличивают lifetime value, снижают отток, растят виральность" },
+      ]
+    }
+  ]
+};
+
+const world = document.getElementById('world');
+const canvas = document.getElementById('canvas');
+const svg = document.getElementById('svg');
+
+let scale = 0.55;
+let panX = -600;
+let panY = -300;
+let isDragging = false;
+let startX, startY;
+
+function updateTransform() {
+  world.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+}
+
+// Pan
+canvas.addEventListener('mousedown', e => {
+  isDragging = true;
+  startX = e.clientX - panX;
+  startY = e.clientY - panY;
+  canvas.classList.add('grabbing');
+});
+window.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  panX = e.clientX - startX;
+  panY = e.clientY - startY;
+  updateTransform();
+});
+window.addEventListener('mouseup', () => {
+  isDragging = false;
+  canvas.classList.remove('grabbing');
+});
+
+// Touch
+canvas.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    isDragging = true;
+    startX = e.touches[0].clientX - panX;
+    startY = e.touches[0].clientY - panY;
+  }
+}, { passive: true });
+canvas.addEventListener('touchmove', e => {
+  if (!isDragging || e.touches.length !== 1) return;
+  panX = e.touches[0].clientX - startX;
+  panY = e.touches[0].clientY - startY;
+  updateTransform();
+}, { passive: true });
+canvas.addEventListener('touchend', () => { isDragging = false; });
+
+// Zoom
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 0.92 : 1.08;
+  const newScale = Math.min(2, Math.max(0.2, scale * delta));
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  panX = mx - (mx - panX) * (newScale / scale);
+  panY = my - (my - panY) * (newScale / scale);
+  scale = newScale;
+  updateTransform();
+}, { passive: false });
+
+function zoomIn() { scale = Math.min(2, scale * 1.2); updateTransform(); }
+function zoomOut() { scale = Math.max(0.2, scale * 0.8); updateTransform(); }
+function resetView() { scale = 0.55; panX = -600; panY = -300; updateTransform(); }
+
+// Render nodes
+function createNode(html, x, y, cls, theme, delay) {
+  const el = document.createElement('div');
+  el.className = `node ${cls}`;
+  el.innerHTML = html;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.style.animationDelay = delay + 's';
+  if (theme) {
+    const wrapper = document.createElement('div');
+    wrapper.className = theme;
+    wrapper.appendChild(el);
+    // position wrapper at same spot
+    wrapper.style.position = 'absolute';
+    wrapper.style.left = '0';
+    wrapper.style.top = '0';
+    world.appendChild(wrapper);
+  } else {
+    world.appendChild(el);
+  }
+  return el;
+}
+
+// Draw curve
+function drawCurve(x1, y1, x2, y2, color) {
+  const mx = (x1 + x2) / 2;
+  const my = (y1 + y2) / 2;
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const cx1 = x1 + dx * 0.3;
+  const cy1 = y1 + dy * 0.05;
+  const cx2 = x2 - dx * 0.3;
+  const cy2 = y2 - dy * 0.05;
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`);
+  path.setAttribute('stroke', color);
+  svg.appendChild(path);
+}
+
+// Colors map
+const colorMap = {
+  'theme-trigger': '#ff6b6b',
+  'theme-action': '#4ecdc4',
+  'theme-reward': '#ffe66d',
+  'theme-invest': '#a29bfe',
+  'theme-ethics': '#fd79a8',
+  'theme-habit': '#55efc4'
+};
+
+// Build
+const c = DATA.center;
+createNode(
+  `<div class="node__title">${c.title}</div><div class="node__sub">${c.sub.replace(/\n/g,'<br>')}</div>`,
+  c.x - 100, c.y - 100, 'node--center', null, 0
+);
+
+let delay = 0.15;
+DATA.branches.forEach(branch => {
+  const p = branch.phase;
+  const themeClass = `theme-${branch.theme}`;
+  const color = colorMap[themeClass];
+
+  // Connection: center → phase
+  drawCurve(c.x, c.y, p.x + 80, p.y + 30, color);
+
+  createNode(
+    `<div class="node__num">${p.num}</div><div class="node__title">${p.title.replace(/\n/g,'<br>')}</div><div class="node__desc">${(p.desc||'').replace(/\n/g,'<br>')}</div>`,
+    p.x, p.y, 'node--phase', themeClass, delay
+  );
+  delay += 0.08;
+
+  branch.details.forEach(d => {
+    drawCurve(p.x + 80, p.y + 30, d.x + 80, d.y + 20, color);
+    createNode(
+      `<div class="node__label">${d.label}</div><div>${d.text}</div>`,
+      d.x, d.y, 'node--detail', themeClass, delay
+    );
+    delay += 0.06;
+  });
+});
+
+updateTransform();
+
+// Auto-center on load
+setTimeout(() => {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  panX = vw / 2 - c.x * scale;
+  panY = vh / 2 - c.y * scale;
+  updateTransform();
+}, 100);
+</script>
+</body>
+</html>
