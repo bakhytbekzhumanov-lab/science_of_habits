@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mind Map Viewer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#0a0a0f;color:#e8e6e1;overflow:hidden;width:100vw;height:100vh}
+#canvas{width:100%;height:100%;cursor:grab;position:relative;overflow:hidden}
+#canvas.grabbing{cursor:grabbing}
+#world{position:absolute;transform-origin:0 0;will-change:transform}
+svg.conn{position:absolute;top:0;left:0;width:6000px;height:4000px;pointer-events:none;z-index:0}
+svg.conn path{fill:none;stroke-width:2;opacity:0.35}
+.nd{position:absolute;border-radius:16px;padding:14px 18px;cursor:default;z-index:1;opacity:0;animation:fadeIn .5s ease forwards;user-select:none;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
+.nd:hover{transform:scale(1.05)!important;z-index:10}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.nd--center{background:linear-gradient(135deg,var(--c1),var(--c2));color:#0a0a0f;border-radius:50%;width:200px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 0 60px var(--glow);z-index:5;font-family:'Space Mono',monospace}
+.nd--center .t{font-size:15px;font-weight:700;letter-spacing:-.5px;line-height:1.2}
+.nd--center .s{font-size:10px;opacity:.65;margin-top:4px}
+.nd--branch{border:2px solid var(--bc);backdrop-filter:blur(8px);min-width:150px;text-align:center;background:var(--bg)}
+.nd--branch .num{font-family:'Space Mono',monospace;font-size:36px;font-weight:700;line-height:1;opacity:.12;position:absolute;top:6px;right:12px}
+.nd--branch .t{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.nd--branch .d{font-size:11px;opacity:.65;margin-top:4px;line-height:1.35}
+.nd--leaf{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(5px);max-width:210px;font-size:12px;line-height:1.45;padding:10px 14px}
+.nd--leaf .lbl{font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;opacity:.5}
+.ctrl{position:fixed;bottom:20px;right:20px;display:flex;gap:6px;z-index:100}
+.ctrl button{width:40px;height:40px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(10,10,15,.85);backdrop-filter:blur(8px);color:#e8e6e1;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ctrl button:hover{background:rgba(255,255,255,.1)}
+.back{position:fixed;top:20px;left:20px;z-index:100;padding:8px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(10,10,15,.85);backdrop-filter:blur(8px);color:#e8e6e1;font-size:13px;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px}
+.back:hover{background:rgba(255,255,255,.1)}
+.legend{position:fixed;top:20px;right:20px;z-index:100;font-size:11px;opacity:.4;font-family:'Space Mono',monospace;text-align:right;max-width:300px}
+body::after{content:'';position:fixed;inset:0;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="300" height="300" filter="url(%23n)" opacity="0.04"/></svg>');pointer-events:none;z-index:999}
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← Назад к списку</a>
+<div class="legend" id="legend"></div>
+<div class="ctrl">
+<button onclick="zoomIn()" title="Zoom In">+</button>
+<button onclick="zoomOut()" title="Zoom Out">−</button>
+<button onclick="resetView()" title="Reset">⊙</button>
+</div>
+<div id="canvas"><div id="world"><svg class="conn" id="svg"></svg></div></div>
+
+<script>
+// ============ MINDMAP DATA FOR ALL 80 SOURCES ============
+const MAPS={
+1:{title:"HOW HABITS\nFORM",sub:"Lally et al. 2010\nEuropean J Social Psychology",c1:"#ff6b6b",c2:"#f7c948",branches:[
+{color:"#ff6b6b",label:"01",title:"МЕТОДОЛОГИЯ",desc:"96 участников, 12 недель",x:-550,y:-350,leaves:[
+  {lbl:"Выборка",txt:"96 добровольцев выбрали 1 действие (еда/питьё/активность) для ежедневного выполнения",dx:-250,dy:-120},
+  {lbl:"Шкала",txt:"SRHI (Self-Report Habit Index) — субъективная оценка автоматичности каждый день",dx:-350,dy:30},
+  {lbl:"Длительность",txt:"84 дня наблюдений, нелинейная регрессия для каждого участника",dx:-200,dy:130}
+]},
+{color:"#ffd93d",label:"02",title:"РЕЗУЛЬТАТЫ",desc:"Асимптотическая кривая",x:550,y:-350,leaves:[
+  {lbl:"Медиана",txt:"66 дней до 95% автоматичности — это среднее, а не правило",dx:250,dy:-120},
+  {lbl:"Диапазон",txt:"От 18 дней (стакан воды) до 254 дней (50 приседаний) — огромный разброс",dx:350,dy:30},
+  {lbl:"Кривая",txt:"Быстрый рост в начале, замедление к плато. Первые 3 недели — максимальный прирост",dx:200,dy:130}
+]},
+{color:"#4ecdc4",label:"03",title:"ПРОПУСКИ",desc:"Один день ≠ катастрофа",x:-500,y:350,leaves:[
+  {lbl:"Потеря",txt:"Пропуск 1 дня = −0.29 балла автоматичности (статистически незначимо)",dx:-250,dy:-80},
+  {lbl:"Восстановление",txt:"После пропуска прогресс возобновляется без значимых потерь",dx:-300,dy:80}
+]},
+{color:"#a78bfa",label:"04",title:"СЛОЖНОСТЬ",desc:"Простое vs сложное",x:500,y:350,leaves:[
+  {lbl:"Простые",txt:"Выпить воду, съесть фрукт — ~20 дней. Минимальное когнитивное усилие",dx:250,dy:-80},
+  {lbl:"Сложные",txt:"50 приседаний, бег 15 мин — 100+ дней. Физическое усилие замедляет",dx:300,dy:80}
+]},
+{color:"#ff8fab",label:"★",title:"КОНТЕКСТ",desc:"Ключ к автоматичности",x:0,y:450,leaves:[
+  {lbl:"Привязка",txt:"'После завтрака' — контекст запускает действие автоматически",dx:-200,dy:100},
+  {lbl:"Стабильность",txt:"Один и тот же контекст каждый день ускоряет формирование",dx:200,dy:100}
+]}
+]},
+
+3:{title:"ATOMIC\nHABITS",sub:"James Clear, 2018\nAvery / Penguin",c1:"#38bdf8",c2:"#a78bfa",branches:[
+{color:"#38bdf8",label:"01",title:"ОЧЕВИДНОСТЬ",desc:"1-й закон: Cue",x:-550,y:-350,leaves:[
+  {lbl:"Habit Stacking",txt:"'После [существующая привычка], я [новая привычка]' — привязка к якорю",dx:-280,dy:-100},
+  {lbl:"Environment",txt:"Измени среду: положи книгу на подушку, убери телефон в другую комнату",dx:-300,dy:60},
+  {lbl:"Scoreboard",txt:"Habit tracker — визуальный сигнал прогресса. 'Не рви цепочку' (Seinfeld)",dx:-200,dy:160}
+]},
+{color:"#ffd93d",label:"02",title:"ПРИВЛЕКАТЕЛЬНОСТЬ",desc:"2-й закон: Craving",x:550,y:-350,leaves:[
+  {lbl:"Temptation Bundle",txt:"Совмести 'надо' с 'хочу': подкаст только во время бега",dx:280,dy:-100},
+  {lbl:"Social Group",txt:"Окружение формирует привычки. Вступи в группу, где твоя цель — норма",dx:320,dy:60},
+  {lbl:"Reframing",txt:"Не 'я должен', а 'я выбираю'. Не 'надо бегать', а 'я укрепляю тело'",dx:220,dy:160}
+]},
+{color:"#34d399",label:"03",title:"ЛЁГКОСТЬ",desc:"3-й закон: Response",x:-500,y:350,leaves:[
+  {lbl:"2-Minute Rule",txt:"Любая привычка = 2-минутная версия. 'Читай 30 мин' → 'Открой книгу'",dx:-280,dy:-80},
+  {lbl:"Friction",txt:"↓трение для хорошего (кроссовки у двери), ↑для плохого (удали приложение)",dx:-300,dy:80},
+  {lbl:"Decisional",txt:"Убери решения: автоматические переводы, meal prep в воскресенье",dx:-200,dy:160}
+]},
+{color:"#ff6b6b",label:"04",title:"УДОВЛЕТВОРЕНИЕ",desc:"4-й закон: Reward",x:500,y:350,leaves:[
+  {lbl:"Немедленность",txt:"Мозг ценит немедленное. Добавь мгновенную награду к долгосрочной привычке",dx:280,dy:-80},
+  {lbl:"Tracking",txt:"Визуальный прогресс = дофаминовая награда. Закрашивание клетки = микро-удовольствие",dx:300,dy:80}
+]},
+{color:"#f472b6",label:"∞",title:"1% РОСТ",desc:"Кумулятивный эффект",x:0,y:480,leaves:[
+  {lbl:"Математика",txt:"1.01^365 = 37.78. Маленькие улучшения дают экспоненциальный результат",dx:-220,dy:90},
+  {lbl:"Identity",txt:"Цель не 'сбросить вес', а 'стать здоровым человеком'. Идентичность > результат",dx:220,dy:90}
+]}
+]},
+
+2:{title:"THE POWER\nOF HABIT",sub:"Charles Duhigg, 2012\nRandom House",c1:"#fb923c",c2:"#ffd93d",branches:[
+{color:"#fb923c",label:"01",title:"HABIT LOOP",desc:"Cue → Routine → Reward",x:-500,y:-300,leaves:[
+  {lbl:"Cue",txt:"Триггер: место, время, эмоция, другие люди, предшествующее действие",dx:-280,dy:-100},
+  {lbl:"Routine",txt:"Действие (физическое, ментальное, эмоциональное) — то, что мы хотим изменить",dx:-320,dy:60},
+  {lbl:"Reward",txt:"Удовлетворение потребности: сахар→энергия, прогулка→социализация, курение→пауза",dx:-200,dy:160}
+]},
+{color:"#ffd93d",label:"02",title:"GOLDEN RULE",desc:"Перезапись, не удаление",x:500,y:-300,leaves:[
+  {lbl:"Принцип",txt:"Оставь тот же Cue и Reward, замени только Routine на здоровый аналог",dx:280,dy:-80},
+  {lbl:"Пример",txt:"Cue: стресс 15:00. Вместо печенья (routine) → прогулка 5 мин. Reward: пауза остаётся",dx:300,dy:80}
+]},
+{color:"#4ecdc4",label:"03",title:"KEYSTONE\nHABITS",desc:"Каскадный эффект",x:-450,y:350,leaves:[
+  {lbl:"Определение",txt:"Одна привычка, которая запускает цепочку изменений в других сферах жизни",dx:-250,dy:-60},
+  {lbl:"Alcoa",txt:"Фокус на безопасности → ↑прибыль ×5, ↑качество, ↑моральный дух за 10 лет",dx:-280,dy:80},
+  {lbl:"Упражнения",txt:"Регулярный спорт → лучше сон → лучше питание → больше энергии → продуктивность",dx:-180,dy:160}
+]},
+{color:"#a78bfa",label:"04",title:"CRAVING",desc:"Движущая сила",x:450,y:350,leaves:[
+  {lbl:"Без craving",txt:"Нет craving = нет привычки. Craving = предвкушение награды (дофамин)",dx:250,dy:-60},
+  {lbl:"Pepsodent",txt:"Hopkins добавил мяту в пасту. Покалывание = craving чистоты. Продажи взлетели",dx:300,dy:80}
+]}
+]},
+
+6:{title:"HOOKED",sub:"Nir Eyal, 2014\nPortfolio/Penguin",c1:"#ff6b35",c2:"#f7c948",branches:[
+{color:"#ff6b6b",label:"01",title:"ТРИГГЕР",desc:"Что запускает действие",x:-550,y:-300,leaves:[
+  {lbl:"Внешние",txt:"Push-уведомления, email, реклама, рекомендации друзей, call-to-action кнопки",dx:-280,dy:-100},
+  {lbl:"Внутренние",txt:"Эмоции: скука → Instagram, одиночество → Facebook, неуверенность → Google",dx:-320,dy:50},
+  {lbl:"Цель",txt:"Перейти от внешних триггеров к внутренним — продукт = ответ на эмоцию",dx:-200,dy:150}
+]},
+{color:"#4ecdc4",label:"02",title:"ДЕЙСТВИЕ",desc:"B = MAT (Fogg)",x:550,y:-300,leaves:[
+  {lbl:"Мотивация",txt:"Удовольствие/боль, надежда/страх, принятие/отвержение — 3 оси мотивации",dx:280,dy:-100},
+  {lbl:"Способность",txt:"6 факторов: время, деньги, физ.усилие, ментальное усилие, соц.норма, привычность",dx:350,dy:50},
+  {lbl:"Принцип",txt:"Один скролл, один клик, один свайп. Уменьши трение → больше действий",dx:220,dy:150}
+]},
+{color:"#ffe66d",label:"03",title:"ПЕРЕМЕННАЯ\nНАГРАДА",desc:"Непредсказуемость",x:-500,y:350,leaves:[
+  {lbl:"Племя",txt:"Социальные: лайки, комментарии, признание, статус — validation от других",dx:-280,dy:-80},
+  {lbl:"Охота",txt:"Информационные: лента новостей, поиск, скроллинг — поиск ресурсов",dx:-300,dy:50},
+  {lbl:"Себя",txt:"Мастерство: прогресс-бары, уровни, завершение задач — внутреннее удовлетворение",dx:-200,dy:140},
+  {lbl:"Скиннер",txt:"Variable ratio schedule: непредсказуемое подкрепление → максимальная устойчивость поведения",dx:-350,dy:220}
+]},
+{color:"#a29bfe",label:"04",title:"ИНВЕСТИЦИЯ",desc:"Вложение в будущее",x:500,y:350,leaves:[
+  {lbl:"Данные",txt:"Профиль, настройки, история — персонализация повышает ценность для пользователя",dx:280,dy:-80},
+  {lbl:"Контент",txt:"Посты, фото, плейлисты — создают привязку. 'Мои 10 лет в Instagram'",dx:300,dy:50},
+  {lbl:"Репутация",txt:"Рейтинги, фолловеры, отзывы — социальный капитал не переносится на другую платформу",dx:250,dy:140}
+]},
+{color:"#fd79a8",label:"★",title:"ЭТИКА",desc:"Manipulation Matrix",x:0,y:500,leaves:[
+  {lbl:"Фасилитатор",txt:"Сам используешь + улучшает жизнь → этичный продукт (пример: Slack для продуктивности)",dx:-220,dy:90},
+  {lbl:"Дилер",txt:"Не используешь + не улучшает → манипуляция → slot machines, clickbait",dx:220,dy:90}
+]}
+]},
+
+46:{title:"THINKING\nFAST & SLOW",sub:"Daniel Kahneman, 2011\nNobel Prize 2002",c1:"#ffd93d",c2:"#fb923c",branches:[
+{color:"#ffd93d",label:"01",title:"СИСТЕМА 1",desc:"Быстрая, автоматическая",x:-550,y:-320,leaves:[
+  {lbl:"Характер",txt:"Мгновенная, интуитивная, эмоциональная. Работает без усилий. >90% всех решений",dx:-280,dy:-100},
+  {lbl:"Плюсы",txt:"Экономит энергию, быстрые реакции, распознавание паттернов, экспертная интуиция",dx:-320,dy:50},
+  {lbl:"Минусы",txt:"Когнитивные искажения: anchoring, availability, representativeness, framing",dx:-200,dy:150}
+]},
+{color:"#38bdf8",label:"02",title:"СИСТЕМА 2",desc:"Медленная, осознанная",x:550,y:-320,leaves:[
+  {lbl:"Характер",txt:"Аналитическая, логическая, требует усилий. Быстро устаёт (ego depletion)",dx:280,dy:-100},
+  {lbl:"Активация",txt:"Включается при: новизне, сложности, противоречии, осознанном усилии",dx:320,dy:50},
+  {lbl:"Проблема",txt:"Ленивая: при возможности перекладывает на Систему 1 (cognitive ease)",dx:230,dy:150}
+]},
+{color:"#ff6b6b",label:"03",title:"LOSS AVERSION",desc:"Потеря = ×2 приобретения",x:-480,y:350,leaves:[
+  {lbl:"Формула",txt:"Потеря $100 ≈ по силе ощущений = приобретению $200. Асимметрия боли и радости",dx:-260,dy:-70},
+  {lbl:"Prospect Theory",txt:"Люди принимают решения от reference point, не от абсолютных значений",dx:-300,dy:70},
+  {lbl:"Применение",txt:"Framing: '90% выживаемость' vs '10% смертность' — одни данные, разные решения",dx:-200,dy:150}
+]},
+{color:"#34d399",label:"04",title:"ANCHORING",desc:"Первое число = якорь",x:480,y:350,leaves:[
+  {lbl:"Механизм",txt:"Любое число, увиденное перед оценкой, сдвигает оценку в свою сторону",dx:260,dy:-70},
+  {lbl:"Эксперимент",txt:"Колесо рулетки → оценка % стран Африки в ООН. Случайное число влияло на ответ",dx:300,dy:70}
+]},
+{color:"#a78bfa",label:"★",title:"HEURISTICS",desc:"Ментальные ярлыки",x:0,y:480,leaves:[
+  {lbl:"Availability",txt:"Оцениваем вероятность по лёгкости вспоминания примера (авиакатастрофы vs ДТП)",dx:-230,dy:90},
+  {lbl:"WYSIATI",txt:"What You See Is All There Is — решаем на основе имеющейся информации, игнорируя пробелы",dx:230,dy:90}
+]}
+]},
+
+39:{title:"FLOW",sub:"Csikszentmihalyi, 1990\nOptimal Experience",c1:"#38bdf8",c2:"#a78bfa",branches:[
+{color:"#38bdf8",label:"01",title:"УСЛОВИЕ",desc:"Challenge ≈ Skill",x:-520,y:-320,leaves:[
+  {lbl:"Баланс",txt:"Сложность задачи должна соответствовать уровню навыка. На границе — поток",dx:-270,dy:-90},
+  {lbl:"Skill>>Challenge",txt:"→ Скука. Задача слишком лёгкая, нет вовлечения",dx:-300,dy:50},
+  {lbl:"Challenge>>Skill",txt:"→ Тревога. Задача подавляет, парализует. Нужна декомпозиция",dx:-220,dy:140}
+]},
+{color:"#a78bfa",label:"02",title:"8 КОМПОНЕНТОВ",desc:"Признаки потока",x:520,y:-320,leaves:[
+  {lbl:"Фокус",txt:"Полная концентрация на задаче. Внешний мир исчезает",dx:270,dy:-110},
+  {lbl:"Слияние",txt:"Действие и осознание сливаются. Ты = процесс",dx:320,dy:-20},
+  {lbl:"Контроль",txt:"Чувство власти над ситуацией. Уверенность в каждом шаге",dx:270,dy:70},
+  {lbl:"Время",txt:"Часы пролетают как минуты. Изменённое восприятие времени",dx:320,dy:150}
+]},
+{color:"#34d399",label:"03",title:"НЕЙРОХИМИЯ",desc:"5 веществ потока",x:-480,y:350,leaves:[
+  {lbl:"Дофамин",txt:"Фокус + мотивация + pattern recognition. Запускает вход в поток",dx:-260,dy:-70},
+  {lbl:"Норадреналин",txt:"Бдительность + энергия. Повышает signal-to-noise ratio в мозге",dx:-300,dy:50},
+  {lbl:"Эндорфины",txt:"Обезболивание + удовольствие. Позволяет продолжать без усталости",dx:-220,dy:130},
+  {lbl:"Анандамид",txt:"Латеральное мышление + creativity. Связи между далёкими идеями",dx:-280,dy:210}
+]},
+{color:"#ffd93d",label:"04",title:"ТРИГГЕРЫ",desc:"Как войти в поток",x:480,y:350,leaves:[
+  {lbl:"Внешние",txt:"Новизна, сложность, непредсказуемость, deep embodiment, rich environment",dx:260,dy:-70},
+  {lbl:"Внутренние",txt:"Ясные цели, немедленная обратная связь, challenge-skill balance",dx:300,dy:50},
+  {lbl:"Социальные",txt:"Совместная работа, общий риск, close listening, yes-and. Групповой поток",dx:240,dy:140}
+]}
+]},
+
+11:{title:"REWARD\nPREDICTION\nERROR",sub:"Schultz W. 1998\nDopamine Neurons",c1:"#ffd93d",c2:"#ff6b6b",branches:[
+{color:"#ffd93d",label:"01",title:"НЕОЖИДАННАЯ\nНАГРАДА",desc:"DA ↑↑↑",x:-500,y:-300,leaves:[
+  {lbl:"Механизм",txt:"Получил больше ожидаемого → мощный всплеск дофамина → 'запомни и повтори!'",dx:-280,dy:-80},
+  {lbl:"Обучение",txt:"Позитивная RPE = главный обучающий сигнал мозга. Основа всего reinforcement learning",dx:-300,dy:60}
+]},
+{color:"#34d399",label:"02",title:"ОЖИДАЕМАЯ\nНАГРАДА",desc:"DA = baseline",x:500,y:-300,leaves:[
+  {lbl:"Механизм",txt:"Получил ровно столько, сколько ожидал → дофамин НЕ меняется → ничего нового",dx:280,dy:-80},
+  {lbl:"Адаптация",txt:"Hedonic treadmill: привычные удовольствия перестают вызывать дофаминовый отклик",dx:300,dy:60}
+]},
+{color:"#ff6b6b",label:"03",title:"ОТСУТСТВИЕ\nОЖИДАЕМОГО",desc:"DA ↓↓↓",x:0,y:400,leaves:[
+  {lbl:"Механизм",txt:"Ожидал награду, не получил → падение дофамина ниже baseline → негативная эмоция",dx:-250,dy:80},
+  {lbl:"Разочарование",txt:"Завышенные ожидания → хроническое разочарование. Управляй ожиданиями!",dx:250,dy:80}
+]},
+{color:"#a78bfa",label:"★",title:"TD LEARNING",desc:"Мозг = нейросеть",x:500,y:350,leaves:[
+  {lbl:"Алгоритм",txt:"Temporal Difference learning: тот же алгоритм, что в AI/ML. Мост между нейронаукой и AI",dx:280,dy:-30},
+  {lbl:"Science 1997",txt:"Schultz-Dayan-Montague формализовали: DA нейроны = TD error signal",dx:250,dy:80}
+]}
+]},
+
+34:{title:"MARSHMALLOW\nTEST",sub:"Walter Mischel, 1972\nStanford University",c1:"#fb923c",c2:"#ff6b6b",branches:[
+{color:"#fb923c",label:"01",title:"ЭКСПЕРИМЕНТ",desc:"4 года, 15 минут",x:-500,y:-300,leaves:[
+  {lbl:"Дизайн",txt:"Ребёнок 4 лет один с маршмеллоу. Если подождёт 15 мин — получит вторую",dx:-280,dy:-80},
+  {lbl:"Стратегии",txt:"Успешные: отвлечение, закрытие глаз, пение. Неуспешные: смотреть на маршмеллоу",dx:-300,dy:60},
+  {lbl:"Результат",txt:"~30% дождались. Остальные съели в среднем через 3 минуты",dx:-200,dy:140}
+]},
+{color:"#ffd93d",label:"02",title:"30 ЛЕТ\nСПУСТЯ",desc:"Follow-up",x:500,y:-300,leaves:[
+  {lbl:"SAT",txt:"+210 баллов у 'ждавших'. Огромная разница в академической успеваемости",dx:280,dy:-80},
+  {lbl:"Здоровье",txt:"Ниже BMI, меньше зависимостей, лучше управление стрессом",dx:300,dy:50},
+  {lbl:"Карьера",txt:"Выше доход, стабильнее отношения, лучше социальные навыки",dx:240,dy:130}
+]},
+{color:"#a78bfa",label:"03",title:"HOT/COOL\nСИСТЕМА",desc:"Мишель 2014",x:0,y:400,leaves:[
+  {lbl:"Hot",txt:"Эмоциональная, лимбическая, быстрая. 'Хочу сейчас!' Амигдала + вентральный стриатум",dx:-250,dy:80},
+  {lbl:"Cool",txt:"Когнитивная, PFC, стратегическая. 'Подожди — будет лучше'. dlPFC + vmPFC",dx:250,dy:80}
+]},
+{color:"#34d399",label:"★",title:"СТРАТЕГИИ",desc:"Как развить",x:-450,y:350,leaves:[
+  {lbl:"Reframing",txt:"Представь маршмеллоу как облако — снимает эмоциональный заряд",dx:-260,dy:-40},
+  {lbl:"Distance",txt:"'Как бы мой друг поступил?' — психологическое дистанцирование",dx:-280,dy:60}
+]}
+]},
+
+42:{title:"SELF-\nDETERMINATION",sub:"Deci & Ryan, 1985\nSDT Theory",c1:"#34d399",c2:"#38bdf8",branches:[
+{color:"#34d399",label:"01",title:"КОМПЕТЕНТНОСТЬ",desc:"Чувство эффективности",x:-500,y:-300,leaves:[
+  {lbl:"Определение",txt:"Ощущение, что ты можешь справиться, что растёшь, что твои усилия дают результат",dx:-280,dy:-80},
+  {lbl:"Практика",txt:"Оптимальный вызов (challenge≈skill), позитивная обратная связь, видимый прогресс",dx:-300,dy:60}
+]},
+{color:"#38bdf8",label:"02",title:"АВТОНОМИЯ",desc:"Чувство выбора",x:500,y:-300,leaves:[
+  {lbl:"Определение",txt:"Ощущение, что ты сам выбираешь что и как делать, а не подчиняешься внешнему контролю",dx:280,dy:-80},
+  {lbl:"Убийца",txt:"Внешний контроль, дедлайны под давлением, surveillance — уничтожают внутреннюю мотивацию",dx:300,dy:60}
+]},
+{color:"#ff8fab",label:"03",title:"СВЯЗЬ",desc:"Чувство принадлежности",x:0,y:400,leaves:[
+  {lbl:"Определение",txt:"Ощущение связи с другими, принадлежности к группе, что ты важен для кого-то",dx:-250,dy:80},
+  {lbl:"Практика",txt:"Командная работа, менторство, признание вклада, тёплые отношения",dx:250,dy:80}
+]},
+{color:"#ffd93d",label:"★",title:"МОТИВАЦИЯ",desc:"Внутренняя > внешней",x:500,y:350,leaves:[
+  {lbl:"Спектр",txt:"Amotivation → External → Introjected → Identified → Integrated → Intrinsic",dx:280,dy:-30},
+  {lbl:"Overjustification",txt:"Внешние награды за то, что уже нравится → ↓внутренняя мотивация",dx:260,dy:70}
+]}
+]}
+};
+
+// Generate basic maps for sources that don't have custom ones
+function generateDefaultMap(id) {
+  // Find source data from the page that linked here
+  const params = new URLSearchParams(window.location.search);
+  const title = params.get('title') || 'SOURCE ' + id;
+  const authors = params.get('authors') || '';
+  const cat = params.get('cat') || 'habits';
+  const finding = params.get('finding') || '';
+  const stat = params.get('stat') || '';
+  const concepts = params.get('concepts') ? params.get('concepts').split('|') : [];
+  const practices = params.get('practices') ? params.get('practices').split('|') : [];
+
+  const catColors = {habits:"#ff6b6b",dopamine:"#ffd93d",serotonin:"#6bcb77",oxytocin:"#ff8fab",endorphins:"#a78bfa",willpower:"#fb923c",flow:"#38bdf8",behavior:"#34d399",neuro:"#f472b6",positive:"#facc15"};
+  const color = catColors[cat] || "#ff6b6b";
+
+  const branches = [];
+  if (finding) {
+    const sentences = finding.split(/\.\s+/).filter(s => s.length > 10);
+    sentences.slice(0, 4).forEach((s, i) => {
+      const angle = (i / Math.min(sentences.length, 4)) * Math.PI * 2 - Math.PI / 2;
+      const dist = 420;
+      branches.push({
+        color: [color, "#38bdf8", "#34d399", "#a78bfa", "#ffd93d"][i % 5],
+        label: String(i + 1).padStart(2, '0'),
+        title: s.substring(0, 30).toUpperCase(),
+        desc: "",
+        x: Math.cos(angle) * dist,
+        y: Math.sin(angle) * dist,
+        leaves: []
+      });
+    });
+  }
+
+  if (concepts.length > 0) {
+    const cx = concepts.length > 4 ? -450 : 450;
+    branches.push({
+      color: "#a78bfa",
+      label: "◆",
+      title: "КОНЦЕПЦИИ",
+      desc: concepts.length + " ключевых",
+      x: cx, y: concepts.length > 4 ? 350 : -200,
+      leaves: concepts.slice(0, 5).map((c, i) => ({
+        lbl: "•", txt: c, dx: cx > 0 ? 250 : -250, dy: -80 + i * 55
+      }))
+    });
+  }
+
+  if (practices.length > 0) {
+    branches.push({
+      color: "#34d399",
+      label: "✓",
+      title: "ПРАКТИКА",
+      desc: practices.length + " выводов",
+      x: concepts.length > 4 ? 450 : -450, y: 350,
+      leaves: practices.slice(0, 4).map((p, i) => ({
+        lbl: "→", txt: p, dx: concepts.length > 4 ? 250 : -250, dy: -60 + i * 55
+      }))
+    });
+  }
+
+  return {
+    title: title.substring(0, 30).toUpperCase(),
+    sub: authors + (authors ? '\n' : '') + 'Source #' + id,
+    c1: color,
+    c2: "#f7c948",
+    branches
+  };
+}
+
+// ============ RENDER ENGINE ============
+const world = document.getElementById('world');
+const canvas = document.getElementById('canvas');
+const svg = document.getElementById('svg');
+
+let scale = 0.5, panX = 0, panY = 0;
+let isDragging = false, startX, startY;
+
+function updateTransform() {
+  world.style.transform = `translate(${panX}px,${panY}px) scale(${scale})`;
+}
+
+canvas.addEventListener('mousedown', e => { isDragging = true; startX = e.clientX - panX; startY = e.clientY - panY; canvas.classList.add('grabbing'); });
+window.addEventListener('mousemove', e => { if (!isDragging) return; panX = e.clientX - startX; panY = e.clientY - startY; updateTransform(); });
+window.addEventListener('mouseup', () => { isDragging = false; canvas.classList.remove('grabbing'); });
+canvas.addEventListener('touchstart', e => { if (e.touches.length===1) { isDragging=true; startX=e.touches[0].clientX-panX; startY=e.touches[0].clientY-panY; } }, {passive:true});
+canvas.addEventListener('touchmove', e => { if (!isDragging||e.touches.length!==1) return; panX=e.touches[0].clientX-startX; panY=e.touches[0].clientY-startY; updateTransform(); }, {passive:true});
+canvas.addEventListener('touchend', () => { isDragging=false; });
+canvas.addEventListener('wheel', e => { e.preventDefault(); const d=e.deltaY>0?.92:1.08; const ns=Math.min(2,Math.max(.15,scale*d)); const r=canvas.getBoundingClientRect(); const mx=e.clientX-r.left,my=e.clientY-r.top; panX=mx-(mx-panX)*(ns/scale); panY=my-(my-panY)*(ns/scale); scale=ns; updateTransform(); }, {passive:false});
+
+function zoomIn(){scale=Math.min(2,scale*1.25);updateTransform()}
+function zoomOut(){scale=Math.max(.15,scale*.8);updateTransform()}
+function resetView(){
+  const vw=window.innerWidth, vh=window.innerHeight;
+  scale=0.5; panX=vw/2-3000*scale; panY=vh/2-2000*scale;
+  updateTransform();
+}
+
+function drawCurve(x1,y1,x2,y2,color) {
+  const dx=x2-x1, dy=y2-y1;
+  const cx1=x1+dx*.4, cy1=y1+dy*.1;
+  const cx2=x2-dx*.4, cy2=y2-dy*.1;
+  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d',`M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`);
+  path.setAttribute('stroke',color);
+  svg.appendChild(path);
+}
+
+function makeNode(html,x,y,cls,delay) {
+  const el=document.createElement('div');
+  el.className='nd '+cls;
+  el.innerHTML=html;
+  el.style.left=x+'px';
+  el.style.top=y+'px';
+  el.style.animationDelay=delay+'s';
+  world.appendChild(el);
+  return el;
+}
+
+function render(data) {
+  const CX=3000, CY=2000;
+  // Center node
+  const ce = makeNode(
+    `<div class="t">${data.title.replace(/\n/g,'<br>')}</div><div class="s">${data.sub.replace(/\n/g,'<br>')}</div>`,
+    CX-100, CY-100, 'nd--center', 0
+  );
+  ce.style.setProperty('--c1', data.c1);
+  ce.style.setProperty('--c2', data.c2);
+  ce.style.setProperty('--glow', data.c1 + '44');
+
+  document.getElementById('legend').textContent = data.title.replace(/\n/g,' ') + ' · scroll/drag';
+
+  let delay = 0.1;
+  data.branches.forEach(b => {
+    const bx = CX + b.x, by = CY + b.y;
+    drawCurve(CX, CY, bx+75, by+25, b.color);
+
+    const bn = makeNode(
+      `<div class="num">${b.label}</div><div class="t">${b.title.replace(/\n/g,'<br>')}</div><div class="d">${b.desc}</div>`,
+      bx, by, 'nd--branch', delay
+    );
+    bn.style.setProperty('--bc', b.color);
+    bn.style.setProperty('--bg', b.color + '0d');
+    delay += 0.06;
+
+    (b.leaves||[]).forEach(l => {
+      const lx = bx + l.dx, ly = by + l.dy;
+      drawCurve(bx+75, by+25, lx+90, ly+15, b.color);
+      const ln = makeNode(
+        `<div class="lbl" style="color:${b.color}">${l.lbl}</div><div>${l.txt}</div>`,
+        lx, ly, 'nd--leaf', delay
+      );
+      delay += 0.04;
+    });
+  });
+
+  // Center view
+  setTimeout(() => {
+    const vw=window.innerWidth, vh=window.innerHeight;
+    panX = vw/2 - CX*scale;
+    panY = vh/2 - CY*scale;
+    updateTransform();
+  }, 50);
+}
+
+// ============ INIT ============
+const params = new URLSearchParams(window.location.search);
+const sourceId = parseInt(params.get('id')) || 1;
+const mapData = MAPS[sourceId] || generateDefaultMap(sourceId);
+render(mapData);
+</script>
+</body>
+</html>

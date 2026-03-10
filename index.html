@@ -1367,6 +1367,9 @@ function DetailModal({ source, onClose }) {
           </div>
         )}
 
+        {/* Mindmap Button */}
+        <a href={"mindmap-viewer.html?id="+source.id+"&title="+encodeURIComponent(source.title)+"&authors="+encodeURIComponent(source.authors)+"&cat="+source.cat+"&finding="+encodeURIComponent(source.finding)+"&stat="+encodeURIComponent(source.stat||"")+"&concepts="+encodeURIComponent((d.concepts||[]).join("|"))+"&practices="+encodeURIComponent((d.practices||[]).join("|"))} target="_blank" className="block w-full text-center py-3 rounded-xl text-sm font-bold uppercase tracking-wider mb-4 no-underline" style={{ background: color+"15", color: color, border: "1px solid "+color+"33", textDecoration: "none", display: "block" }}>🧠 Открыть интерактивную Mind Map →</a>
+
         {/* Impact */}
         <div className="flex items-center gap-3 mt-6 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <span className="text-xs opacity-30 uppercase">Impact Score</span>
