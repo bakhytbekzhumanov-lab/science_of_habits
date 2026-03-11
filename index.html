@@ -16,8 +16,6 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:#08080d;color:#e8
 select option{background:#1a1a2e;color:#e8e6e1}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:50;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .modal-content{max-width:900px;margin:20px auto;padding:24px;background:#0f0f18;border-radius:20px;border:1px solid rgba(255,255,255,0.08);position:relative}
-.mindmap-node{transition:transform 0.2s}
-.mindmap-node:hover{transform:scale(1.05)}
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
@@ -1237,32 +1235,6 @@ const HORMONES = [
   { hormone: "Норадреналин", triggers: "Стресс, холод, нагрузки", effect: "Бдительность, энергия", risk: "Выгорание", color: "#fb923c" },
 ];
 
-// SVG Mindmap component
-function Mindmap({ concepts, color, title }) {
-  if (!concepts || concepts.length === 0) return null;
-  const cx = 280, cy = 160, r = 120;
-  const nodes = concepts.slice(0, 8);
-  return (
-    <svg viewBox="0 0 560 320" className="w-full">
-      <circle cx={cx} cy={cy} r={45} fill={color + "22"} stroke={color} strokeWidth="2"/>
-      <text x={cx} y={cy-6} textAnchor="middle" fill={color} fontSize="10" fontWeight="bold" fontFamily="'Space Mono',monospace">КЛЮЧЕВЫЕ</text>
-      <text x={cx} y={cy+8} textAnchor="middle" fill={color} fontSize="10" fontWeight="bold" fontFamily="'Space Mono',monospace">КОНЦЕПЦИИ</text>
-      {nodes.map((n, i) => {
-        const angle = (i / nodes.length) * Math.PI * 2 - Math.PI / 2;
-        const nx = cx + r * Math.cos(angle);
-        const ny = cy + r * Math.sin(angle);
-        return (
-          <g key={i} className="mindmap-node">
-            <line x1={cx + 45 * Math.cos(angle)} y1={cy + 45 * Math.sin(angle)} x2={nx} y2={ny} stroke={color} strokeWidth="1.5" opacity="0.3"/>
-            <rect x={nx - 60} y={ny - 14} width="120" height="28" rx="14" fill={color + "15"} stroke={color + "44"} strokeWidth="1"/>
-            <text x={nx} y={ny + 4} textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="9" fontFamily="'DM Sans',sans-serif">{n}</text>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
 function BarChart({ data, color, label }) {
   if (!data || data.length === 0) return null;
   const max = Math.max(...data.map(d => Math.abs(d.y)));
@@ -1342,15 +1314,6 @@ function DetailModal({ source, onClose }) {
           </div>
         )}
 
-        {/* Mindmap */}
-        {d.concepts && d.concepts.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-xs font-bold uppercase tracking-wider opacity-40 mb-2">🧠 Mind Map концепций</h3>
-            <div className="rounded-xl overflow-hidden" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-              <Mindmap concepts={d.concepts} color={color} title={source.title} />
-            </div>
-          </div>
-        )}
 
         {/* Practices */}
         {d.practices && d.practices.length > 0 && (
